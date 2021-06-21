@@ -271,7 +271,7 @@ Runner.prototype = {
    * @return {boolean}
    */
   isDisabled() {
-    return loadTimeData && loadTimeData.valueExists("disabledEasterEgg");
+    return false;
   },
 
   /**
