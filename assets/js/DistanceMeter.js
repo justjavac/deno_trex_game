@@ -132,29 +132,13 @@ DistanceMeter.prototype = {
 
     this.canvasCtx.save();
 
-    if (IS_RTL) {
-      if (opt_highScore) {
-        this.canvasCtx.translate(
-          this.canvas.width / 2 -
-            DistanceMeter.dimensions.WIDTH * (this.maxScoreUnits + 3),
-          this.y,
-        );
-      } else {
-        this.canvasCtx.translate(
-          this.canvas.width / 2 - DistanceMeter.dimensions.WIDTH,
-          this.y,
-        );
-      }
-      this.canvasCtx.scale(-1, 1);
-    } else {
-      const highScoreX = this.x -
-        this.maxScoreUnits * 2 * DistanceMeter.dimensions.WIDTH;
-      if (opt_highScore) {
-        this.canvasCtx.translate(highScoreX, this.y);
-      } else {
-        this.canvasCtx.translate(this.x, this.y);
-      }
-    }
+    const highScoreX = this.x -
+    this.maxScoreUnits * 2 * DistanceMeter.dimensions.WIDTH;
+  if (opt_highScore) {
+    this.canvasCtx.translate(highScoreX, this.y);
+  } else {
+    this.canvasCtx.translate(this.x, this.y);
+  }
 
     this.canvasCtx.drawImage(
       this.image,

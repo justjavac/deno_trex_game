@@ -1238,7 +1238,7 @@ Runner.prototype = {
 
   setPlayStatus(isPlaying) {
     if (this.touchController) {
-      this.touchController.classList.toggle(HIDDEN_CLASS, !isPlaying);
+      this.touchController.classList.toggle("hidden", !isPlaying);
     }
     this.playing = isPlaying;
   },
@@ -1282,8 +1282,7 @@ Runner.prototype = {
       ),
     ) * window.devicePixelRatio;
 
-    const cssScale = IS_RTL ? -scale + "," + scale : scale;
-    this.containerEl.style.transform = "scale(" + cssScale + ") translateY(" +
+    this.containerEl.style.transform = "scale(" + scale + ") translateY(" +
       translateY + "px)";
   },
 
