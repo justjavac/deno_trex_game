@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const HIDDEN_CLASS = 'hidden';
+const HIDDEN_CLASS = "hidden";
 
 /**
  * T-Rex runner.
@@ -265,7 +265,7 @@ Runner.prototype = {
           this.tRex.setJumpVelocity(value);
           break;
         case "SPEED":
-          this.setSpeed(/** @type {number} */(value));
+          this.setSpeed(/** @type {number} */ (value));
           break;
       }
     }
@@ -277,10 +277,9 @@ Runner.prototype = {
    * @return {HTMLImageElement} The created element.
    */
   createImageElement(resourceName) {
-    const imgSrc =
-      loadTimeData && loadTimeData.valueExists(resourceName)
-        ? loadTimeData.getString(resourceName)
-        : null;
+    const imgSrc = loadTimeData && loadTimeData.valueExists(resourceName)
+      ? loadTimeData.getString(resourceName)
+      : null;
 
     if (imgSrc) {
       const el = /** @type {HTMLImageElement} */ (
@@ -331,7 +330,7 @@ Runner.prototype = {
       // If the images are not yet loaded, add a listener.
       Runner.imageSprite.addEventListener(
         Runner.events.LOAD,
-        this.init.bind(this)
+        this.init.bind(this),
       );
     }
   },
@@ -344,20 +343,20 @@ Runner.prototype = {
       this.audioContext = new AudioContext();
 
       const resourceTemplate = document.getElementById(
-        this.config.RESOURCE_TEMPLATE_ID
+        this.config.RESOURCE_TEMPLATE_ID,
       ).content;
 
       for (const sound in Runner.sounds) {
         const soundSrc = resourceTemplate.getElementById(
-          Runner.sounds[sound]
+          Runner.sounds[sound],
         ).src;
-        fetch(soundSrc).then(response => {
+        fetch(soundSrc).then((response) => {
           return response.arrayBuffer();
-        }).then(buffer => {
+        }).then((buffer) => {
           return this.audioContext.decodeAudioData(buffer);
-        }).then(audioData => {
+        }).then((audioData) => {
           this.soundFx[sound] = audioData;
-        })
+        });
       }
     }
   },
@@ -374,7 +373,7 @@ Runner.prototype = {
       const mobileSpeed = Runner.slowDown
         ? speed
         : ((speed * this.dimensions.WIDTH) / DEFAULT_WIDTH) *
-        this.config.MOBILE_SPEED_COEFFICIENT;
+          this.config.MOBILE_SPEED_COEFFICIENT;
       this.currentSpeed = mobileSpeed > speed ? speed : mobileSpeed;
     } else if (opt_speed) {
       this.currentSpeed = opt_speed;
@@ -398,7 +397,7 @@ Runner.prototype = {
     this.canvas = createCanvas(
       this.containerEl,
       this.dimensions.WIDTH,
-      this.dimensions.HEIGHT
+      this.dimensions.HEIGHT,
     );
 
     this.generatedSoundFx = new GeneratedSoundFx();
@@ -415,14 +414,14 @@ Runner.prototype = {
       this.canvas,
       this.spriteDef,
       this.dimensions,
-      this.config.GAP_COEFFICIENT
+      this.config.GAP_COEFFICIENT,
     );
 
     // Distance meter
     this.distanceMeter = new DistanceMeter(
       this.canvas,
       this.spriteDef.TEXT_SPRITE,
-      this.dimensions.WIDTH
+      this.dimensions.WIDTH,
     );
 
     // Draw t-rex
@@ -435,12 +434,12 @@ Runner.prototype = {
 
     window.addEventListener(
       Runner.events.RESIZE,
-      this.debounceResize.bind(this)
+      this.debounceResize.bind(this),
     );
 
     // Handle dark mode
     const darkModeMediaQuery = window.matchMedia(
-      "(prefers-color-scheme: dark)"
+      "(prefers-color-scheme: dark)",
     );
     this.isDarkMode = darkModeMediaQuery && darkModeMediaQuery.matches;
     darkModeMediaQuery.addListener((e) => {
@@ -477,7 +476,7 @@ Runner.prototype = {
 
     const boxStyles = window.getComputedStyle(this.outerContainerEl);
     const padding = Number(
-      boxStyles.paddingLeft.substr(0, boxStyles.paddingLeft.length - 2)
+      boxStyles.paddingLeft.substr(0, boxStyles.paddingLeft.length - 2),
     );
 
     this.dimensions.WIDTH = this.outerContainerEl.offsetWidth - padding * 2;
@@ -528,8 +527,7 @@ Runner.prototype = {
       this.tRex.playingIntro = true;
 
       // CSS animation definition.
-      const keyframes =
-        "@-webkit-keyframes intro { " +
+      const keyframes = "@-webkit-keyframes intro { " +
         "from { width:" +
         Trex.config.WIDTH +
         "px }" +
@@ -541,7 +539,7 @@ Runner.prototype = {
 
       this.containerEl.addEventListener(
         Runner.events.ANIM_END,
-        this.startGame.bind(this)
+        this.startGame.bind(this),
       );
 
       this.containerEl.style.webkitAnimation = "intro .4s ease-out 1 both";
@@ -572,17 +570,17 @@ Runner.prototype = {
     // Handle tabbing off the page. Pause the current game.
     document.addEventListener(
       Runner.events.VISIBILITY,
-      this.onVisibilityChange.bind(this)
+      this.onVisibilityChange.bind(this),
     );
 
     window.addEventListener(
       Runner.events.BLUR,
-      this.onVisibilityChange.bind(this)
+      this.onVisibilityChange.bind(this),
     );
 
     window.addEventListener(
       Runner.events.FOCUS,
-      this.onVisibilityChange.bind(this)
+      this.onVisibilityChange.bind(this),
     );
   },
 
@@ -591,7 +589,7 @@ Runner.prototype = {
       0,
       0,
       this.dimensions.WIDTH,
-      this.dimensions.HEIGHT
+      this.dimensions.HEIGHT,
     );
   },
 
@@ -603,7 +601,7 @@ Runner.prototype = {
   isCanvasInView() {
     return (
       this.containerEl.getBoundingClientRect().top >
-      Runner.config.CANVAS_IN_VIEW_OFFSET
+        Runner.config.CANVAS_IN_VIEW_OFFSET
     );
   },
 
@@ -684,13 +682,13 @@ Runner.prototype = {
           deltaTime,
           this.currentSpeed,
           hasObstacles,
-          showNightMode
+          showNightMode,
         );
       }
 
       // Check for collisions.
-      let collision =
-        hasObstacles && checkForCollision(this.horizon.obstacles[0], this.tRex);
+      let collision = hasObstacles &&
+        checkForCollision(this.horizon.obstacles[0], this.tRex);
 
       // For a11y, audio cues.
       if (Runner.audioCues && hasObstacles) {
@@ -701,8 +699,7 @@ Runner.prototype = {
           const threshold = Runner.isMobileMouseInput
             ? Runner.config.AUDIOCUE_PROXIMITY_THRESHOLD_MOBILE_A11Y
             : Runner.config.AUDIOCUE_PROXIMITY_THRESHOLD;
-          const adjProximityThreshold =
-            threshold +
+          const adjProximityThreshold = threshold +
             threshold * Math.log10(this.currentSpeed / Runner.config.SPEED);
 
           if (this.horizon.obstacles[0].xPos < adjProximityThreshold) {
@@ -726,7 +723,7 @@ Runner.prototype = {
 
       const playAchievementSound = this.distanceMeter.update(
         deltaTime,
-        Math.ceil(this.distanceRan)
+        Math.ceil(this.distanceRan),
       );
 
       if (!Runner.audioCues && playAchievementSound) {
@@ -742,7 +739,7 @@ Runner.prototype = {
         this.invertTimer += deltaTime;
       } else {
         const actualDistance = this.distanceMeter.getActualDistance(
-          Math.ceil(this.distanceRan)
+          Math.ceil(this.distanceRan),
         );
 
         if (actualDistance > 0) {
@@ -845,15 +842,15 @@ Runner.prototype = {
     // A11y keyboard / screen reader activation.
     this.containerEl.addEventListener(
       Runner.events.KEYDOWN,
-      this.handleCanvasKeyPress.bind(this)
+      this.handleCanvasKeyPress.bind(this),
     );
     this.canvas.addEventListener(
       Runner.events.KEYDOWN,
-      this.preventScrolling.bind(this)
+      this.preventScrolling.bind(this),
     );
     this.canvas.addEventListener(
       Runner.events.KEYUP,
-      this.preventScrolling.bind(this)
+      this.preventScrolling.bind(this),
     );
 
     // Keys.
@@ -913,11 +910,10 @@ Runner.prototype = {
 
       if (!this.crashed && !this.paused) {
         // For a11y, screen reader activation.
-        const isMobileMouseInput =
-          (IS_MOBILE &&
-            e.type === Runner.events.POINTERDOWN &&
-            e.pointerType == "mouse" &&
-            e.target == this.containerEl) ||
+        const isMobileMouseInput = (IS_MOBILE &&
+          e.type === Runner.events.POINTERDOWN &&
+          e.pointerType == "mouse" &&
+          e.target == this.containerEl) ||
           (IS_IOS &&
             e.pointerType == "touch" &&
             document.activeElement == this.containerEl);
@@ -980,8 +976,7 @@ Runner.prototype = {
    */
   onKeyUp(e) {
     const keyCode = String(e.keyCode);
-    const isjumpKey =
-      Runner.keycodes.JUMP[keyCode] ||
+    const isjumpKey = Runner.keycodes.JUMP[keyCode] ||
       e.type === Runner.events.TOUCHEND ||
       e.type === Runner.events.POINTERUP;
 
@@ -1097,7 +1092,7 @@ Runner.prototype = {
     if (state !== previousState) {
       const e = new KeyboardEvent(
         state ? Runner.events.KEYDOWN : Runner.events.KEYUP,
-        { keyCode: keyCode }
+        { keyCode: keyCode },
       );
       document.dispatchEvent(e);
     }
@@ -1221,7 +1216,7 @@ Runner.prototype = {
           this.canvas,
           origSpriteDef.TEXT_SPRITE,
           origSpriteDef.RESTART,
-          this.dimensions
+          this.dimensions,
         );
       }
     }
@@ -1321,20 +1316,19 @@ Runner.prototype = {
     const scaledCanvasHeight = this.dimensions.HEIGHT * scale;
     // Positions the game container at 10% of the available vertical window
     // height minus the game container height.
-    const translateY =
-      Math.ceil(
-        Math.max(
-          0,
-          (windowHeight -
-            scaledCanvasHeight -
-            Runner.config.ARCADE_MODE_INITIAL_TOP_POSITION) *
-          Runner.config.ARCADE_MODE_TOP_POSITION_PERCENT
-        )
-      ) * window.devicePixelRatio;
+    const translateY = Math.ceil(
+      Math.max(
+        0,
+        (windowHeight -
+          scaledCanvasHeight -
+          Runner.config.ARCADE_MODE_INITIAL_TOP_POSITION) *
+          Runner.config.ARCADE_MODE_TOP_POSITION_PERCENT,
+      ),
+    ) * window.devicePixelRatio;
 
     const cssScale = IS_RTL ? -scale + "," + scale : scale;
-    this.containerEl.style.transform =
-      "scale(" + cssScale + ") translateY(" + translateY + "px)";
+    this.containerEl.style.transform = "scale(" + cssScale + ") translateY(" +
+      translateY + "px)";
   },
 
   /**
@@ -1381,7 +1375,7 @@ Runner.prototype = {
     } else {
       this.inverted = htmlEl.classList.toggle(
         Runner.classes.INVERTED,
-        this.invertTrigger
+        this.invertTrigger,
       );
     }
   },
@@ -1408,8 +1402,8 @@ Runner.updateCanvasScaling = function (canvas, opt_width, opt_height) {
   // Query the various pixel ratios
   const devicePixelRatio = Math.floor(window.devicePixelRatio) || 1;
   /** @suppress {missingProperties} */
-  const backingStoreRatio =
-    Math.floor(context.webkitBackingStorePixelRatio) || 1;
+  const backingStoreRatio = Math.floor(context.webkitBackingStorePixelRatio) ||
+    1;
   const ratio = devicePixelRatio / backingStoreRatio;
 
   // Upscale the canvas if the two ratios don't match
@@ -1534,7 +1528,7 @@ GeneratedSoundFx.prototype = {
           this.playNote(73.42, this.context.currentTime, 0.05, 0.16);
           this.playNote(69.3, this.context.currentTime + 0.116, 0.116, 0.16);
         }.bind(this),
-        280
+        280,
       );
     }
   },
@@ -1649,7 +1643,7 @@ function GameOverPanel(
   restartImgPos,
   dimensions,
   opt_altGameEndImgPos,
-  opt_altGameActive
+  opt_altGameActive,
 ) {
   this.canvas = canvas;
   this.canvasCtx = /** @type {CanvasRenderingContext2D} */ (
@@ -1757,7 +1751,7 @@ GameOverPanel.prototype = {
       textTargetX,
       textTargetY,
       textTargetWidth,
-      textTargetHeight
+      textTargetHeight,
     );
 
     this.canvasCtx.restore();
@@ -1790,7 +1784,7 @@ GameOverPanel.prototype = {
         altGameEndTargetX,
         altGameEndTargetY,
         altGameEndConfig.WIDTH,
-        altGameEndConfig.HEIGHT
+        altGameEndConfig.HEIGHT,
       );
     }
   },
@@ -1803,8 +1797,8 @@ GameOverPanel.prototype = {
     let framePosX = GameOverPanel.animConfig.frames[this.currentFrame];
     let restartSourceWidth = dimensions.RESTART_WIDTH;
     let restartSourceHeight = dimensions.RESTART_HEIGHT;
-    const restartTargetX =
-      this.canvasDimensions.WIDTH / 2 - dimensions.RESTART_WIDTH / 2;
+    const restartTargetX = this.canvasDimensions.WIDTH / 2 -
+      dimensions.RESTART_WIDTH / 2;
     const restartTargetY = this.canvasDimensions.HEIGHT / 2;
 
     if (IS_HIDPI) {
@@ -1829,7 +1823,7 @@ GameOverPanel.prototype = {
       restartTargetX,
       restartTargetY,
       dimensions.RESTART_WIDTH,
-      dimensions.RESTART_HEIGHT
+      dimensions.RESTART_HEIGHT,
     );
     this.canvasCtx.restore();
   },
@@ -1921,11 +1915,11 @@ GameOverPanel.prototype = {
     this.canvasCtx.clearRect(
       Math.round(
         this.canvasDimensions.WIDTH / 2 -
-        GameOverPanel.dimensions.TEXT_WIDTH / 2
+          GameOverPanel.dimensions.TEXT_WIDTH / 2,
       ),
       Math.round((this.canvasDimensions.HEIGHT - 25) / 3),
       GameOverPanel.dimensions.TEXT_WIDTH,
-      GameOverPanel.dimensions.TEXT_HEIGHT + 4
+      GameOverPanel.dimensions.TEXT_HEIGHT + 4,
     );
     this.canvasCtx.restore();
   },
@@ -1963,14 +1957,14 @@ function checkForCollision(obstacle, tRex, opt_canvasCtx) {
     tRex.xPos + 1,
     tRex.yPos + 1,
     tRex.config.WIDTH - 2,
-    tRex.config.HEIGHT - 2
+    tRex.config.HEIGHT - 2,
   );
 
   const obstacleBox = new CollisionBox(
     obstacle.xPos + 1,
     obstacle.yPos + 1,
     obstacle.typeConfig.width * obstacle.size - 2,
-    obstacle.typeConfig.height - 2
+    obstacle.typeConfig.height - 2,
   );
 
   // Debug outer box
@@ -1991,11 +1985,11 @@ function checkForCollision(obstacle, tRex, opt_canvasCtx) {
         // Adjust the box to actual positions.
         const adjTrexBox = createAdjustedCollisionBox(
           tRexCollisionBoxes[t],
-          tRexBox
+          tRexBox,
         );
         const adjObstacleBox = createAdjustedCollisionBox(
           collisionBoxes[i],
-          obstacleBox
+          obstacleBox,
         );
         const crashed = boxCompare(adjTrexBox, adjObstacleBox);
 
@@ -2023,7 +2017,7 @@ function createAdjustedCollisionBox(box, adjustment) {
     box.x + adjustment.x,
     box.y + adjustment.y,
     box.width,
-    box.height
+    box.height,
   );
 }
 
@@ -2040,7 +2034,7 @@ function drawCollisionBoxes(canvasCtx, tRexBox, obstacleBox) {
     obstacleBox.x,
     obstacleBox.y,
     obstacleBox.width,
-    obstacleBox.height
+    obstacleBox.height,
   );
   canvasCtx.restore();
 }
@@ -2111,7 +2105,7 @@ function Obstacle(
   gapCoefficient,
   speed,
   opt_xOffset,
-  opt_isAltGameMode
+  opt_isAltGameMode,
 ) {
   this.canvasCtx = canvasCtx;
   this.spritePos = spriteImgPos;
@@ -2127,12 +2121,11 @@ function Obstacle(
   this.gap = 0;
   this.speedOffset = 0;
   this.altGameModeActive = opt_isAltGameMode;
-  this.imageSprite =
-    this.typeConfig.type == "COLLECTABLE"
-      ? Runner.altCommonImageSprite
-      : this.altGameModeActive
-        ? Runner.altGameImageSprite
-        : Runner.imageSprite;
+  this.imageSprite = this.typeConfig.type == "COLLECTABLE"
+    ? Runner.altCommonImageSprite
+    : this.altGameModeActive
+    ? Runner.altGameImageSprite
+    : Runner.imageSprite;
 
   // For animated obstacles.
   this.currentFrame = 0;
@@ -2187,8 +2180,7 @@ Obstacle.prototype = {
     //   |_|___|_|   |_|_____|_|   |_|_______|_|
     //
     if (this.size > 1) {
-      this.collisionBoxes[1].width =
-        this.width -
+      this.collisionBoxes[1].width = this.width -
         this.collisionBoxes[0].width -
         this.collisionBoxes[2].width;
       this.collisionBoxes[2].x = this.width - this.collisionBoxes[2].width;
@@ -2196,10 +2188,9 @@ Obstacle.prototype = {
 
     // For obstacles that go at a different speed from the horizon.
     if (this.typeConfig.speedOffset) {
-      this.speedOffset =
-        Math.random() > 0.5
-          ? this.typeConfig.speedOffset
-          : -this.typeConfig.speedOffset;
+      this.speedOffset = Math.random() > 0.5
+        ? this.typeConfig.speedOffset
+        : -this.typeConfig.speedOffset;
     }
 
     this.gap = this.getGap(this.gapCoefficient, speed);
@@ -2223,8 +2214,8 @@ Obstacle.prototype = {
     }
 
     // X position in sprite.
-    let sourceX =
-      sourceWidth * this.size * (0.5 * (this.size - 1)) + this.spritePos.x;
+    let sourceX = sourceWidth * this.size * (0.5 * (this.size - 1)) +
+      this.spritePos.x;
 
     // Animation frames.
     if (this.currentFrame > 0) {
@@ -2240,7 +2231,7 @@ Obstacle.prototype = {
       this.xPos,
       this.yPos,
       this.typeConfig.width * this.size,
-      this.typeConfig.height
+      this.typeConfig.height,
     );
   },
 
@@ -2284,7 +2275,7 @@ Obstacle.prototype = {
    */
   getGap(gapCoefficient, speed) {
     const minGap = Math.round(
-      this.width * speed + this.typeConfig.minGap * gapCoefficient
+      this.width * speed + this.typeConfig.minGap * gapCoefficient,
     );
     const maxGap = Math.round(minGap * Obstacle.MAX_GAP_COEFFICIENT);
     return getRandomNum(minGap, maxGap);
@@ -2310,7 +2301,7 @@ Obstacle.prototype = {
         collisionBoxes[i].x,
         collisionBoxes[i].y,
         collisionBoxes[i].width,
-        collisionBoxes[i].height
+        collisionBoxes[i].height,
       );
     }
   },
@@ -2455,8 +2446,7 @@ Trex.prototype = {
    * Sets the t-rex to blink at random intervals.
    */
   init() {
-    this.groundYPos =
-      Runner.defaultDimensions.HEIGHT -
+    this.groundYPos = Runner.defaultDimensions.HEIGHT -
       this.config.HEIGHT -
       Runner.config.BOTTOM_PAD;
     this.yPos = this.groundYPos;
@@ -2520,8 +2510,7 @@ Trex.prototype = {
     this.config = Trex.config;
 
     // Adjust bottom horizon placement.
-    this.groundYPos =
-      Runner.defaultDimensions.HEIGHT -
+    this.groundYPos = Runner.defaultDimensions.HEIGHT -
       this.config.HEIGHT -
       Runner.spriteDefinition["BOTTOM_PAD"];
     this.yPos = this.groundYPos;
@@ -2539,8 +2528,8 @@ Trex.prototype = {
       }
       Trex.config.MIN_JUMP_HEIGHT *= 1.5;
       Trex.config.MAX_JUMP_HEIGHT *= 1.5;
-      Trex.config.INITIAL_JUMP_VELOCITY =
-        Trex.config.INITIAL_JUMP_VELOCITY * 1.5;
+      Trex.config.INITIAL_JUMP_VELOCITY = Trex.config.INITIAL_JUMP_VELOCITY *
+        1.5;
     }
   },
 
@@ -2585,7 +2574,7 @@ Trex.prototype = {
     // Game intro animation, T-rex moves in from the left.
     if (this.playingIntro && this.xPos < this.config.START_X_POS) {
       this.xPos += Math.round(
-        (this.config.START_X_POS / this.config.INTRO_DURATION) * deltaTime
+        (this.config.START_X_POS / this.config.INTRO_DURATION) * deltaTime,
       );
       this.xInitialPos = this.xPos;
     }
@@ -2598,10 +2587,9 @@ Trex.prototype = {
 
     // Update the frame position.
     if (!this.flashing && this.timer >= this.msPerFrame) {
-      this.currentFrame =
-        this.currentFrame == this.currentAnimFrames.length - 1
-          ? 0
-          : this.currentFrame + 1;
+      this.currentFrame = this.currentFrame == this.currentAnimFrames.length - 1
+        ? 0
+        : this.currentFrame + 1;
       this.timer = 0;
     }
 
@@ -2622,10 +2610,9 @@ Trex.prototype = {
   draw(x, y) {
     let sourceX = x;
     let sourceY = y;
-    let sourceWidth =
-      this.ducking && this.status !== Trex.status.CRASHED
-        ? this.config.WIDTH_DUCK
-        : this.config.WIDTH;
+    let sourceWidth = this.ducking && this.status !== Trex.status.CRASHED
+      ? this.config.WIDTH_DUCK
+      : this.config.WIDTH;
     let sourceHeight = this.config.HEIGHT;
     const outputHeight = sourceHeight;
 
@@ -2676,7 +2663,7 @@ Trex.prototype = {
         this.xPos,
         this.yPos,
         this.config.WIDTH_DUCK,
-        outputHeight
+        outputHeight,
       );
     } else if (
       this.altGameModeEnabled &&
@@ -2693,7 +2680,7 @@ Trex.prototype = {
         this.xPos - jumpOffset,
         this.yPos,
         this.config.WIDTH_JUMP,
-        outputHeight
+        outputHeight,
       );
     } else {
       // Crashed whilst ducking. Trex is standing up so needs adjustment.
@@ -2710,7 +2697,7 @@ Trex.prototype = {
         this.xPos,
         this.yPos,
         this.config.WIDTH,
-        outputHeight
+        outputHeight,
       );
     }
     this.canvasCtx.globalAlpha = 1;
@@ -2784,7 +2771,7 @@ Trex.prototype = {
     // Speed drop makes Trex fall faster.
     if (this.speedDrop) {
       this.yPos += Math.round(
-        this.jumpVelocity * this.config.SPEED_DROP_COEFFICIENT * framesElapsed
+        this.jumpVelocity * this.config.SPEED_DROP_COEFFICIENT * framesElapsed,
       );
     } else if (this.config.INVERT_JUMP) {
       this.yPos -= Math.round(this.jumpVelocity * framesElapsed);
@@ -2966,8 +2953,7 @@ DistanceMeter.prototype = {
    * @param {number} canvasWidth
    */
   calcXPos(canvasWidth) {
-    this.x =
-      canvasWidth -
+    this.x = canvasWidth -
       DistanceMeter.dimensions.DEST_WIDTH * (this.maxScoreUnits + 1);
   },
 
@@ -3004,19 +2990,19 @@ DistanceMeter.prototype = {
       if (opt_highScore) {
         this.canvasCtx.translate(
           this.canvas.width / 2 -
-          DistanceMeter.dimensions.WIDTH * (this.maxScoreUnits + 3),
-          this.y
+            DistanceMeter.dimensions.WIDTH * (this.maxScoreUnits + 3),
+          this.y,
         );
       } else {
         this.canvasCtx.translate(
           this.canvas.width / 2 - DistanceMeter.dimensions.WIDTH,
-          this.y
+          this.y,
         );
       }
       this.canvasCtx.scale(-1, 1);
     } else {
-      const highScoreX =
-        this.x - this.maxScoreUnits * 2 * DistanceMeter.dimensions.WIDTH;
+      const highScoreX = this.x -
+        this.maxScoreUnits * 2 * DistanceMeter.dimensions.WIDTH;
       if (opt_highScore) {
         this.canvasCtx.translate(highScoreX, this.y);
       } else {
@@ -3033,7 +3019,7 @@ DistanceMeter.prototype = {
       targetX,
       targetY,
       targetWidth,
-      targetHeight
+      targetHeight,
     );
 
     this.canvasCtx.restore();
@@ -3082,7 +3068,7 @@ DistanceMeter.prototype = {
 
         // Create a string representation of the distance with leading 0.
         const distanceStr = (this.defaultString + distance).substr(
-          -this.maxScoreUnits
+          -this.maxScoreUnits,
         );
         this.digits = distanceStr.split("");
       } else {
@@ -3139,7 +3125,7 @@ DistanceMeter.prototype = {
   setHighScore(distance) {
     distance = this.getActualDistance(distance);
     const highScoreStr = (this.defaultString + distance).substr(
-      -this.maxScoreUnits
+      -this.maxScoreUnits,
     );
 
     this.highScore = ["10", "11", ""].concat(highScoreStr.split(""));
@@ -3179,16 +3165,13 @@ DistanceMeter.prototype = {
    */
   getHighScoreBounds() {
     return {
-      x:
-        this.x -
+      x: this.x -
         this.maxScoreUnits * 2 * DistanceMeter.dimensions.WIDTH -
         DistanceMeter.config.HIGH_SCORE_HIT_AREA_PADDING,
       y: this.y,
-      width:
-        DistanceMeter.dimensions.WIDTH * (this.highScore.length + 1) +
+      width: DistanceMeter.dimensions.WIDTH * (this.highScore.length + 1) +
         DistanceMeter.config.HIGH_SCORE_HIT_AREA_PADDING,
-      height:
-        DistanceMeter.dimensions.HEIGHT +
+      height: DistanceMeter.dimensions.HEIGHT +
         DistanceMeter.config.HIGH_SCORE_HIT_AREA_PADDING * 2,
     };
   },
@@ -3237,7 +3220,7 @@ DistanceMeter.prototype = {
       this.highScoreBounds.x,
       this.highScoreBounds.y,
       this.highScoreBounds.width,
-      this.highScoreBounds.height
+      this.highScoreBounds.height,
     );
     this.canvasCtx.fill();
     this.canvasCtx.restore();
@@ -3312,7 +3295,7 @@ function Cloud(canvas, spritePos, containerWidth) {
   this.remove = false;
   this.gap = getRandomNum(
     Cloud.config.MIN_CLOUD_GAP,
-    Cloud.config.MAX_CLOUD_GAP
+    Cloud.config.MAX_CLOUD_GAP,
   );
 
   this.init();
@@ -3338,7 +3321,7 @@ Cloud.prototype = {
   init() {
     this.yPos = getRandomNum(
       Cloud.config.MAX_SKY_LEVEL,
-      Cloud.config.MIN_SKY_LEVEL
+      Cloud.config.MIN_SKY_LEVEL,
     );
     this.draw();
   },
@@ -3366,7 +3349,7 @@ Cloud.prototype = {
       this.xPos,
       this.yPos,
       outputWidth,
-      outputHeight
+      outputHeight,
     );
 
     this.canvasCtx.restore();
@@ -3419,7 +3402,7 @@ function BackgroundEl(canvas, spritePos, containerWidth, type) {
   this.type = type;
   this.gap = getRandomNum(
     BackgroundEl.config.MIN_GAP,
-    BackgroundEl.config.MAX_GAP
+    BackgroundEl.config.MAX_GAP,
   );
   this.animTimer = 0;
   this.switchFrames = false;
@@ -3452,8 +3435,7 @@ BackgroundEl.prototype = {
     if (this.spriteConfig.FIXED) {
       this.xPos = this.spriteConfig.FIXED_X_POS;
     }
-    this.yPos =
-      BackgroundEl.config.Y_POS -
+    this.yPos = BackgroundEl.config.Y_POS -
       this.spriteConfig.HEIGHT +
       this.spriteConfig.OFFSET;
     this.draw();
@@ -3485,7 +3467,7 @@ BackgroundEl.prototype = {
       this.xPos,
       this.yPos,
       outputWidth,
-      outputHeight
+      outputHeight,
     );
 
     this.canvasCtx.restore();
@@ -3601,7 +3583,7 @@ NightMode.prototype = {
         for (let i = 0; i < NightMode.config.NUM_STARS; i++) {
           this.stars[i].x = this.updateXPos(
             this.stars[i].x,
-            NightMode.config.STAR_SPEED
+            NightMode.config.STAR_SPEED,
           );
         }
       }
@@ -3623,10 +3605,9 @@ NightMode.prototype = {
   },
 
   draw() {
-    let moonSourceWidth =
-      this.currentPhase === 3
-        ? NightMode.config.WIDTH * 2
-        : NightMode.config.WIDTH;
+    let moonSourceWidth = this.currentPhase === 3
+      ? NightMode.config.WIDTH * 2
+      : NightMode.config.WIDTH;
     let moonSourceHeight = NightMode.config.HEIGHT;
     let moonSourceX = this.spritePos.x + NightMode.phases[this.currentPhase];
     const moonOutputWidth = moonSourceWidth;
@@ -3656,7 +3637,7 @@ NightMode.prototype = {
           Math.round(this.stars[i].x),
           this.stars[i].y,
           NightMode.config.STAR_SIZE,
-          NightMode.config.STAR_SIZE
+          NightMode.config.STAR_SIZE,
         );
       }
     }
@@ -3671,7 +3652,7 @@ NightMode.prototype = {
       Math.round(this.xPos),
       this.yPos,
       moonOutputWidth,
-      NightMode.config.HEIGHT
+      NightMode.config.HEIGHT,
     );
 
     this.canvasCtx.globalAlpha = 1;
@@ -3681,7 +3662,7 @@ NightMode.prototype = {
   // Do star placement.
   placeStars() {
     const segmentSize = Math.round(
-      this.containerWidth / NightMode.config.NUM_STARS
+      this.containerWidth / NightMode.config.NUM_STARS,
     );
 
     for (let i = 0; i < NightMode.config.NUM_STARS; i++) {
@@ -3798,7 +3779,7 @@ HorizonLine.prototype = {
       this.xPos[0],
       this.yPos,
       this.dimensions.WIDTH,
-      this.dimensions.HEIGHT
+      this.dimensions.HEIGHT,
     );
 
     this.canvasCtx.drawImage(
@@ -3810,7 +3791,7 @@ HorizonLine.prototype = {
       this.xPos[1],
       this.yPos,
       this.dimensions.WIDTH,
-      this.dimensions.HEIGHT
+      this.dimensions.HEIGHT,
     );
   },
 
@@ -3921,14 +3902,14 @@ Horizon.prototype = {
     // Multiple Horizon lines
     for (let i = 0; i < Runner.spriteDefinition.LINES.length; i++) {
       this.horizonLines.push(
-        new HorizonLine(this.canvas, Runner.spriteDefinition.LINES[i])
+        new HorizonLine(this.canvas, Runner.spriteDefinition.LINES[i]),
       );
     }
 
     this.nightMode = new NightMode(
       this.canvas,
       this.spritePos.MOON,
-      this.dimensions.WIDTH
+      this.dimensions.WIDTH,
     );
   },
 
@@ -3974,7 +3955,7 @@ Horizon.prototype = {
     this.horizonLines = [];
     for (let i = 0; i < Runner.spriteDefinition.LINES.length; i++) {
       this.horizonLines.push(
-        new HorizonLine(this.canvas, Runner.spriteDefinition.LINES[i])
+        new HorizonLine(this.canvas, Runner.spriteDefinition.LINES[i]),
       );
     }
     this.reset();
@@ -4052,7 +4033,7 @@ Horizon.prototype = {
       this.clouds,
       this.config.MAX_CLOUDS,
       this.addCloud.bind(this),
-      this.cloudFrequency
+      this.cloudFrequency,
     );
 
     // Remove expired elements.
@@ -4070,7 +4051,7 @@ Horizon.prototype = {
       this.backgroundEls,
       BackgroundEl.config.MAX_BG_ELS,
       this.addBackgroundEl.bind(this),
-      this.cloudFrequency
+      this.cloudFrequency,
     );
 
     // Remove expired elements.
@@ -4104,7 +4085,7 @@ Horizon.prototype = {
         !lastObstacle.followingObstacleCreated &&
         lastObstacle.isVisible() &&
         lastObstacle.xPos + lastObstacle.width + lastObstacle.gap <
-        this.dimensions.WIDTH
+          this.dimensions.WIDTH
       ) {
         this.addNewObstacle(currentSpeed);
         lastObstacle.followingObstacleCreated = true;
@@ -4124,12 +4105,12 @@ Horizon.prototype = {
    * @param {number} currentSpeed
    */
   addNewObstacle(currentSpeed) {
-    const obstacleCount =
-      this.altGameModeActive
-        ? Obstacle.types.length - 1
-        : Obstacle.types.length - 2;
-    const obstacleTypeIndex =
-      obstacleCount > 0 ? getRandomNum(0, obstacleCount) : 0;
+    const obstacleCount = this.altGameModeActive
+      ? Obstacle.types.length - 1
+      : Obstacle.types.length - 2;
+    const obstacleTypeIndex = obstacleCount > 0
+      ? getRandomNum(0, obstacleCount)
+      : 0;
     const obstacleType = Obstacle.types[obstacleTypeIndex];
 
     // Check for multiples of the same type of obstacle.
@@ -4151,8 +4132,8 @@ Horizon.prototype = {
           this.gapCoefficient,
           currentSpeed,
           obstacleType.width,
-          this.altGameModeActive
-        )
+          this.altGameModeActive,
+        ),
       );
 
       this.obstacleHistory.unshift(obstacleType.type);
@@ -4172,8 +4153,9 @@ Horizon.prototype = {
     let duplicateCount = 0;
 
     for (let i = 0; i < this.obstacleHistory.length; i++) {
-      duplicateCount =
-        this.obstacleHistory[i] === nextObstacleType ? duplicateCount + 1 : 0;
+      duplicateCount = this.obstacleHistory[i] === nextObstacleType
+        ? duplicateCount + 1
+        : 0;
     }
     return duplicateCount >= Runner.config.MAX_OBSTACLE_DUPLICATION;
   },
@@ -4206,7 +4188,7 @@ Horizon.prototype = {
    */
   addCloud() {
     this.clouds.push(
-      new Cloud(this.canvas, this.spritePos.CLOUD, this.dimensions.WIDTH)
+      new Cloud(this.canvas, this.spritePos.CLOUD, this.dimensions.WIDTH),
     );
   },
 
@@ -4215,7 +4197,7 @@ Horizon.prototype = {
    */
   addBackgroundEl() {
     const backgroundElTypes = Object.keys(
-      Runner.spriteDefinition.BACKGROUND_EL
+      Runner.spriteDefinition.BACKGROUND_EL,
     );
 
     if (backgroundElTypes.length > 0) {
@@ -4234,8 +4216,8 @@ Horizon.prototype = {
           this.canvas,
           this.spritePos.BACKGROUND_EL,
           this.dimensions.WIDTH,
-          type
-        )
+          type,
+        ),
       );
     }
   },
