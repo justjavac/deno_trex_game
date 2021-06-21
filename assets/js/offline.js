@@ -405,28 +405,6 @@ Runner.prototype = {
       this.dimensions.HEIGHT
     );
 
-    // Add checkbox to slow down the game.
-    this.slowSpeedCheckboxLabel = document.createElement("label");
-    this.slowSpeedCheckboxLabel.className = "slow-speed-toggle hidden";
-    this.slowSpeedCheckboxLabel.textContent = getA11yString(
-      A11Y_STRINGS.speedLabel
-    );
-
-    this.slowSpeedCheckbox = document.createElement("input");
-    this.slowSpeedCheckbox.setAttribute("type", "checkbox");
-    this.slowSpeedCheckbox.setAttribute(
-      "title",
-      getA11yString(A11Y_STRINGS.speedLabel)
-    );
-    this.slowSpeedCheckbox.setAttribute("tabindex", "0");
-    this.slowSpeedCheckbox.setAttribute("checked", "checked");
-
-    this.slowSpeedToggleEl = document.createElement("span");
-    this.slowSpeedToggleEl.className = "slow-speed-toggle";
-
-    this.slowSpeedCheckboxLabel.appendChild(this.slowSpeedCheckbox);
-    this.slowSpeedCheckboxLabel.appendChild(this.slowSpeedToggleEl);
-
     this.generatedSoundFx = new GeneratedSoundFx();
 
     this.canvasCtx = /** @type {CanvasRenderingContext2D} */ (
@@ -455,7 +433,6 @@ Runner.prototype = {
     this.tRex = new Trex(this.canvas, this.spriteDef.TREX);
 
     this.outerContainerEl.appendChild(this.containerEl);
-    this.outerContainerEl.appendChild(this.slowSpeedCheckboxLabel);
 
     this.startListening();
     this.update();
@@ -866,34 +843,6 @@ Runner.prototype = {
         this.tRex.enableSlowConfig();
         this.horizon.adjustObstacleSpeed();
       }
-      this.disableSpeedToggle(true);
-    }
-  },
-
-  /**
-   * Show the speed toggle.
-   * From focus event or when audio cues are activated.
-   * @param {Event=} e
-   */
-  showSpeedToggle(e) {
-    const isFocusEvent = e && e.type == "focus";
-    if (Runner.audioCues || isFocusEvent) {
-      this.slowSpeedCheckboxLabel.classList.toggle(
-        HIDDEN_CLASS,
-        isFocusEvent ? false : !this.crashed
-      );
-    }
-  },
-
-  /**
-   * Disable the speed toggle.
-   * @param {boolean} disable
-   */
-  disableSpeedToggle(disable) {
-    if (disable) {
-      this.slowSpeedCheckbox.setAttribute("disabled", "disabled");
-    } else {
-      this.slowSpeedCheckbox.removeAttribute("disabled");
     }
   },
 
@@ -906,12 +855,6 @@ Runner.prototype = {
       Runner.events.KEYDOWN,
       this.handleCanvasKeyPress.bind(this)
     );
-    if (!IS_MOBILE) {
-      this.containerEl.addEventListener(
-        Runner.events.FOCUS,
-        this.showSpeedToggle.bind(this)
-      );
-    }
     this.canvas.addEventListener(
       Runner.events.KEYDOWN,
       this.preventScrolling.bind(this)
@@ -1308,8 +1251,6 @@ Runner.prototype = {
         getA11yString(A11Y_STRINGS.ariaLabel)
       );
     }
-    this.showSpeedToggle();
-    this.disableSpeedToggle(false);
   },
 
   stop() {
