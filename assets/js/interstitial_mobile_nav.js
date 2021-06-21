@@ -9,16 +9,15 @@ let mobileNav = false;
  * below the advanced text.
  */
 function onResize() {
-  const helpOuterBox = document.querySelector("#details");
-  const mainContent = document.querySelector("#main-content");
-  const mediaQuery =
-    "(min-width: 240px) and (max-width: 420px) and " +
-    "(min-height: 401px), " +
-    "(max-height: 560px) and (min-height: 240px) and " +
-    "(min-width: 421px)";
+  const helpOuterBox = document.querySelector('#details');
+  const mainContent = document.querySelector('#main-content');
+  const mediaQuery = '(min-width: 240px) and (max-width: 420px) and ' +
+      '(min-height: 401px), ' +
+      '(max-height: 560px) and (min-height: 240px) and ' +
+      '(min-width: 421px)';
 
   const detailsHidden = helpOuterBox.classList.contains(HIDDEN_CLASS);
-  const runnerContainer = document.querySelector(".runner-container");
+  const runnerContainer = document.querySelector('.runner-container');
 
   // Check for change in nav status.
   if (mobileNav !== window.matchMedia(mediaQuery).matches) {
@@ -43,8 +42,8 @@ function onResize() {
 }
 
 function setupMobileNav() {
-  window.addEventListener("resize", onResize);
+  window.addEventListener('resize', onResize);
   onResize();
 }
 
-document.addEventListener("DOMContentLoaded", setupMobileNav);
+document.addEventListener('DOMContentLoaded', setupMobileNav);
