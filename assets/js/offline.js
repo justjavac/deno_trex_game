@@ -115,9 +115,6 @@ const IS_MOBILE = /Android/.test(window.navigator.userAgent) || IS_IOS;
 const IS_RTL = document.querySelector("html").dir == "rtl";
 
 /** @const */
-const ARCADE_MODE_URL = "chrome://dino/";
-
-/** @const */
 const RESOURCE_POSTFIX = "offline-resources-";
 
 /** @const */
@@ -395,11 +392,9 @@ Runner.prototype = {
     this.adjustDimensions();
     this.setSpeed();
 
-    const ariaLabel = getA11yString(A11Y_STRINGS.ariaLabel);
     this.containerEl = document.createElement("div");
     this.containerEl.setAttribute("role", IS_MOBILE ? "button" : "application");
     this.containerEl.setAttribute("tabindex", "0");
-    this.containerEl.setAttribute("title", ariaLabel);
 
     this.containerEl.className = Runner.classes.CONTAINER;
 
@@ -409,13 +404,6 @@ Runner.prototype = {
       this.dimensions.WIDTH,
       this.dimensions.HEIGHT
     );
-
-    // Live region for game status updates.
-    this.a11yStatusEl = document.createElement("span");
-    this.a11yStatusEl.className = "offline-runner-live-region";
-    this.a11yStatusEl.setAttribute("aria-live", "assertive");
-    this.a11yStatusEl.textContent = "";
-    Runner.a11yStatusEl = this.a11yStatusEl;
 
     // Add checkbox to slow down the game.
     this.slowSpeedCheckboxLabel = document.createElement("label");
@@ -438,14 +426,6 @@ Runner.prototype = {
 
     this.slowSpeedCheckboxLabel.appendChild(this.slowSpeedCheckbox);
     this.slowSpeedCheckboxLabel.appendChild(this.slowSpeedToggleEl);
-
-    if (IS_IOS) {
-      this.outerContainerEl.appendChild(this.a11yStatusEl);
-    } else {
-      this.containerEl.appendChild(this.a11yStatusEl);
-    }
-
-    announcePhrase(getA11yString(A11Y_STRINGS.description));
 
     this.generatedSoundFx = new GeneratedSoundFx();
 
@@ -615,8 +595,7 @@ Runner.prototype = {
     this.containerEl.style.webkitAnimation = "";
     this.playCount++;
     this.generatedSoundFx.background();
-    announcePhrase(getA11yString(A11Y_STRINGS.started));
-
+    
     if (Runner.audioCues) {
       this.containerEl.setAttribute("title", getA11yString(A11Y_STRINGS.jump));
     }
@@ -1324,18 +1303,6 @@ Runner.prototype = {
 
     if (Runner.audioCues) {
       this.generatedSoundFx.stopAll();
-      announcePhrase(
-        getA11yString(A11Y_STRINGS.gameOver).replace(
-          "$1",
-          this.distanceMeter.getActualDistance(this.distanceRan).toString()
-        ) +
-        " " +
-        getA11yString(A11Y_STRINGS.highScore).replace(
-          "$1",
-
-          this.distanceMeter.getActualDistance(this.highestScore).toString()
-        )
-      );
       this.containerEl.setAttribute(
         "title",
         getA11yString(A11Y_STRINGS.ariaLabel)
@@ -1387,7 +1354,6 @@ Runner.prototype = {
       this.gameOverPanel.reset();
       this.generatedSoundFx.background();
       this.containerEl.setAttribute("title", getA11yString(A11Y_STRINGS.jump));
-      announcePhrase(getA11yString(A11Y_STRINGS.started));
     }
   },
 
@@ -1682,17 +1648,6 @@ function speakPhrase(phrase) {
     const voices = window.speechSynthesis.getVoices();
     msg.text = phrase;
     speechSynthesis.speak(msg);
-  }
-}
-
-/**
- * For screen readers make an announcement to the live region.
- * @param {string} phrase Sentence to speak.
- */
-function announcePhrase(phrase) {
-  if (Runner.a11yStatusEl) {
-    Runner.a11yStatusEl.textContent = "";
-    Runner.a11yStatusEl.textContent = phrase;
   }
 }
 
