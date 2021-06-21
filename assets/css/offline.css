@@ -1,0 +1,222 @@
+/* Copyright The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+body {
+  margin: 0;
+  font-family: system-ui, PingFang SC, STHeiti, sans-serif;
+  font-size: 75%;
+  background-color: rgb(247, 247, 247);
+  color: rgb(100, 100, 100);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+.offline {
+  transition: filter 1.5s cubic-bezier(0.65, 0.05, 0.36, 1),
+    background-color 1.5s cubic-bezier(0.65, 0.05, 0.36, 1);
+  will-change: filter, background-color;
+}
+
+.offline.inverted {
+  background-color: #fff;
+  filter: invert(1);
+}
+
+.offline .interstitial-wrapper {
+  color: var(--text-color);
+  font-size: 1em;
+  line-height: 1.55;
+  margin: 0 auto;
+  max-width: 600px;
+  padding-top: 100px;
+  position: relative;
+  width: 100%;
+}
+
+.offline .runner-container {
+  direction: ltr;
+  height: 150px;
+  max-width: 600px;
+  overflow: hidden;
+  position: absolute;
+  top: 35px;
+  width: 44px;
+}
+
+.offline .runner-container:focus {
+  outline: none;
+}
+
+.offline .runner-container:focus-visible {
+  outline: 3px solid var(--google-blue-300);
+}
+
+.offline .runner-canvas {
+  height: 150px;
+  max-width: 600px;
+  opacity: 1;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  z-index: 10;
+}
+
+#offline-resources {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .interstitial-wrapper {
+    padding: 0 10%;
+  }
+}
+
+@media (max-width: 420px) {
+  .interstitial-wrapper {
+    padding: 0 5%;
+  }
+}
+
+/**
+* Mobile specific styling.
+* Navigation buttons are anchored to the bottom of the screen.
+* Details message replaces the top content in its own scrollable area.
+*/
+
+/* Fixed nav. */
+
+@media (min-width: 240px) and (max-width: 420px) and (min-height: 401px),
+  (min-width: 421px) and (min-height: 240px) and (max-height: 560px) {
+  .interstitial-wrapper {
+    max-width: 736px;
+  }
+}
+
+@media (max-width: 420px) and (orientation: portrait), (max-height: 560px) {
+  body {
+    margin: 0 auto;
+  }
+
+  .interstitial-wrapper {
+    box-sizing: border-box;
+    margin: 7vh auto 12px;
+    padding: 0 24px;
+    position: relative;
+  }
+}
+
+@media (min-width: 421px) and (min-height: 500px) and (max-height: 560px) {
+  .interstitial-wrapper {
+    margin-top: 10vh;
+  }
+}
+
+@media (min-height: 400px) and (orientation: portrait) {
+  .interstitial-wrapper {
+    margin-bottom: 145px;
+  }
+}
+
+@media (min-height: 500px) and (max-height: 650px) and (max-width: 414px) and (orientation: portrait) {
+  .interstitial-wrapper {
+    margin-top: 7vh;
+  }
+}
+
+@media (min-height: 650px) and (max-width: 414px) and (orientation: portrait) {
+  .interstitial-wrapper {
+    margin-top: 10vh;
+  }
+}
+
+/* Small mobile screens. No fixed nav. */
+
+@media (max-height: 400px) and (orientation: portrait),
+  (max-height: 239px) and (orientation: landscape),
+  (max-width: 419px) and (max-height: 399px) {
+  .interstitial-wrapper {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0;
+  }
+}
+
+@media (max-height: 350px) {
+  .interstitial-wrapper {
+    margin-top: 5%;
+  }
+}
+
+@media (min-width: 420px) and (max-width: 736px) and (min-height: 240px) and (max-height: 420px) and (orientation: landscape) {
+  .interstitial-wrapper {
+    margin-bottom: 100px;
+  }
+}
+
+@media (max-width: 360px) and (max-height: 480px) {
+  .offline .interstitial-wrapper {
+    padding-top: 60px;
+  }
+
+  .offline .runner-container {
+    top: 8px;
+  }
+}
+
+@media (min-height: 240px) and (orientation: landscape) {
+  .offline .interstitial-wrapper {
+    margin-bottom: 90px;
+  }
+}
+
+@media (max-height: 320px) and (orientation: landscape) {
+  .offline .runner-container {
+    top: 10px;
+  }
+}
+
+@media (max-width: 240px) {
+  .interstitial-wrapper {
+    overflow: inherit;
+    padding: 0 8px;
+  }
+}
+
+.arcade-mode,
+.arcade-mode .runner-container,
+.arcade-mode .runner-canvas {
+  image-rendering: pixelated;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.arcade-mode .interstitial-wrapper {
+  height: 100vh;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.arcade-mode .runner-container {
+  left: 0;
+  margin: auto;
+  right: 0;
+  transform-origin: top center;
+  transition: transform 250ms cubic-bezier(0.4, 0, 1, 1) 0.4s;
+  z-index: 2;
+}
+
+.v-fork-me {
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 999;
+}
+
+@media (max-width: 979px) {
+  .v-fork-me {
+    display: none;
+  }
+}
