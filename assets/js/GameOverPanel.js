@@ -107,11 +107,6 @@ GameOverPanel.prototype = {
 
     this.canvasCtx.save();
 
-    if (IS_RTL) {
-      this.canvasCtx.translate(this.canvas.width / 2, 0);
-      this.canvasCtx.scale(-1, 1);
-    }
-
     // Game over text from sprite.
     this.canvasCtx.drawImage(
       spriteSource,
@@ -179,11 +174,6 @@ GameOverPanel.prototype = {
     }
 
     this.canvasCtx.save();
-
-    if (IS_RTL) {
-      this.canvasCtx.translate(this.canvas.width / 2, 0);
-      this.canvasCtx.scale(-1, 1);
-    }
 
     this.canvasCtx.drawImage(
       Runner.origImageSprite,
