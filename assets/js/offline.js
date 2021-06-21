@@ -568,10 +568,6 @@ Runner.prototype = {
     this.containerEl.style.webkitAnimation = "";
     this.playCount++;
     this.generatedSoundFx.background();
-    
-    if (Runner.audioCues) {
-      this.containerEl.setAttribute("title", getA11yString(A11Y_STRINGS.jump));
-    }
 
     // Handle tabbing off the page. Pause the current game.
     document.addEventListener(
@@ -1242,10 +1238,6 @@ Runner.prototype = {
 
     if (Runner.audioCues) {
       this.generatedSoundFx.stopAll();
-      this.containerEl.setAttribute(
-        "title",
-        getA11yString(A11Y_STRINGS.ariaLabel)
-      );
     }
   },
 
@@ -1290,7 +1282,6 @@ Runner.prototype = {
       this.update();
       this.gameOverPanel.reset();
       this.generatedSoundFx.background();
-      this.containerEl.setAttribute("title", getA11yString(A11Y_STRINGS.jump));
     }
   },
 
@@ -1586,33 +1577,6 @@ function speakPhrase(phrase) {
     msg.text = phrase;
     speechSynthesis.speak(msg);
   }
-}
-
-/**
- * Returns a string from loadTimeData data object.
- * @param {string} stringName
- * @return {string}
- */
-function getA11yString(stringName) {
-  const A11Y = {
-    "dinoGameA11yAriaLabel": "恐龙游戏，您只需按空格键让恐龙跳跃即可开始玩这个游戏",
-    "dinoGameA11yGameOver": "游戏结束，您的得分是 $1。",
-    "dinoGameA11yHighScore": "您的最高得分是 $1。",
-    "dinoGameA11yJump": "跳！",
-    "dinoGameA11yStartGame": "游戏已开始。",
-    "errorCode": "",
-    "fontfamily": "system-ui,PingFang SC,STHeiti,sans-serif",
-    "fontsize": "75%",
-    "heading": {
-      "hostName": "dino",
-      "msg": "按空格键即可播放"
-    },
-    "iconClass": "icon-offline",
-    "language": "zh",
-    "textdirection": "ltr",
-    "title": "chrome://dino/"
-  }
-  return A11Y[stringName] || "";
 }
 
 /**
