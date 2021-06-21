@@ -262,14 +262,6 @@ Runner.prototype = {
   },
 
   /**
-   * Whether the easter egg has been disabled. CrOS enterprise enrolled devices.
-   * @return {boolean}
-   */
-  isDisabled() {
-    return false;
-  },
-
-  /**
    * Setting individual settings for debugging.
    * @param {string} setting
    * @param {number|string} value
