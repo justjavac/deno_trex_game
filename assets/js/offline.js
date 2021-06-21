@@ -83,18 +83,13 @@ function Runner(outerContainerId, optConfig) {
   this.gamepadIndex = undefined;
   this.previousGamepad = null;
 
-  if (this.isDisabled()) {
-    this.setupDisabledRunner();
-  } else {
-    if (Runner.isAltGameModeEnabled()) {
-      this.initAltGameType();
-      Runner.gameType = this.gameType;
-    }
-    this.loadImages();
-
-    window["initializeEasterEggHighScore"] =
-      this.initializeHighScore.bind(this);
+  if (Runner.isAltGameModeEnabled()) {
+    this.initAltGameType();
+    Runner.gameType = this.gameType;
   }
+  this.loadImages();
+
+  window["initializeEasterEggHighScore"] = this.initializeHighScore.bind(this);
 }
 
 /**
@@ -272,27 +267,6 @@ Runner.prototype = {
    */
   isDisabled() {
     return false;
-  },
-
-  /**
-   * For disabled instances, set up a snackbar with the disabled message.
-   */
-  setupDisabledRunner() {
-    this.containerEl = document.createElement("div");
-    this.containerEl.className = Runner.classes.SNACKBAR;
-    this.containerEl.textContent = loadTimeData.getValue("disabledEasterEgg");
-    this.outerContainerEl.appendChild(this.containerEl);
-
-    // Show notification when the activation key is pressed.
-    document.addEventListener(
-      Runner.events.KEYDOWN,
-      function (e) {
-        if (Runner.keycodes.JUMP[e.keyCode]) {
-          this.containerEl.classList.add(Runner.classes.SNACKBAR_SHOW);
-          document.querySelector(".icon").classList.add("icon-disabled");
-        }
-      }.bind(this)
-    );
   },
 
   /**
