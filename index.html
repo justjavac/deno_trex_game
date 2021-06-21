@@ -7,23 +7,19 @@
   <meta name="renderer" content="webkit" />
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#fff">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0,
-                                 maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Chrome T-Rex Game</title>
   <link rel="stylesheet" href="assets/css/t-rex.css" />
   <!-- <script src="assets/js/neterror.js"></script> -->
-  <script src="assets/js/interstitial_mobile_nav.js"></script>
+  <!-- <script src="assets/js/interstitial_mobile_nav.js"></script> -->
   <script src="assets/js/offline.js"></script>
   <script src="assets/js/offline-sprite-definitions.js"></script>
 </head>
 
-<body id="t" style="
-      font-family: 'Segoe UI', Arial, 'Microsoft Yahei', sans-serif;
-      font-size: 75%;
-    " class="offline">
+<body class="offline">
   <div id="main-frame-error" class="interstitial-wrapper">
-    <div class="runner-container">
-      <canvas class="runner-canvas" width="600" height="150" style="width: 600px; height: 150px"></canvas>
+    <div id="main-content">
+      <div class="icon icon-offline" style="visibility: hidden;"></div>
     </div>
   </div>
 
@@ -31,9 +27,9 @@
     <img id="offline-resources-1x" src="assets/img/offline-resources-1x.png">
     <img id="offline-resources-2x" src="assets/img/offline-resources-2x.png">
     <template id="audio-resources">
-      <audio id="offline-sound-press" src="assets/audio/offline-sound-press.mpeg" i18n-processed=""></audio>
-      <audio id="offline-sound-hit" src="assets/audio/offline-sound-hit.mpeg" i18n-processed=""></audio>
-      <audio id="offline-sound-reached" src="assets/audio/offline-sound-reached.mpeg" i18n-processed=""></audio>
+      <audio id="offline-sound-press" src="assets/audio/offline-sound-press.mpeg"></audio>
+      <audio id="offline-sound-hit" src="assets/audio/offline-sound-hit.mpeg"></audio>
+      <audio id="offline-sound-reached" src="assets/audio/offline-sound-reached.mpeg"></audio>
     </template>
   </div>
 

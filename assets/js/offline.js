@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+const HIDDEN_CLASS = 'hidden';
+
 /**
  * T-Rex runner.
  * @param {string} outerContainerId Outer containing element id.
@@ -83,10 +85,6 @@ function Runner(outerContainerId, optConfig) {
   this.gamepadIndex = undefined;
   this.previousGamepad = null;
 
-  if (Runner.isAltGameModeEnabled()) {
-    this.initAltGameType();
-    Runner.gameType = this.gameType;
-  }
   this.loadImages();
 
   window["initializeEasterEggHighScore"] = this.initializeHighScore.bind(this);
@@ -252,16 +250,6 @@ Runner.events = {
 
 Runner.prototype = {
   /**
-   * Assign a random game type.
-   */
-  initAltGameType() {
-    this.gameType =
-      loadTimeData && loadTimeData.valueExists("altGameType")
-        ? GAME_TYPE[parseInt(loadTimeData.getValue("altGameType"), 10) - 1]
-        : "";
-  },
-
-  /**
    * Setting individual settings for debugging.
    * @param {string} setting
    * @param {number|string} value
@@ -280,7 +268,7 @@ Runner.prototype = {
           this.tRex.setJumpVelocity(value);
           break;
         case "SPEED":
-          this.setSpeed(/** @type {number} */ (value));
+          this.setSpeed(/** @type {number} */(value));
           break;
       }
     }
@@ -337,7 +325,6 @@ Runner.prototype = {
 
     // Disable the alt game mode if the sprites can't be loaded.
     if (!Runner.altGameImageSprite || !Runner.altCommonImageSprite) {
-      Runner.isAltGameModeEnabled = () => false;
       this.altGameModeActive = false;
     }
 
@@ -364,19 +351,16 @@ Runner.prototype = {
       ).content;
 
       for (const sound in Runner.sounds) {
-        let soundSrc = resourceTemplate.getElementById(
+        const soundSrc = resourceTemplate.getElementById(
           Runner.sounds[sound]
         ).src;
-        soundSrc = soundSrc.substr(soundSrc.indexOf(",") + 1);
-        const buffer = decodeBase64ToArrayBuffer(soundSrc);
-
-        // Async, so no guarantee of order in array.
-        this.audioContext.decodeAudioData(
-          buffer,
-          function (index, audioData) {
-            this.soundFx[index] = audioData;
-          }.bind(this, sound)
-        );
+        fetch(soundSrc).then(response => {
+          return response.arrayBuffer();
+        }).then(buffer => {
+          return this.audioContext.decodeAudioData(buffer);
+        }).then(audioData => {
+          this.soundFx[sound] = audioData;
+        })
       }
     }
   },
@@ -393,7 +377,7 @@ Runner.prototype = {
       const mobileSpeed = Runner.slowDown
         ? speed
         : ((speed * this.dimensions.WIDTH) / DEFAULT_WIDTH) *
-          this.config.MOBILE_SPEED_COEFFICIENT;
+        this.config.MOBILE_SPEED_COEFFICIENT;
       this.currentSpeed = mobileSpeed > speed ? speed : mobileSpeed;
     } else if (opt_speed) {
       this.currentSpeed = opt_speed;
@@ -782,20 +766,6 @@ Runner.prototype = {
         }
       }
 
-      // Activated alt game mode.
-      if (
-        Runner.isAltGameModeEnabled() &&
-        collision &&
-        this.horizon.obstacles[0].typeConfig.type == "COLLECTABLE"
-      ) {
-        this.horizon.removeFirstObstacle();
-        this.tRex.setFlashing(true);
-        collision = false;
-        this.altGameModeFlashTimer = this.config.FLASH_DURATION;
-        this.runningTime = 0;
-        this.generatedSoundFx.collect();
-      }
-
       if (!collision) {
         this.distanceRan += (this.currentSpeed * deltaTime) / this.msPerFrame;
 
@@ -816,27 +786,25 @@ Runner.prototype = {
       }
 
       // Night mode.
-      if (!Runner.isAltGameModeEnabled()) {
-        if (this.invertTimer > this.config.INVERT_FADE_DURATION) {
-          this.invertTimer = 0;
-          this.invertTrigger = false;
-          this.invert(false);
-        } else if (this.invertTimer) {
-          this.invertTimer += deltaTime;
-        } else {
-          const actualDistance = this.distanceMeter.getActualDistance(
-            Math.ceil(this.distanceRan)
+      if (this.invertTimer > this.config.INVERT_FADE_DURATION) {
+        this.invertTimer = 0;
+        this.invertTrigger = false;
+        this.invert(false);
+      } else if (this.invertTimer) {
+        this.invertTimer += deltaTime;
+      } else {
+        const actualDistance = this.distanceMeter.getActualDistance(
+          Math.ceil(this.distanceRan)
+        );
+
+        if (actualDistance > 0) {
+          this.invertTrigger = !(
+            actualDistance % this.config.INVERT_DISTANCE
           );
 
-          if (actualDistance > 0) {
-            this.invertTrigger = !(
-              actualDistance % this.config.INVERT_DISTANCE
-            );
-
-            if (this.invertTrigger && this.invertTimer === 0) {
-              this.invertTimer += deltaTime;
-              this.invert(false);
-            }
+          if (this.invertTrigger && this.invertTimer === 0) {
+            this.invertTimer += deltaTime;
+            this.invert(false);
           }
         }
       }
@@ -1335,23 +1303,12 @@ Runner.prototype = {
         : Runner.spriteDefinitionByType.original.LDPI;
 
       if (this.canvas) {
-        if (Runner.isAltGameModeEnabled) {
-          this.gameOverPanel = new GameOverPanel(
-            this.canvas,
-            origSpriteDef.TEXT_SPRITE,
-            origSpriteDef.RESTART,
-            this.dimensions,
-            origSpriteDef.ALT_GAME_END,
-            this.altGameModeActive
-          );
-        } else {
-          this.gameOverPanel = new GameOverPanel(
-            this.canvas,
-            origSpriteDef.TEXT_SPRITE,
-            origSpriteDef.RESTART,
-            this.dimensions
-          );
-        }
+        this.gameOverPanel = new GameOverPanel(
+          this.canvas,
+          origSpriteDef.TEXT_SPRITE,
+          origSpriteDef.RESTART,
+          this.dimensions
+        );
       }
     }
 
@@ -1372,12 +1329,12 @@ Runner.prototype = {
           "$1",
           this.distanceMeter.getActualDistance(this.distanceRan).toString()
         ) +
-          " " +
-          getA11yString(A11Y_STRINGS.highScore).replace(
-            "$1",
+        " " +
+        getA11yString(A11Y_STRINGS.highScore).replace(
+          "$1",
 
-            this.distanceMeter.getActualDistance(this.highestScore).toString()
-          )
+          this.distanceMeter.getActualDistance(this.highestScore).toString()
+        )
       );
       this.containerEl.setAttribute(
         "title",
@@ -1448,9 +1405,7 @@ Runner.prototype = {
   isArcadeMode() {
     // In RTL languages the title is wrapped with the left to right mark
     // control characters &#x202A; and &#x202C but are invisible.
-    return IS_RTL
-      ? document.title.indexOf(ARCADE_MODE_URL) == 1
-      : document.title === ARCADE_MODE_URL;
+    return true;
   },
 
   /**
@@ -1479,7 +1434,7 @@ Runner.prototype = {
           (windowHeight -
             scaledCanvasHeight -
             Runner.config.ARCADE_MODE_INITIAL_TOP_POSITION) *
-            Runner.config.ARCADE_MODE_TOP_POSITION_PERCENT
+          Runner.config.ARCADE_MODE_TOP_POSITION_PERCENT
         )
       ) * window.devicePixelRatio;
 
@@ -1585,14 +1540,6 @@ Runner.updateCanvasScaling = function (canvas, opt_width, opt_height) {
     canvas.style.height = canvas.height + "px";
   }
   return false;
-};
-
-/**
- * Whether events are enabled.
- * @return {boolean}
- */
-Runner.isAltGameModeEnabled = function () {
-  return loadTimeData && loadTimeData.valueExists("enableAltGameMode");
 };
 
 /**
@@ -1755,9 +1702,25 @@ function announcePhrase(phrase) {
  * @return {string}
  */
 function getA11yString(stringName) {
-  return loadTimeData && loadTimeData.valueExists(stringName)
-    ? loadTimeData.getString(stringName)
-    : "";
+  const A11Y = {
+    "dinoGameA11yAriaLabel": "恐龙游戏，您只需按空格键让恐龙跳跃即可开始玩这个游戏",
+    "dinoGameA11yGameOver": "游戏结束，您的得分是 $1。",
+    "dinoGameA11yHighScore": "您的最高得分是 $1。",
+    "dinoGameA11yJump": "跳！",
+    "dinoGameA11yStartGame": "游戏已开始。",
+    "errorCode": "",
+    "fontfamily": "system-ui,PingFang SC,STHeiti,sans-serif",
+    "fontsize": "75%",
+    "heading": {
+      "hostName": "dino",
+      "msg": "按空格键即可播放"
+    },
+    "iconClass": "icon-offline",
+    "language": "zh",
+    "textdirection": "ltr",
+    "title": "chrome://dino/"
+  }
+  return A11Y[stringName] || "";
 }
 
 /**
@@ -2115,7 +2078,7 @@ GameOverPanel.prototype = {
     this.canvasCtx.clearRect(
       Math.round(
         this.canvasDimensions.WIDTH / 2 -
-          GameOverPanel.dimensions.TEXT_WIDTH / 2
+        GameOverPanel.dimensions.TEXT_WIDTH / 2
       ),
       Math.round((this.canvasDimensions.HEIGHT - 25) / 3),
       GameOverPanel.dimensions.TEXT_WIDTH,
@@ -2175,15 +2138,9 @@ function checkForCollision(obstacle, tRex, opt_canvasCtx) {
   // Simple outer bounds check.
   if (boxCompare(tRexBox, obstacleBox)) {
     const collisionBoxes = obstacle.collisionBoxes;
-    let tRexCollisionBoxes = [];
-
-    if (Runner.isAltGameModeEnabled()) {
-      tRexCollisionBoxes = Runner.spriteDefinition.TREX.COLLISION_BOXES;
-    } else {
-      tRexCollisionBoxes = tRex.ducking
-        ? Trex.collisionBoxes.DUCKING
-        : Trex.collisionBoxes.RUNNING;
-    }
+    let tRexCollisionBoxes = tRex.ducking
+      ? Trex.collisionBoxes.DUCKING
+      : Trex.collisionBoxes.RUNNING;
 
     // Detailed axis aligned box check.
     for (let t = 0; t < tRexCollisionBoxes.length; t++) {
@@ -2331,8 +2288,8 @@ function Obstacle(
     this.typeConfig.type == "COLLECTABLE"
       ? Runner.altCommonImageSprite
       : this.altGameModeActive
-      ? Runner.altGameImageSprite
-      : Runner.imageSprite;
+        ? Runner.altGameImageSprite
+        : Runner.imageSprite;
 
   // For animated obstacles.
   this.currentFrame = 0;
@@ -3204,7 +3161,7 @@ DistanceMeter.prototype = {
       if (opt_highScore) {
         this.canvasCtx.translate(
           this.canvas.width / 2 -
-            DistanceMeter.dimensions.WIDTH * (this.maxScoreUnits + 3),
+          DistanceMeter.dimensions.WIDTH * (this.maxScoreUnits + 3),
           this.y
         );
       } else {
@@ -4304,7 +4261,7 @@ Horizon.prototype = {
         !lastObstacle.followingObstacleCreated &&
         lastObstacle.isVisible() &&
         lastObstacle.xPos + lastObstacle.width + lastObstacle.gap <
-          this.dimensions.WIDTH
+        this.dimensions.WIDTH
       ) {
         this.addNewObstacle(currentSpeed);
         lastObstacle.followingObstacleCreated = true;
@@ -4325,7 +4282,6 @@ Horizon.prototype = {
    */
   addNewObstacle(currentSpeed) {
     const obstacleCount =
-      (Runner.isAltGameModeEnabled() && !this.altGameModeActive) ||
       this.altGameModeActive
         ? Obstacle.types.length - 1
         : Obstacle.types.length - 2;

@@ -7,13 +7,15 @@ a {
 }
 
 body {
+    margin: 0;
+    font-family: system-ui,PingFang SC,STHeiti,sans-serif;
+    font-size: 75%;
     background-color: rgb(247, 247, 247);
     color: rgb(100, 100, 100);
 }
 
 html {
     -webkit-text-size-adjust: 100%;
-    font-size: 125%;
 }
 
 /* Copyright 2014 The Chromium Authors. All rights reserved.
