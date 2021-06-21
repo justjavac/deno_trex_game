@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const HIDDEN_CLASS = "hidden";
-
 /**
  * T-Rex runner.
  * @param {string} outerContainerId Outer containing element id.
@@ -1282,7 +1280,7 @@ Runner.prototype = {
 
   setPlayStatus(isPlaying) {
     if (this.touchController) {
-      this.touchController.classList.toggle(HIDDEN_CLASS, !isPlaying);
+      this.touchController.classList.toggle("hidden", !isPlaying);
     }
     this.playing = isPlaying;
   },
