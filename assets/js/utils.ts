@@ -1,17 +1,19 @@
+import { IS_MOBILE } from './constants'
+
 /**
- * Get random number.
- * @param {number} min
- * @param {number} max
+ * 获取指定范围内的随机数字。
+ * @param 最小值
+ * @param 最大值
  */
-function getRandomNum(min, max) {
+export function getRandomNum(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 /**
- * Vibrate on mobile devices.
- * @param {number} duration Duration of the vibration in milliseconds.
+ * 在手机设备上震动。
+ * @param 震动的持续时间，单位毫秒。
  */
-function vibrate(duration) {
+ export function vibrate(duration: number) {
   if (IS_MOBILE && window.navigator.vibrate) {
     window.navigator.vibrate(duration);
   }
@@ -25,10 +27,8 @@ function vibrate(duration) {
  * @param {string=} opt_classname
  * @return {HTMLCanvasElement}
  */
-function createCanvas(container, width, height, opt_classname) {
-  const canvas = /** @type {!HTMLCanvasElement} */ (
-    document.createElement("canvas")
-  );
+ export function createCanvas(container: Element, width: number, height: number, opt_classname: string | undefined): HTMLCanvasElement {
+  const canvas = document.createElement("canvas");
   canvas.className = opt_classname
     ? Runner.classes.CANVAS + " " + opt_classname
     : Runner.classes.CANVAS;
@@ -37,22 +37,6 @@ function createCanvas(container, width, height, opt_classname) {
   container.appendChild(canvas);
 
   return canvas;
-}
-
-/**
- * Decodes the base 64 audio to ArrayBuffer used by Web Audio.
- * @param {string} base64String
- */
-function decodeBase64ToArrayBuffer(base64String) {
-  const len = (base64String.length / 4) * 3;
-  const str = atob(base64String);
-  const arrayBuffer = new ArrayBuffer(len);
-  const bytes = new Uint8Array(arrayBuffer);
-
-  for (let i = 0; i < len; i++) {
-    bytes[i] = str.charCodeAt(i);
-  }
-  return bytes.buffer;
 }
 
 /**
