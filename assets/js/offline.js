@@ -1560,6 +1560,8 @@ GeneratedSoundFx.prototype = {
   },
 };
 
+//===================
+
 /**
  * Get random number.
  * @param {number} min
