@@ -1567,19 +1567,6 @@ GeneratedSoundFx.prototype = {
 };
 
 /**
- * Speak a phrase using Speech Synthesis API for a11y.
- * @param {string} phrase Sentence to speak.
- */
-function speakPhrase(phrase) {
-  if ("speechSynthesis" in window) {
-    const msg = new SpeechSynthesisUtterance(phrase);
-    const voices = window.speechSynthesis.getVoices();
-    msg.text = phrase;
-    speechSynthesis.speak(msg);
-  }
-}
-
-/**
  * Get random number.
  * @param {number} min
  * @param {number} max
