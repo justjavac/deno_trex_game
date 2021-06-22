@@ -1,6 +1,6 @@
 import { IS_HIDPI } from "./constants";
 import Runner from "./Runner";
-import Sprite from "./sprite";
+import Sprite, { Position } from "./sprite";
 import { getRandomNum } from "./utils";
 
 /**
@@ -37,7 +37,7 @@ export default class NightMode {
 
   static phases: number[] = [140, 120, 100, 60, 40, 20, 0];
 
-  spritePos: number;
+  spritePos: Position;
   canvas: HTMLCanvasElement;
   canvasCtx: CanvasRenderingContext2D;
   xPos: number;
@@ -50,13 +50,10 @@ export default class NightMode {
 
   /**
    * Nightmode shows a moon and stars on the horizon.
-   * @param {HTMLCanvasElement} canvas
-   * @param {number} spritePos
-   * @param {number} containerWidth
    */
   constructor(
     canvas: HTMLCanvasElement,
-    spritePos: number,
+    spritePos: Position,
     containerWidth: number,
   ) {
     this.spritePos = spritePos;

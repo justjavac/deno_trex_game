@@ -1,5 +1,6 @@
 import { IS_HIDPI } from "./constants";
 import Runner from "./Runner";
+import { Position } from "./sprite";
 import { getRandomNum } from "./utils";
 
 enum CloudConfig {
@@ -14,7 +15,7 @@ enum CloudConfig {
 export default class Cloud {
   canvas: HTMLCanvasElement;
   canvasCtx: CanvasRenderingContext2D;
-  spritePos: object;
+  spritePos: Position;
   containerWidth: number;
   xPos: number;
   yPos: number;
@@ -31,7 +32,7 @@ export default class Cloud {
    */
   constructor(
     canvas: HTMLCanvasElement,
-    spritePos: object,
+    spritePos: Position,
     containerWidth: number,
   ) {
     this.canvas = canvas;

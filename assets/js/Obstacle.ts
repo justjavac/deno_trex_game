@@ -1,7 +1,7 @@
 import CollisionBox from "./CollisionBox";
 import { FPS, IS_HIDPI, IS_MOBILE } from "./constants";
 import Runner from "./Runner";
-import { ObstacleType } from "./sprite";
+import { Dimensions, ObstacleType, Position } from "./sprite";
 import { getRandomNum } from "./utils";
 
 export default class Obstacle {
@@ -13,11 +13,11 @@ export default class Obstacle {
   static MAX_OBSTACLE_LENGTH = 3;
 
   canvasCtx: CanvasRenderingContext2D;
-  spritePos: object;
+  spritePos: Position;
   typeConfig: ObstacleType;
   gapCoefficient: number;
   size: number;
-  dimensions: object;
+  dimensions: Dimensions;
   remove: boolean;
   xPos: number;
   yPos: number;
@@ -31,22 +31,18 @@ export default class Obstacle {
   currentFrame: number;
   timer: number;
   jumpAlerted: any;
+  followingObstacleCreated: boolean;
 
   /**
  * Obstacle.
- * @param {CanvasRenderingContext2D} canvasCtx
- * @param {ObstacleType} type
- * @param {Object} spriteImgPos Obstacle position in sprite.
- * @param {Object} dimensions
  * @param {number} gapCoefficient Mutipler in determining the gap.
- * @param {number} speed
  * @param {number=} optXOffset
  */
   constructor(
     canvasCtx: CanvasRenderingContext2D,
     type: ObstacleType,
-    spriteImgPos: object,
-    dimensions: object,
+    spriteImgPos: Position,
+    dimensions: Dimensions,
     gapCoefficient: number,
     speed: number,
     optXOffset: number | undefined,

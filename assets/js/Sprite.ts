@@ -9,6 +9,11 @@ export interface Position {
   y: number;
 }
 
+export interface Dimensions {
+  WIDTH: number;
+  HEIGHT: number;
+}
+
 /**
  * Obstacle definitions.
  * minGap: minimum pixel space between obstacles.

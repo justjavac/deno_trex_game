@@ -1,27 +1,26 @@
 import { IS_HIDPI } from "./constants";
 import Runner from "./Runner";
-import Sprite from "./sprite";
+import Sprite, { Position } from "./sprite";
 import { getRandomNum } from "./utils";
 
-/**
+export default class BackgroundEl {
+  /**
  * Background element object config.
  * Real values assigned when game type changes.
- * @enum {number}
  */
-enum BackgroundElConfig {
-  MAX_BG_ELS = 0,
-  MAX_GAP = 0,
-  MIN_GAP = 0,
-  POS = 0,
-  SPEED = 0,
-  Y_POS = 0,
-  MS_PER_FRAME = 0, // only needed when BACKGROUND_EL.FIXED is true
-}
+  static config = {
+    MAX_BG_ELS: 0,
+    MAX_GAP: 0,
+    MIN_GAP: 0,
+    POS: 0,
+    SPEED: 0,
+    Y_POS: 0,
+    MS_PER_FRAME: 0, // only needed when BACKGROUND_EL.FIXED is true
+  };
 
-export default class BackgroundEl {
   canvas: HTMLCanvasElement;
   canvasCtx: CanvasRenderingContext2D;
-  spritePos: object;
+  spritePos: Position;
   containerWidth: number;
   xPos: number;
   yPos: number;
@@ -35,19 +34,15 @@ export default class BackgroundEl {
   /**
    * 背景元素
    * 和云类似(cloud)，但是没有随机的 y 坐标
-   * @param {HTMLCanvasElement} canvas Canvas element.
-   * @param {Object} spritePos Position of image in sprite.
-   * @param {number} containerWidth
-   * @param {string} type Element type.
    */
   constructor(
     canvas: HTMLCanvasElement,
-    spritePos: object,
+    spritePos: Position,
     containerWidth: number,
     type: string,
   ) {
     this.canvas = canvas;
-    this.canvasCtx = /** @type {CanvasRenderingContext2D} */ this.canvas
+    this.canvasCtx = this.canvas
       .getContext("2d");
     this.spritePos = spritePos;
     this.containerWidth = containerWidth;
@@ -56,8 +51,8 @@ export default class BackgroundEl {
     this.remove = false;
     this.type = type;
     this.gap = getRandomNum(
-      BackgroundElConfig.MIN_GAP,
-      BackgroundElConfig.MAX_GAP,
+      BackgroundEl.config.MIN_GAP,
+      BackgroundEl.config.MAX_GAP,
     );
     this.animTimer = 0;
     this.switchFrames = false;
@@ -74,7 +69,7 @@ export default class BackgroundEl {
     if (this.spriteConfig.FIXED) {
       this.xPos = this.spriteConfig.FIXED_X_POS;
     }
-    this.yPos = BackgroundElConfig.Y_POS -
+    this.yPos = BackgroundEl.config.Y_POS -
       this.spriteConfig.HEIGHT +
       this.spriteConfig.OFFSET;
     this.draw();
@@ -121,10 +116,10 @@ export default class BackgroundEl {
 
     if (!this.spriteConfig.FIXED) {
       // Fixed speed, regardless of actual game speed.
-      this.xPos -= BackgroundElConfig.SPEED;
+      this.xPos -= BackgroundEl.config.SPEED;
     } else {
       this.animTimer += speed;
-      if (this.animTimer > BackgroundElConfig.MS_PER_FRAME) {
+      if (this.animTimer > BackgroundEl.config.MS_PER_FRAME) {
         this.animTimer = 0;
         this.switchFrames = !this.switchFrames;
       }

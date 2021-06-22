@@ -3,7 +3,7 @@ import Cloud from "./Cloud";
 import Obstacle from "./Obstacle";
 import Runner from "./Runner";
 import HorizonLine from "./HorizonLine";
-import Sprite from "./sprite";
+import Sprite, { Dimensions, Stage } from "./sprite";
 import NightMode from "./NightMode";
 import { getRandomNum } from "./utils";
 
@@ -21,13 +21,13 @@ enum HorizonConfig {
 export default class Horizon {
   canvas: HTMLCanvasElement;
   canvasCtx: CanvasRenderingContext2D;
-  dimensions: object;
+  dimensions: Dimensions;
   gapCoefficient: number;
   obstacles: Obstacle[];
-  obstacleHistory: any[];
+  obstacleHistory: string[];
   horizonOffsets: [number, number];
   cloudFrequency: number;
-  spritePos: object;
+  spritePos: Stage;
   nightMode: NightMode;
 
   // Cloud
@@ -36,12 +36,13 @@ export default class Horizon {
 
   // Background elements
   backgroundEls: BackgroundEl[];
-  lastEl: object;
+  lastEl: string;
   backgroundSpeed: number;
 
   // Horizon
   horizonLine: HorizonLine;
   horizonLines: HorizonLine[];
+  runningTime: number;
 
   /**
    * Horizon background class.
@@ -49,12 +50,11 @@ export default class Horizon {
    * @param {Object} spritePos Sprite positioning.
    * @param {Object} dimensions Canvas dimensions.
    * @param {number} gapCoefficient
-   * @constructor
    */
   constructor(
     canvas: HTMLCanvasElement,
-    spritePos: object,
-    dimensions: object,
+    spritePos: Stage,
+    dimensions: Dimensions,
     gapCoefficient: number,
   ) {
     this.canvas = canvas;
@@ -123,40 +123,10 @@ export default class Horizon {
   }
 
   /**
-   * Update sprites to correspond to change in sprite sheet.
-   * @param {number} spritePos
-   */
-  enableAltGameMode(spritePos: number) {
-    // Clear existing horizon objects.
-    this.clouds = [];
-    this.backgroundEls = [];
-
-    this.spritePos = spritePos;
-
-    Obstacle.types = Sprite.OBSTACLES;
-    this.adjustObstacleSpeed();
-
-    Obstacle.MAX_GAP_COEFFICIENT = Sprite.MAX_GAP_COEFFICIENT;
-    Obstacle.MAX_OBSTACLE_LENGTH = Sprite.MAX_OBSTACLE_LENGTH;
-
-    BackgroundEl.config = Sprite.BACKGROUND_EL_CONFIG;
-
-    this.horizonLines = [];
-    for (let i = 0; i < Sprite.LINES.length; i++) {
-      this.horizonLines.push(
-        new HorizonLine(this.canvas, Sprite.LINES[i]),
-      );
-    }
-    this.reset();
-  }
-
-  /**
-   * @param {number} deltaTime
-   * @param {number} currentSpeed
-   * @param {boolean} updateObstacles Used as an override to prevent
+   * @param updateObstacles Used as an override to prevent
    *     the obstacles from being updated / added. This happens in the
    *     ease in section.
-   * @param {boolean} showNightMode Night mode activated.
+   * @param showNightMode Night mode activated.
    */
   update(
     deltaTime: number,
@@ -188,9 +158,9 @@ export default class Horizon {
    */
   updateBackgroundEl(
     elSpeed: number,
-    bgElArray: Array<object>,
+    bgElArray: (Cloud | BackgroundEl)[],
     maxBgEl: number,
-    bgElAddFunction: Function,
+    bgElAddFunction: ()=>void,
     frequency: number,
   ) {
     const numElements = bgElArray.length;

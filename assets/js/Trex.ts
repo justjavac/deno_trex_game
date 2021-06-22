@@ -153,7 +153,7 @@ export default class Trex {
   flashing: boolean;
   midair: boolean;
   playingIntro: boolean;
-  static status: any;
+  static status: TrexStatus;
 
   /**
    * T-rex game character.
@@ -397,10 +397,6 @@ export default class Trex {
       this.jumping = true;
       this.reachedMinHeight = false;
       this.speedDrop = false;
-
-      if (this.config.INVERT_JUMP) {
-        this.minJumpHeight = this.groundYPos + this.config.MIN_JUMP_HEIGHT;
-      }
     }
   }
 
@@ -429,8 +425,6 @@ export default class Trex {
       this.yPos += Math.round(
         this.jumpVelocity * this.config.SPEED_DROP_COEFFICIENT * framesElapsed,
       );
-    } else if (this.config.INVERT_JUMP) {
-      this.yPos -= Math.round(this.jumpVelocity * framesElapsed);
     } else {
       this.yPos += Math.round(this.jumpVelocity * framesElapsed);
     }
@@ -439,8 +433,7 @@ export default class Trex {
 
     // Minimum height has been reached.
     if (
-      (this.config.INVERT_JUMP && this.yPos > this.minJumpHeight) ||
-      (!this.config.INVERT_JUMP && this.yPos < this.minJumpHeight) ||
+      this.yPos < this.minJumpHeight ||
       this.speedDrop
     ) {
       this.reachedMinHeight = true;
@@ -448,18 +441,14 @@ export default class Trex {
 
     // Reached max height.
     if (
-      (this.config.INVERT_JUMP && this.yPos > -this.config.MAX_JUMP_HEIGHT) ||
-      (!this.config.INVERT_JUMP && this.yPos < this.config.MAX_JUMP_HEIGHT) ||
+      this.yPos < this.config.MAX_JUMP_HEIGHT ||
       this.speedDrop
     ) {
       this.endJump();
     }
 
     // Back down at ground level. Jump completed.
-    if (
-      (this.config.INVERT_JUMP && this.yPos) < this.groundYPos ||
-      (!this.config.INVERT_JUMP && this.yPos) > this.groundYPos
-    ) {
+    if (this.yPos > this.groundYPos) {
       this.reset();
       this.jumpCount++;
 

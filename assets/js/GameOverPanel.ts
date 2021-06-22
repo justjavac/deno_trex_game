@@ -1,5 +1,6 @@
 import { IS_HIDPI } from "./constants";
 import Runner from "./Runner";
+import { Dimensions, Position } from "./sprite";
 import { getTimeStamp } from "./utils";
 
 const RESTART_ANIM_DURATION = 875;
@@ -12,11 +13,6 @@ const AnimConfig = {
   frames: [0, 36, 72, 108, 144, 180, 216, 252],
   msPerFrame: RESTART_ANIM_DURATION / 8,
 };
-
-interface Dimensions {
-  WIDTH: number;
-  HEIGHT: number;
-}
 
 /**
  * Dimensions used in the panel.
@@ -35,8 +31,8 @@ export default class GameOverPanel {
   canvasCtx: CanvasRenderingContext2D;
   canvasDimensions: Dimensions;
 
-  textImgPos: object;
-  restartImgPos: object;
+  textImgPos: Position;
+  restartImgPos: Position;
 
   // Retry animation.
   frameTimeStamp: number;
@@ -60,8 +56,8 @@ export default class GameOverPanel {
  */
   constructor(
     canvas: HTMLCanvasElement,
-    textImgPos: object,
-    restartImgPos: object,
+    textImgPos: Position,
+    restartImgPos: Position,
     dimensions: Dimensions,
   ) {
     this.canvas = canvas;

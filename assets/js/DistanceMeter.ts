@@ -1,6 +1,7 @@
 import { IS_HIDPI } from "./constants";
 import { getTimeStamp } from "./utils";
 import Runner from "./Runner";
+import { Position } from "./sprite";
 
 interface Bounds {
   x: number;
@@ -42,7 +43,7 @@ export default class DistanceMeter {
   canvas: HTMLCanvasElement;
   canvasCtx: CanvasRenderingContext2D;
   image: HTMLImageElement;
-  spritePos: object;
+  spritePos: Position;
   x: number;
   y: number;
 
@@ -80,7 +81,7 @@ export default class DistanceMeter {
    */
   constructor(
     canvas: HTMLCanvasElement,
-    spritePos: object,
+    spritePos: Position,
     canvasWidth: number,
   ) {
     this.canvas = canvas;
