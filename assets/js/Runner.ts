@@ -152,37 +152,34 @@ export default class Runner {
   playingIntro: boolean;
   updatePending: boolean;
   static audioCues: boolean;
-  static isMobileMouseInput: any;
+  static isMobileMouseInput: boolean;
   invertTrigger: boolean;
   static generatedSoundFx: GeneratedSoundFx;
-  slowSpeedCheckbox: any;
+  slowSpeedCheckbox: HTMLInputElement;
   raqId: number;
-  flashTimer: any;
 
   /**
- * Updates the canvas size taking into
- * account the backing store pixel ratio and
- * the device pixel ratio.
- *
- * See article by Paul Lewis:
- * http://www.html5rocks.com/en/tutorials/canvas/hidpi/
- *
- * @return Whether the canvas was scaled.
- */
+   * Updates the canvas size taking into
+   * account the backing store pixel ratio and
+   * the device pixel ratio.
+   *
+   * See article by Paul Lewis:
+   * http://www.html5rocks.com/en/tutorials/canvas/hidpi/
+   *
+   * @return Whether the canvas was scaled.
+   */
   static updateCanvasScaling(
     canvas: HTMLCanvasElement,
     optWidth?: number,
     optWeight?: number,
   ): boolean {
-    const context: CanvasRenderingContext2D =
-      /** @type {CanvasRenderingContext2D} */ canvas.getContext("2d");
+    const context = canvas.getContext("2d");
 
     // Query the various pixel ratios
     const devicePixelRatio = Math.floor(window.devicePixelRatio) || 1;
     /** @suppress {missingProperties} */
     const backingStoreRatio =
-      Math.floor(context.webkitBackingStorePixelRatio) ||
-      1;
+      Math.floor(context.webkitBackingStorePixelRatio) || 1;
     const ratio = devicePixelRatio / backingStoreRatio;
 
     // Upscale the canvas if the two ratios don't match
@@ -262,10 +259,6 @@ export default class Runner {
   // Global web audio context for playing sounds.
   audioContext: AudioContext;
 
-  // Images.
-  images: object;
-  imagesLoaded: number;
-
   // Gamepad state.
   pollingGamepads: boolean;
   gamepadIndex: number;
@@ -334,10 +327,6 @@ export default class Runner {
     // Global web audio context for playing sounds.
     this.audioContext = null;
 
-    // Images.
-    this.images = {};
-    this.imagesLoaded = 0;
-
     // Gamepad state.
     this.pollingGamepads = false;
     this.gamepadIndex = undefined;
@@ -385,14 +374,18 @@ export default class Runner {
     if (!IS_IOS) {
       this.audioContext = new AudioContext();
 
-      const resourceTemplate = (document.getElementById(
-        this.config.RESOURCE_TEMPLATE_ID,
-      ) as HTMLTemplateElement).content;
+      const resourceTemplate = (
+        document.getElementById(
+          this.config.RESOURCE_TEMPLATE_ID,
+        ) as HTMLTemplateElement
+      ).content;
 
       for (const sound in Runner.sounds) {
-        const soundSrc = (resourceTemplate.getElementById(
-          Runner.sounds[sound],
-        ) as HTMLAudioElement).src;
+        const soundSrc = (
+          resourceTemplate.getElementById(
+            Runner.sounds[sound],
+          ) as HTMLAudioElement
+        ).src;
         fetch(soundSrc)
           .then((response) => {
             return response.arrayBuffer();
@@ -796,7 +789,7 @@ export default class Runner {
    * Initialize audio cues if activated by focus on the canvas element.
    * @param {Event} e
    */
-  handleCanvasKeyPress(e: Event) {
+  handleCanvasKeyPress(e: KeyboardEvent) {
     if (!this.activated) {
       this.toggleSpeed();
       Runner.audioCues = true;
@@ -810,9 +803,8 @@ export default class Runner {
 
   /**
    * Prevent space key press from scrolling.
-   * @param {Event} e
    */
-  preventScrolling(e: Event) {
+  preventScrolling(e: KeyboardEvent) {
     if (e.keyCode === 32) {
       e.preventDefault();
     }
@@ -895,9 +887,8 @@ export default class Runner {
 
   /**
    * Process keydown.
-   * @param {Event} e
    */
-  onKeyDown(e: Event) {
+  onKeyDown(e: KeyboardEvent) {
     // Prevent native page scrolling whilst tapping on mobile.
     if (IS_MOBILE && this.playing) {
       e.preventDefault();
@@ -916,11 +907,8 @@ export default class Runner {
         // For a11y, screen reader activation.
         const isMobileMouseInput = (IS_MOBILE &&
           e.type === Runner.events.POINTERDOWN &&
-          e.pointerType == "mouse" &&
           e.target == this.containerEl) ||
-          (IS_IOS &&
-            e.pointerType == "touch" &&
-            document.activeElement == this.containerEl);
+          (IS_IOS && document.activeElement == this.containerEl);
 
         if (
           Runner.keycodes.JUMP[e.keyCode] ||
@@ -952,10 +940,7 @@ export default class Runner {
             this.tRex.startJump(this.currentSpeed);
           }
           // Ducking is disabled on alt game modes.
-        } else if (
-          this.playing &&
-          Runner.keycodes.DUCK[e.keyCode]
-        ) {
+        } else if (this.playing && Runner.keycodes.DUCK[e.keyCode]) {
           e.preventDefault();
           if (this.tRex.jumping) {
             // Speed drop, activated only when jump key is not pressed.
@@ -971,9 +956,8 @@ export default class Runner {
 
   /**
    * Process key up.
-   * @param {Event} e
    */
-  onKeyUp(e: Event) {
+  onKeyUp(e: KeyboardEvent) {
     const keyCode = String(e.keyCode);
     const isjumpKey = Runner.keycodes.JUMP[keyCode] ||
       e.type === Runner.events.TOUCHEND ||
@@ -991,11 +975,11 @@ export default class Runner {
       if (
         this.isCanvasInView() &&
         (Runner.keycodes.RESTART[keyCode] ||
-          this.isLeftClickOnCanvas(e) ||
+          this.isLeftClickOnCanvas(e as unknown as MouseEvent) ||
           (deltaTime >= this.config.GAMEOVER_CLEAR_TIME &&
             Runner.keycodes.JUMP[keyCode]))
       ) {
-        this.handleGameOverClicks(e);
+        this.handleGameOverClicks(e as unknown as MouseEvent);
       }
     } else if (this.paused && isjumpKey) {
       // Reset the jump state
@@ -1099,9 +1083,8 @@ export default class Runner {
   /**
    * Handle interactions on the game over screen state.
    * A user is able to tap the high score twice to reset it.
-   * @param {Event} e
    */
-  handleGameOverClicks(e: Event) {
+  handleGameOverClicks(e: MouseEvent) {
     if (e.target != this.slowSpeedCheckbox) {
       e.preventDefault();
       if (this.distanceMeter.hasClickedOnHighScore(e) && this.highestScore) {
@@ -1123,10 +1106,8 @@ export default class Runner {
   /**
    * Returns whether the event was a left click on canvas.
    * On Windows right click is registered as a click.
-   * @param {Event} e
-   * @return {boolean}
    */
-  isLeftClickOnCanvas(e: Event): boolean {
+  isLeftClickOnCanvas(e: MouseEvent): boolean {
     return (
       e.button != null &&
       e.button < 2 &&
@@ -1256,7 +1237,6 @@ export default class Runner {
       this.tRex.reset();
       this.playSound(this.soundFx.BUTTON_PRESS);
       this.invert(true);
-      this.flashTimer = null;
       this.update();
       this.gameOverPanel.reset();
       this.generatedSoundFx.background();
