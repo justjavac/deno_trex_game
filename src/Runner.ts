@@ -242,7 +242,7 @@ export default class Runner {
   previousGamepad: Gamepad | null;
 
   spriteDef: Stage;
-  gameOverPanel: GameOverPanel;
+  gameOverPanel!: GameOverPanel;
   horizon!: Horizon;
   isDarkMode: boolean;
   playingIntro?: boolean;
