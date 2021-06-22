@@ -35,13 +35,13 @@ GeneratedSoundFx.prototype = {
   },
 
   /**
-     * Play oscillators at certain frequency and for a certain time.
-     * @param {number} frequency
-     * @param {number} startTime
-     * @param {number} duration
-     * @param {?number=} opt_vol
-     * @param {number=} opt_pan
-     */
+   * Play oscillators at certain frequency and for a certain time.
+   * @param {number} frequency
+   * @param {number} startTime
+   * @param {number} duration
+   * @param {?number=} opt_vol
+   * @param {number=} opt_pan
+   */
   playNote(frequency, startTime, duration, opt_vol, opt_pan) {
     const osc1 = this.context.createOscillator();
     const osc2 = this.context.createOscillator();

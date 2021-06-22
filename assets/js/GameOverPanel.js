@@ -43,17 +43,17 @@ GameOverPanel.LOGO_PAUSE_DURATION = 875;
 GameOverPanel.FLASH_ITERATIONS = 5;
 
 /**
-   * Animation frames spec.
-   */
+ * Animation frames spec.
+ */
 GameOverPanel.animConfig = {
   frames: [0, 36, 72, 108, 144, 180, 216, 252],
   msPerFrame: GameOverPanel.RESTART_ANIM_DURATION / 8,
 };
 
 /**
-   * Dimensions used in the panel.
-   * @enum {number}
-   */
+ * Dimensions used in the panel.
+ * @enum {number}
+ */
 GameOverPanel.dimensions = {
   TEXT_X: 0,
   TEXT_Y: 13,
@@ -65,10 +65,10 @@ GameOverPanel.dimensions = {
 
 GameOverPanel.prototype = {
   /**
-     * Update the panel dimensions.
-     * @param {number} width New canvas width.
-     * @param {number} opt_height Optional new canvas height.
-     */
+   * Update the panel dimensions.
+   * @param {number} width New canvas width.
+   * @param {number} opt_height Optional new canvas height.
+   */
   updateDimensions(width, opt_height) {
     this.canvasDimensions.WIDTH = width;
     if (opt_height) {
@@ -124,8 +124,8 @@ GameOverPanel.prototype = {
   },
 
   /**
-     * Draw additional adornments for alternative game types.
-     */
+   * Draw additional adornments for alternative game types.
+   */
   drawAltGameElements(tRex) {
     // Additional adornments.
     if (this.altGameModeActive) {
@@ -156,8 +156,8 @@ GameOverPanel.prototype = {
   },
 
   /**
-     * Draw restart button.
-     */
+   * Draw restart button.
+   */
   drawRestartButton() {
     const dimensions = GameOverPanel.dimensions;
     let framePosX = GameOverPanel.animConfig.frames[this.currentFrame];
@@ -190,10 +190,10 @@ GameOverPanel.prototype = {
   },
 
   /**
-     * Draw the panel.
-     * @param {boolean} opt_altGameModeActive
-     * @param {!Trex} opt_tRex
-     */
+   * Draw the panel.
+   * @param {boolean} opt_altGameModeActive
+   * @param {!Trex} opt_tRex
+   */
   draw(opt_altGameModeActive, opt_tRex) {
     if (opt_altGameModeActive) {
       this.altGameModeActive = opt_altGameModeActive;
@@ -206,8 +206,8 @@ GameOverPanel.prototype = {
   },
 
   /**
-     * Update animation frames.
-     */
+   * Update animation frames.
+   */
   update() {
     const now = getTimeStamp();
     const deltaTime = now - (this.frameTimeStamp || now);
@@ -268,8 +268,8 @@ GameOverPanel.prototype = {
   },
 
   /**
-     * Clear game over text.
-     */
+   * Clear game over text.
+   */
   clearGameOverTextBounds() {
     this.canvasCtx.save();
 

@@ -137,17 +137,17 @@ Runner.slowConfig = {
 };
 
 /**
-   * Default dimensions.
-   */
+ * Default dimensions.
+ */
 Runner.defaultDimensions = {
   WIDTH: DEFAULT_WIDTH,
   HEIGHT: 150,
 };
 
 /**
-   * CSS class names.
-   * @enum {string}
-   */
+ * CSS class names.
+ * @enum {string}
+ */
 Runner.classes = {
   ARCADE_MODE: "arcade-mode",
   CANVAS: "runner-canvas",
@@ -161,9 +161,9 @@ Runner.classes = {
 };
 
 /**
-   * Sound FX. Reference to the ID of the audio tag on interstitial page.
-   * @enum {string}
-   */
+ * Sound FX. Reference to the ID of the audio tag on interstitial page.
+ * @enum {string}
+ */
 Runner.sounds = {
   BUTTON_PRESS: "offline-sound-press",
   HIT: "offline-sound-hit",
@@ -171,9 +171,9 @@ Runner.sounds = {
 };
 
 /**
-   * Key code mapping.
-   * @enum {Object}
-   */
+ * Key code mapping.
+ * @enum {Object}
+ */
 Runner.keycodes = {
   JUMP: { 38: 1, 32: 1 }, // Up, spacebar
   DUCK: { 40: 1 }, // Down
@@ -181,9 +181,9 @@ Runner.keycodes = {
 };
 
 /**
-   * Runner event names.
-   * @enum {string}
-   */
+ * Runner event names.
+ * @enum {string}
+ */
 Runner.events = {
   ANIM_END: "webkitAnimationEnd",
   CLICK: "click",
@@ -203,10 +203,10 @@ Runner.events = {
 
 Runner.prototype = {
   /**
-     * Setting individual settings for debugging.
-     * @param {string} setting
-     * @param {number|string} value
-     */
+   * Setting individual settings for debugging.
+   * @param {string} setting
+   * @param {number|string} value
+   */
   updateConfigSetting(setting, value) {
     if (setting in this.config && value !== undefined) {
       this.config[setting] = value;
@@ -228,10 +228,10 @@ Runner.prototype = {
   },
 
   /**
-     * Creates an on page image element from the base 64 encoded string source.
-     * @param {string} resourceName Name in data object,
-     * @return {HTMLImageElement} The created element.
-     */
+   * Creates an on page image element from the base 64 encoded string source.
+   * @param {string} resourceName Name in data object,
+   * @return {HTMLImageElement} The created element.
+   */
   createImageElement(resourceName) {
     const imgSrc = loadTimeData && loadTimeData.valueExists(resourceName)
       ? loadTimeData.getString(resourceName)
@@ -250,9 +250,9 @@ Runner.prototype = {
   },
 
   /**
-     * Cache the appropriate image sprite from the page and get the sprite sheet
-     * definition.
-     */
+   * Cache the appropriate image sprite from the page and get the sprite sheet
+   * definition.
+   */
   loadImages() {
     let scale = "1x";
     this.spriteDef = Runner.spriteDefinition.LDPI;
@@ -292,8 +292,8 @@ Runner.prototype = {
   },
 
   /**
-     * Load and decode base 64 encoded sounds.
-     */
+   * Load and decode base 64 encoded sounds.
+   */
   loadSounds() {
     if (!IS_IOS) {
       this.audioContext = new AudioContext();
@@ -306,21 +306,24 @@ Runner.prototype = {
         const soundSrc = resourceTemplate.getElementById(
           Runner.sounds[sound],
         ).src;
-        fetch(soundSrc).then((response) => {
-          return response.arrayBuffer();
-        }).then((buffer) => {
-          return this.audioContext.decodeAudioData(buffer);
-        }).then((audioData) => {
-          this.soundFx[sound] = audioData;
-        });
+        fetch(soundSrc)
+          .then((response) => {
+            return response.arrayBuffer();
+          })
+          .then((buffer) => {
+            return this.audioContext.decodeAudioData(buffer);
+          })
+          .then((audioData) => {
+            this.soundFx[sound] = audioData;
+          });
       }
     }
   },
 
   /**
-     * Sets the game speed. Adjust the speed accordingly if on a smaller screen.
-     * @param {number=} opt_speed
-     */
+   * Sets the game speed. Adjust the speed accordingly if on a smaller screen.
+   * @param {number=} opt_speed
+   */
   setSpeed(opt_speed) {
     const speed = opt_speed || this.currentSpeed;
 
@@ -337,8 +340,8 @@ Runner.prototype = {
   },
 
   /**
-     * Game initialiser.
-     */
+   * Game initialiser.
+   */
   init() {
     this.adjustDimensions();
     this.setSpeed();
@@ -404,8 +407,8 @@ Runner.prototype = {
   },
 
   /**
-     * Create the touch controller. A div that covers whole screen.
-     */
+   * Create the touch controller. A div that covers whole screen.
+   */
   createTouchController() {
     this.touchController = document.createElement("div");
     this.touchController.className = Runner.classes.TOUCH_CONTROLLER;
@@ -415,8 +418,8 @@ Runner.prototype = {
   },
 
   /**
-     * Debounce the resize event.
-     */
+   * Debounce the resize event.
+   */
   debounceResize() {
     if (!this.resizeTimerId_) {
       this.resizeTimerId_ = setInterval(this.adjustDimensions.bind(this), 250);
@@ -424,8 +427,8 @@ Runner.prototype = {
   },
 
   /**
-     * Adjust game space dimensions on resize.
-     */
+   * Adjust game space dimensions on resize.
+   */
   adjustDimensions() {
     clearInterval(this.resizeTimerId_);
     this.resizeTimerId_ = null;
@@ -474,9 +477,9 @@ Runner.prototype = {
   },
 
   /**
-     * Play the game intro.
-     * Canvas container width expands out to the full width.
-     */
+   * Play the game intro.
+   * Canvas container width expands out to the full width.
+   */
   playIntro() {
     if (!this.activated && !this.crashed) {
       this.playingIntro = true;
@@ -509,8 +512,8 @@ Runner.prototype = {
   },
 
   /**
-     * Update the game status to started.
-     */
+   * Update the game status to started.
+   */
   startGame() {
     if (this.isArcadeMode()) {
       this.setArcadeMode();
@@ -550,10 +553,10 @@ Runner.prototype = {
   },
 
   /**
-     * Checks whether the canvas area is in the viewport of the browser
-     * through the current scroll position.
-     * @return boolean.
-     */
+   * Checks whether the canvas area is in the viewport of the browser
+   * through the current scroll position.
+   * @return boolean.
+   */
   isCanvasInView() {
     return (
       this.containerEl.getBoundingClientRect().top >
@@ -562,8 +565,8 @@ Runner.prototype = {
   },
 
   /**
-     * Enable the alt game mode. Switching out the sprites.
-     */
+   * Enable the alt game mode. Switching out the sprites.
+   */
   enableAltGameMode() {
     Runner.imageSprite = Runner.altGameImageSprite;
     Runner.spriteDefinition = Runner.spriteDefinitionByType[Runner.gameType];
@@ -581,8 +584,8 @@ Runner.prototype = {
   },
 
   /**
-     * Update the game frame and schedules the next one.
-     */
+   * Update the game frame and schedules the next one.
+   */
   update() {
     this.updatePending = false;
 
@@ -699,9 +702,7 @@ Runner.prototype = {
         );
 
         if (actualDistance > 0) {
-          this.invertTrigger = !(
-            actualDistance % this.config.INVERT_DISTANCE
-          );
+          this.invertTrigger = !(actualDistance % this.config.INVERT_DISTANCE);
 
           if (this.invertTrigger && this.invertTimer === 0) {
             this.invertTimer += deltaTime;
@@ -721,9 +722,9 @@ Runner.prototype = {
   },
 
   /**
-     * Event handler.
-     * @param {Event} e
-     */
+   * Event handler.
+   * @param {Event} e
+   */
   handleEvent(e) {
     return function (evtType, events) {
       switch (evtType) {
@@ -745,9 +746,9 @@ Runner.prototype = {
   },
 
   /**
-     * Initialize audio cues if activated by focus on the canvas element.
-     * @param {Event} e
-     */
+   * Initialize audio cues if activated by focus on the canvas element.
+   * @param {Event} e
+   */
   handleCanvasKeyPress(e) {
     if (!this.activated) {
       this.toggleSpeed();
@@ -761,9 +762,9 @@ Runner.prototype = {
   },
 
   /**
-     * Prevent space key press from scrolling.
-     * @param {Event} e
-     */
+   * Prevent space key press from scrolling.
+   * @param {Event} e
+   */
   preventScrolling(e) {
     if (e.keyCode === 32) {
       e.preventDefault();
@@ -771,8 +772,8 @@ Runner.prototype = {
   },
 
   /**
-     * Toggle speed setting if toggle is shown.
-     */
+   * Toggle speed setting if toggle is shown.
+   */
   toggleSpeed() {
     if (Runner.audioCues) {
       const speedChange = Runner.slowDown != this.slowSpeedCheckbox.checked;
@@ -792,8 +793,8 @@ Runner.prototype = {
   },
 
   /**
-     * Bind relevant key / mouse / touch listeners.
-     */
+   * Bind relevant key / mouse / touch listeners.
+   */
   startListening() {
     // A11y keyboard / screen reader activation.
     this.containerEl.addEventListener(
@@ -825,8 +826,8 @@ Runner.prototype = {
   },
 
   /**
-     * Remove all listeners.
-     */
+   * Remove all listeners.
+   */
   stopListening() {
     document.removeEventListener(Runner.events.KEYDOWN, this);
     document.removeEventListener(Runner.events.KEYUP, this);
@@ -846,9 +847,9 @@ Runner.prototype = {
   },
 
   /**
-     * Process keydown.
-     * @param {Event} e
-     */
+   * Process keydown.
+   * @param {Event} e
+   */
   onKeyDown(e) {
     // Prevent native page scrolling whilst tapping on mobile.
     if (IS_MOBILE && this.playing) {
@@ -927,9 +928,9 @@ Runner.prototype = {
   },
 
   /**
-     * Process key up.
-     * @param {Event} e
-     */
+   * Process key up.
+   * @param {Event} e
+   */
   onKeyUp(e) {
     const keyCode = String(e.keyCode);
     const isjumpKey = Runner.keycodes.JUMP[keyCode] ||
@@ -962,9 +963,9 @@ Runner.prototype = {
   },
 
   /**
-     * Process gamepad connected event.
-     * @param {Event} e
-     */
+   * Process gamepad connected event.
+   * @param {Event} e
+   */
   onGamepadConnected(e) {
     if (!this.pollingGamepads) {
       this.pollGamepadState();
@@ -972,8 +973,8 @@ Runner.prototype = {
   },
 
   /**
-     * rAF loop for gamepad polling.
-     */
+   * rAF loop for gamepad polling.
+   */
   pollGamepadState() {
     const gamepads = navigator.getGamepads();
     this.pollActiveGamepad(gamepads);
@@ -983,10 +984,10 @@ Runner.prototype = {
   },
 
   /**
-     * Polls for a gamepad with the jump button pressed. If one is found this
-     * becomes the "active" gamepad and all others are ignored.
-     * @param {!Array<Gamepad>} gamepads
-     */
+   * Polls for a gamepad with the jump button pressed. If one is found this
+   * becomes the "active" gamepad and all others are ignored.
+   * @param {!Array<Gamepad>} gamepads
+   */
   pollForActiveGamepad(gamepads) {
     for (let i = 0; i < gamepads.length; ++i) {
       if (
@@ -1002,10 +1003,10 @@ Runner.prototype = {
   },
 
   /**
-     * Polls the chosen gamepad for button presses and generates KeyboardEvents
-     * to integrate with the rest of the game logic.
-     * @param {!Array<Gamepad>} gamepads
-     */
+   * Polls the chosen gamepad for button presses and generates KeyboardEvents
+   * to integrate with the rest of the game logic.
+   * @param {!Array<Gamepad>} gamepads
+   */
   pollActiveGamepad(gamepads) {
     if (this.gamepadIndex === undefined) {
       this.pollForActiveGamepad(gamepads);
@@ -1033,11 +1034,11 @@ Runner.prototype = {
   },
 
   /**
-     * Generates a key event based on a gamepad button.
-     * @param {!Gamepad} gamepad
-     * @param {number} buttonIndex
-     * @param {number} keyCode
-     */
+   * Generates a key event based on a gamepad button.
+   * @param {!Gamepad} gamepad
+   * @param {number} buttonIndex
+   * @param {number} keyCode
+   */
   pollGamepadButton(gamepad, buttonIndex, keyCode) {
     const state = gamepad.buttons[buttonIndex].pressed;
     let previousState = false;
@@ -1055,10 +1056,10 @@ Runner.prototype = {
   },
 
   /**
-     * Handle interactions on the game over screen state.
-     * A user is able to tap the high score twice to reset it.
-     * @param {Event} e
-     */
+   * Handle interactions on the game over screen state.
+   * A user is able to tap the high score twice to reset it.
+   * @param {Event} e
+   */
   handleGameOverClicks(e) {
     if (e.target != this.slowSpeedCheckbox) {
       e.preventDefault();
@@ -1079,11 +1080,11 @@ Runner.prototype = {
   },
 
   /**
-     * Returns whether the event was a left click on canvas.
-     * On Windows right click is registered as a click.
-     * @param {Event} e
-     * @return {boolean}
-     */
+   * Returns whether the event was a left click on canvas.
+   * On Windows right click is registered as a click.
+   * @param {Event} e
+   * @return {boolean}
+   */
   isLeftClickOnCanvas(e) {
     return (
       e.button != null &&
@@ -1095,8 +1096,8 @@ Runner.prototype = {
   },
 
   /**
-     * RequestAnimationFrame wrapper.
-     */
+   * RequestAnimationFrame wrapper.
+   */
   scheduleNextUpdate() {
     if (!this.updatePending) {
       this.updatePending = true;
@@ -1105,17 +1106,17 @@ Runner.prototype = {
   },
 
   /**
-     * Whether the game is running.
-     * @return {boolean}
-     */
+   * Whether the game is running.
+   * @return {boolean}
+   */
   isRunning() {
     return !!this.raqId;
   },
 
   /**
-     * Set the initial high score as stored in the user's profile.
-     * @param {number} highScore
-     */
+   * Set the initial high score as stored in the user's profile.
+   * @param {number} highScore
+   */
   initializeHighScore(highScore) {
     this.syncHighestScore = true;
     highScore = Math.ceil(highScore);
@@ -1130,10 +1131,10 @@ Runner.prototype = {
   },
 
   /**
-     * Sets the current high score and saves to the profile if available.
-     * @param {number} distanceRan Total distance ran.
-     * @param {boolean=} opt_resetScore Whether to reset the score.
-     */
+   * Sets the current high score and saves to the profile if available.
+   * @param {number} distanceRan Total distance ran.
+   * @param {boolean=} opt_resetScore Whether to reset the score.
+   */
   saveHighScore(distanceRan, opt_resetScore) {
     this.highestScore = Math.ceil(distanceRan);
     this.distanceMeter.setHighScore(this.highestScore);
@@ -1149,8 +1150,8 @@ Runner.prototype = {
   },
 
   /**
-     * Game over state.
-     */
+   * Game over state.
+   */
   gameOver() {
     this.playSound(this.soundFx.HIT);
     vibrate(200);
@@ -1244,9 +1245,9 @@ Runner.prototype = {
   },
 
   /**
-     * Whether the game should go into arcade mode.
-     * @return {boolean}
-     */
+   * Whether the game should go into arcade mode.
+   * @return {boolean}
+   */
   isArcadeMode() {
     // In RTL languages the title is wrapped with the left to right mark
     // control characters &#x202A; and &#x202C but are invisible.
@@ -1254,16 +1255,16 @@ Runner.prototype = {
   },
 
   /**
-     * Hides offline messaging for a fullscreen game only experience.
-     */
+   * Hides offline messaging for a fullscreen game only experience.
+   */
   setArcadeMode() {
     document.body.classList.add(Runner.classes.ARCADE_MODE);
     this.setArcadeModeContainerScale();
   },
 
   /**
-     * Sets the scaling for arcade mode.
-     */
+   * Sets the scaling for arcade mode.
+   */
   setArcadeModeContainerScale() {
     const windowHeight = window.innerHeight;
     const scaleHeight = windowHeight / this.dimensions.HEIGHT;
@@ -1287,8 +1288,8 @@ Runner.prototype = {
   },
 
   /**
-     * Pause the game if the tab is not in focus.
-     */
+   * Pause the game if the tab is not in focus.
+   */
   onVisibilityChange(e) {
     if (
       document.hidden ||
@@ -1304,9 +1305,9 @@ Runner.prototype = {
   },
 
   /**
-     * Play a sound.
-     * @param {AudioBuffer} soundBuffer
-     */
+   * Play a sound.
+   * @param {AudioBuffer} soundBuffer
+   */
   playSound(soundBuffer) {
     if (soundBuffer) {
       const sourceNode = this.audioContext.createBufferSource();
@@ -1317,9 +1318,9 @@ Runner.prototype = {
   },
 
   /**
-     * Inverts the current page / canvas colors.
-     * @param {boolean} reset Whether to reset colors.
-     */
+   * Inverts the current page / canvas colors.
+   * @param {boolean} reset Whether to reset colors.
+   */
   invert(reset) {
     const htmlEl = document.firstElementChild;
 
@@ -1337,18 +1338,18 @@ Runner.prototype = {
 };
 
 /**
-   * Updates the canvas size taking into
-   * account the backing store pixel ratio and
-   * the device pixel ratio.
-   *
-   * See article by Paul Lewis:
-   * http://www.html5rocks.com/en/tutorials/canvas/hidpi/
-   *
-   * @param {HTMLCanvasElement} canvas
-   * @param {number=} opt_width
-   * @param {number=} opt_height
-   * @return {boolean} Whether the canvas was scaled.
-   */
+ * Updates the canvas size taking into
+ * account the backing store pixel ratio and
+ * the device pixel ratio.
+ *
+ * See article by Paul Lewis:
+ * http://www.html5rocks.com/en/tutorials/canvas/hidpi/
+ *
+ * @param {HTMLCanvasElement} canvas
+ * @param {number=} opt_width
+ * @param {number=} opt_height
+ * @return {boolean} Whether the canvas was scaled.
+ */
 Runner.updateCanvasScaling = function (canvas, opt_width, opt_height) {
   const context = /** @type {CanvasRenderingContext2D} */ (
     canvas.getContext("2d")

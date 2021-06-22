@@ -36,8 +36,8 @@ function DistanceMeter(canvas, spritePos, canvasWidth) {
 }
 
 /**
-   * @enum {number}
-   */
+ * @enum {number}
+ */
 DistanceMeter.dimensions = {
   WIDTH: 10,
   HEIGHT: 13,
@@ -45,16 +45,16 @@ DistanceMeter.dimensions = {
 };
 
 /**
-   * Y positioning of the digits in the sprite sheet.
-   * X position is always 0.
-   * @type {Array<number>}
-   */
+ * Y positioning of the digits in the sprite sheet.
+ * X position is always 0.
+ * @type {Array<number>}
+ */
 DistanceMeter.yPos = [0, 13, 27, 40, 53, 67, 80, 93, 107, 120];
 
 /**
-   * Distance meter config.
-   * @enum {number}
-   */
+ * Distance meter config.
+ * @enum {number}
+ */
 DistanceMeter.config = {
   // Number of digits.
   MAX_DISTANCE_UNITS: 5,
@@ -77,9 +77,9 @@ DistanceMeter.config = {
 
 DistanceMeter.prototype = {
   /**
-     * Initialise the distance meter to '00000'.
-     * @param {number} width Canvas width in px.
-     */
+   * Initialise the distance meter to '00000'.
+   * @param {number} width Canvas width in px.
+   */
   init(width) {
     let maxDistanceStr = "";
 
@@ -95,20 +95,20 @@ DistanceMeter.prototype = {
   },
 
   /**
-     * Calculate the xPos in the canvas.
-     * @param {number} canvasWidth
-     */
+   * Calculate the xPos in the canvas.
+   * @param {number} canvasWidth
+   */
   calcXPos(canvasWidth) {
     this.x = canvasWidth -
       DistanceMeter.dimensions.DEST_WIDTH * (this.maxScoreUnits + 1);
   },
 
   /**
-     * Draw a digit to canvas.
-     * @param {number} digitPos Position of the digit.
-     * @param {number} value Digit value 0-9.
-     * @param {boolean=} opt_highScore Whether drawing the high score.
-     */
+   * Draw a digit to canvas.
+   * @param {number} digitPos Position of the digit.
+   * @param {number} value Digit value 0-9.
+   * @param {boolean=} opt_highScore Whether drawing the high score.
+   */
   draw(digitPos, value, opt_highScore) {
     let sourceWidth = DistanceMeter.dimensions.WIDTH;
     let sourceHeight = DistanceMeter.dimensions.HEIGHT;
@@ -133,12 +133,12 @@ DistanceMeter.prototype = {
     this.canvasCtx.save();
 
     const highScoreX = this.x -
-    this.maxScoreUnits * 2 * DistanceMeter.dimensions.WIDTH;
-  if (opt_highScore) {
-    this.canvasCtx.translate(highScoreX, this.y);
-  } else {
-    this.canvasCtx.translate(this.x, this.y);
-  }
+      this.maxScoreUnits * 2 * DistanceMeter.dimensions.WIDTH;
+    if (opt_highScore) {
+      this.canvasCtx.translate(highScoreX, this.y);
+    } else {
+      this.canvasCtx.translate(this.x, this.y);
+    }
 
     this.canvasCtx.drawImage(
       this.image,
@@ -156,20 +156,20 @@ DistanceMeter.prototype = {
   },
 
   /**
-     * Covert pixel distance to a 'real' distance.
-     * @param {number} distance Pixel distance ran.
-     * @return {number} The 'real' distance ran.
-     */
+   * Covert pixel distance to a 'real' distance.
+   * @param {number} distance Pixel distance ran.
+   * @return {number} The 'real' distance ran.
+   */
   getActualDistance(distance) {
     return distance ? Math.round(distance * this.config.COEFFICIENT) : 0;
   },
 
   /**
-     * Update the distance meter.
-     * @param {number} distance
-     * @param {number} deltaTime
-     * @return {boolean} Whether the acheivement sound fx should be played.
-     */
+   * Update the distance meter.
+   * @param {number} distance
+   * @param {number} deltaTime
+   * @return {boolean} Whether the acheivement sound fx should be played.
+   */
   update(deltaTime, distance) {
     let paint = true;
     let playSound = false;
@@ -234,8 +234,8 @@ DistanceMeter.prototype = {
   },
 
   /**
-     * Draw the high score.
-     */
+   * Draw the high score.
+   */
   drawHighScore() {
     if (parseInt(this.highScore, 10) > 0) {
       this.canvasCtx.save();
@@ -248,10 +248,10 @@ DistanceMeter.prototype = {
   },
 
   /**
-     * Set the highscore as a array string.
-     * Position of char in the sprite: H - 10, I - 11.
-     * @param {number} distance Distance ran in pixels.
-     */
+   * Set the highscore as a array string.
+   * Position of char in the sprite: H - 10, I - 11.
+   * @param {number} distance Distance ran in pixels.
+   */
   setHighScore(distance) {
     distance = this.getActualDistance(distance);
     const highScoreStr = (this.defaultString + distance).substr(
@@ -262,10 +262,10 @@ DistanceMeter.prototype = {
   },
 
   /**
-     * Whether a clicked is in the high score area.
-     * @param {Event} e Event object.
-     * @return {boolean} Whether the click was in the high score bounds.
-     */
+   * Whether a clicked is in the high score area.
+   * @param {Event} e Event object.
+   * @return {boolean} Whether the click was in the high score bounds.
+   */
   hasClickedOnHighScore(e) {
     let x = 0;
     let y = 0;
@@ -290,9 +290,9 @@ DistanceMeter.prototype = {
   },
 
   /**
-     * Get the bounding box for the high score.
-     * @return {Object} Object with x, y, width and height properties.
-     */
+   * Get the bounding box for the high score.
+   * @return {Object} Object with x, y, width and height properties.
+   */
   getHighScoreBounds() {
     return {
       x: this.x -
@@ -307,9 +307,9 @@ DistanceMeter.prototype = {
   },
 
   /**
-     * Animate flashing the high score to indicate ready for resetting.
-     * The flashing stops following this.config.FLASH_ITERATIONS x 2 flashes.
-     */
+   * Animate flashing the high score to indicate ready for resetting.
+   * The flashing stops following this.config.FLASH_ITERATIONS x 2 flashes.
+   */
   flashHighScore() {
     const now = getTimeStamp();
     const deltaTime = now - (this.frameTimeStamp || now);
@@ -341,8 +341,8 @@ DistanceMeter.prototype = {
   },
 
   /**
-     * Draw empty rectangle over high score.
-     */
+   * Draw empty rectangle over high score.
+   */
   clearHighScoreBounds() {
     this.canvasCtx.save();
     this.canvasCtx.fillStyle = "#fff";
@@ -357,24 +357,24 @@ DistanceMeter.prototype = {
   },
 
   /**
-     * Starts the flashing of the high score.
-     */
+   * Starts the flashing of the high score.
+   */
   startHighScoreFlashing() {
     this.highScoreFlashing = true;
     this.flashHighScore();
   },
 
   /**
-     * Whether high score is flashing.
-     * @return {boolean}
-     */
+   * Whether high score is flashing.
+   * @return {boolean}
+   */
   isHighScoreFlashing() {
     return this.highScoreFlashing;
   },
 
   /**
-     * Stop flashing the high score.
-     */
+   * Stop flashing the high score.
+   */
   cancelHighScoreFlashing() {
     if (this.flashingRafId) {
       cancelAnimationFrame(this.flashingRafId);
@@ -387,16 +387,16 @@ DistanceMeter.prototype = {
   },
 
   /**
-     * Clear the high score.
-     */
+   * Clear the high score.
+   */
   resetHighScore() {
     this.setHighScore(0);
     this.cancelHighScoreFlashing();
   },
 
   /**
-     * Reset the distance meter back to '00000'.
-     */
+   * Reset the distance meter back to '00000'.
+   */
   reset() {
     this.update(0, 0);
     this.achievement = false;

@@ -39,9 +39,9 @@ NightMode.phases = [140, 120, 100, 60, 40, 20, 0];
 
 NightMode.prototype = {
   /**
-     * Update moving moon, changing phases.
-     * @param {boolean} activated Whether night mode is activated.
-     */
+   * Update moving moon, changing phases.
+   * @param {boolean} activated Whether night mode is activated.
+   */
   update(activated) {
     // Moon phase.
     if (activated && this.opacity === 0) {

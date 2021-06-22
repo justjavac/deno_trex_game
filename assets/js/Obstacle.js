@@ -48,20 +48,20 @@ function Obstacle(
 }
 
 /**
-   * Coefficient for calculating the maximum gap.
-   */
+ * Coefficient for calculating the maximum gap.
+ */
 Obstacle.MAX_GAP_COEFFICIENT = 1.5;
 
 /**
-   * Maximum obstacle grouping count.
-   */
+ * Maximum obstacle grouping count.
+ */
 Obstacle.MAX_OBSTACLE_LENGTH = 3;
 
 Obstacle.prototype = {
   /**
-     * Initialise the DOM for the obstacle.
-     * @param {number} speed
-     */
+   * Initialise the DOM for the obstacle.
+   * @param {number} speed
+   */
   init(speed) {
     this.cloneCollisionBoxes();
 
@@ -115,8 +115,8 @@ Obstacle.prototype = {
   },
 
   /**
-     * Draw and crop based on size.
-     */
+   * Draw and crop based on size.
+   */
   draw() {
     let sourceWidth = this.typeConfig.width;
     let sourceHeight = this.typeConfig.height;
@@ -149,10 +149,10 @@ Obstacle.prototype = {
   },
 
   /**
-     * Obstacle frame update.
-     * @param {number} deltaTime
-     * @param {number} speed
-     */
+   * Obstacle frame update.
+   * @param {number} deltaTime
+   * @param {number} speed
+   */
   update(deltaTime, speed) {
     if (!this.remove) {
       if (this.typeConfig.speedOffset) {
@@ -180,12 +180,12 @@ Obstacle.prototype = {
   },
 
   /**
-     * Calculate a random gap size.
-     * - Minimum gap gets wider as speed increses
-     * @param {number} gapCoefficient
-     * @param {number} speed
-     * @return {number} The gap size.
-     */
+   * Calculate a random gap size.
+   * - Minimum gap gets wider as speed increses
+   * @param {number} gapCoefficient
+   * @param {number} speed
+   * @return {number} The gap size.
+   */
   getGap(gapCoefficient, speed) {
     const minGap = Math.round(
       this.width * speed + this.typeConfig.minGap * gapCoefficient,
@@ -195,17 +195,17 @@ Obstacle.prototype = {
   },
 
   /**
-     * Check if obstacle is visible.
-     * @return {boolean} Whether the obstacle is in the game area.
-     */
+   * Check if obstacle is visible.
+   * @return {boolean} Whether the obstacle is in the game area.
+   */
   isVisible() {
     return this.xPos + this.width > 0;
   },
 
   /**
-     * Make a copy of the collision boxes, since these will change based on
-     * obstacle type and size.
-     */
+   * Make a copy of the collision boxes, since these will change based on
+   * obstacle type and size.
+   */
   cloneCollisionBoxes() {
     const collisionBoxes = this.typeConfig.collisionBoxes;
 

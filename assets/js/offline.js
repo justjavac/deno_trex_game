@@ -348,13 +348,16 @@ Runner.prototype = {
         const soundSrc = resourceTemplate.getElementById(
           Runner.sounds[sound],
         ).src;
-        fetch(soundSrc).then((response) => {
-          return response.arrayBuffer();
-        }).then((buffer) => {
-          return this.audioContext.decodeAudioData(buffer);
-        }).then((audioData) => {
-          this.soundFx[sound] = audioData;
-        });
+        fetch(soundSrc)
+          .then((response) => {
+            return response.arrayBuffer();
+          })
+          .then((buffer) => {
+            return this.audioContext.decodeAudioData(buffer);
+          })
+          .then((audioData) => {
+            this.soundFx[sound] = audioData;
+          });
       }
     }
   },
@@ -741,9 +744,7 @@ Runner.prototype = {
         );
 
         if (actualDistance > 0) {
-          this.invertTrigger = !(
-            actualDistance % this.config.INVERT_DISTANCE
-          );
+          this.invertTrigger = !(actualDistance % this.config.INVERT_DISTANCE);
 
           if (this.invertTrigger && this.invertTimer === 0) {
             this.invertTimer += deltaTime;

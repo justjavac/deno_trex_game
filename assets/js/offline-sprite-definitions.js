@@ -129,7 +129,7 @@ Runner.spriteDefinitionByType = {
         ],
         numFrames: 2,
         frameRate: 1000 / 6,
-        speedOffset: .8,
+        speedOffset: 0.8,
       },
       {
         type: "COLLECTABLE",
@@ -143,7 +143,7 @@ Runner.spriteDefinitionByType = {
       },
     ],
     BACKGROUND_EL: {
-      "CLOUD": {
+      CLOUD: {
         HEIGHT: 14,
         MAX_CLOUD_GAP: 400,
         MAX_SKY_LEVEL: 30,
@@ -163,9 +163,7 @@ Runner.spriteDefinitionByType = {
       SPEED: 0.5,
       Y_POS: 125,
     },
-    LINES: [
-      { SOURCE_X: 2, SOURCE_Y: 52, WIDTH: 600, HEIGHT: 12, YPOS: 127 },
-    ],
+    LINES: [{ SOURCE_X: 2, SOURCE_Y: 52, WIDTH: 600, HEIGHT: 12, YPOS: 127 }],
     ALT_GAME_END_CONFIG: {
       WIDTH: 15,
       HEIGHT: 17,
@@ -312,7 +310,7 @@ Runner.spriteDefinitionByType = {
       },
     ],
     BACKGROUND_EL: {
-      "BACKGROUND_0": {
+      BACKGROUND_0: {
         HEIGHT: 93,
         WIDTH: 423,
         Y_POS: 120,
@@ -367,36 +365,38 @@ Runner.spriteDefinitionByType = {
         new CollisionBox(10, 17, 19, 20),
       ],
     },
-    OBSTACLES: [{
-      type: "OBSTACLE_1",
-      width: 54,
-      height: 54,
-      yPos: 90,
-      multipleSpeed: 4,
-      minGap: 70,
-      minSpeed: 0,
-      collisionBoxes: [
-        new CollisionBox(0, 8, 20, 43),
-        new CollisionBox(21, 6, 8, 42),
-        new CollisionBox(32, 2, 18, 49),
-      ],
-    }],
+    OBSTACLES: [
+      {
+        type: "OBSTACLE_1",
+        width: 54,
+        height: 54,
+        yPos: 90,
+        multipleSpeed: 4,
+        minGap: 70,
+        minSpeed: 0,
+        collisionBoxes: [
+          new CollisionBox(0, 8, 20, 43),
+          new CollisionBox(21, 6, 8, 42),
+          new CollisionBox(32, 2, 18, 49),
+        ],
+      },
+    ],
     BACKGROUND_EL: {
-      "BACKGROUND_0": {
+      BACKGROUND_0: {
         HEIGHT: 120,
         WIDTH: 89,
         Y_POS: 40,
         X_POS: 1,
         OFFSET: 4,
       },
-      "BACKGROUND_1": {
+      BACKGROUND_1: {
         HEIGHT: 108,
         WIDTH: 130,
         Y_POS: 40,
         X_POS: 92,
         OFFSET: 4,
       },
-      "BACKGROUND_2": {
+      BACKGROUND_2: {
         HEIGHT: 28,
         WIDTH: 204,
         Y_POS: 40,
@@ -549,7 +549,7 @@ Runner.spriteDefinitionByType = {
       },
     ],
     BACKGROUND_EL: {
-      "BACKGROUND_0": {
+      BACKGROUND_0: {
         HEIGHT: 78,
         OFFSET: 6,
         WIDTH: 105,
@@ -569,9 +569,7 @@ Runner.spriteDefinitionByType = {
       Y_POS: 125,
       MS_PER_FRAME: 250,
     },
-    LINES: [
-      { SOURCE_X: 2, SOURCE_Y: 58, WIDTH: 600, HEIGHT: 8, YPOS: 125 },
-    ],
+    LINES: [{ SOURCE_X: 2, SOURCE_Y: 58, WIDTH: 600, HEIGHT: 8, YPOS: 125 }],
   },
   type_4: {
     LDPI: {
@@ -659,21 +657,21 @@ Runner.spriteDefinitionByType = {
       Y_POS: 100,
     },
     BACKGROUND_EL: {
-      "BACKGROUND_0": {
+      BACKGROUND_0: {
         HEIGHT: 32,
         WIDTH: 30,
         Y_POS: 2,
         X_POS: 811,
         OFFSET: -65,
       },
-      "BACKGROUND_1": {
+      BACKGROUND_1: {
         HEIGHT: 37,
         WIDTH: 40,
         Y_POS: 2,
         X_POS: 842,
         OFFSET: -13,
       },
-      "BACKGROUND_2": {
+      BACKGROUND_2: {
         HEIGHT: 33,
         WIDTH: 82,
         Y_POS: 2,
@@ -725,20 +723,22 @@ Runner.spriteDefinitionByType = {
         new CollisionBox(4, 27, 31, 28),
       ],
     },
-    OBSTACLES: [{
-      type: "OBSTACLE_1",
-      width: 21,
-      height: 57,
-      yPos: 93,
-      multipleSpeed: 999,
-      minGap: 40,
-      minSpeed: 0,
-      collisionBoxes: [
-        new CollisionBox(0, 0, 3, 41),
-        new CollisionBox(3, 5, 14, 39),
-        new CollisionBox(16, 7, 4, 43),
-      ],
-    }],
+    OBSTACLES: [
+      {
+        type: "OBSTACLE_1",
+        width: 21,
+        height: 57,
+        yPos: 93,
+        multipleSpeed: 999,
+        minGap: 40,
+        minSpeed: 0,
+        collisionBoxes: [
+          new CollisionBox(0, 0, 3, 41),
+          new CollisionBox(3, 5, 14, 39),
+          new CollisionBox(16, 7, 4, 43),
+        ],
+      },
+    ],
     BACKGROUND_EL_CONFIG: {
       MAX_BG_ELS: 4,
       MAX_GAP: 420,
@@ -748,7 +748,7 @@ Runner.spriteDefinitionByType = {
       Y_POS: 125,
     },
     BACKGROUND_EL: {
-      "BACKGROUND_0": {
+      BACKGROUND_0: {
         HEIGHT: 40,
         WIDTH: 170,
         Y_POS: 100,

@@ -39,8 +39,8 @@ function Trex(canvas, spritePos) {
 }
 
 /**
-   * T-rex player config.
-   */
+ * T-rex player config.
+ */
 Trex.config = {
   DROP_VELOCITY: -5,
   FLASH_OFF: 175,
@@ -70,9 +70,9 @@ Trex.normalJumpConfig = {
 };
 
 /**
-   * Used in collision detection.
-   * @enum {Array<CollisionBox>}
-   */
+ * Used in collision detection.
+ * @enum {Array<CollisionBox>}
+ */
 Trex.collisionBoxes = {
   DUCKING: [new CollisionBox(1, 18, 55, 25)],
   RUNNING: [
@@ -86,9 +86,9 @@ Trex.collisionBoxes = {
 };
 
 /**
-   * Animation states.
-   * @enum {string}
-   */
+ * Animation states.
+ * @enum {string}
+ */
 Trex.status = {
   CRASHED: "CRASHED",
   DUCKING: "DUCKING",
@@ -98,15 +98,15 @@ Trex.status = {
 };
 
 /**
-   * Blinking coefficient.
-   * @const
-   */
+ * Blinking coefficient.
+ * @const
+ */
 Trex.BLINK_TIMING = 7000;
 
 /**
-   * Animation config for different states.
-   * @enum {Object}
-   */
+ * Animation config for different states.
+ * @enum {Object}
+ */
 Trex.animFrames = {
   WAITING: {
     frames: [44, 0],
@@ -132,9 +132,9 @@ Trex.animFrames = {
 
 Trex.prototype = {
   /**
-     * T-rex player initaliser.
-     * Sets the t-rex to blink at random intervals.
-     */
+   * T-rex player initaliser.
+   * Sets the t-rex to blink at random intervals.
+   */
   init() {
     this.groundYPos = Runner.defaultDimensions.HEIGHT -
       this.config.HEIGHT -
@@ -147,8 +147,8 @@ Trex.prototype = {
   },
 
   /**
-     * Assign the appropriate jump parameters based on the game speed.
-     */
+   * Assign the appropriate jump parameters based on the game speed.
+   */
   enableSlowConfig: function () {
     const jumpConfig = Runner.slowDown
       ? Trex.slowJumpConfig
@@ -159,9 +159,9 @@ Trex.prototype = {
   },
 
   /**
-     * Enables the alternative game. Redefines the dino config.
-     * @param {Object} spritePos New positioning within image sprite.
-     */
+   * Enables the alternative game. Redefines the dino config.
+   * @param {Object} spritePos New positioning within image sprite.
+   */
   enableAltGameMode: function (spritePos) {
     this.altGameModeEnabled = true;
     this.spritePos = spritePos;
@@ -208,9 +208,9 @@ Trex.prototype = {
   },
 
   /**
-     * Slow speeds adjustments for the alt game modes.
-     * @param {number=} opt_gravityValue
-     */
+   * Slow speeds adjustments for the alt game modes.
+   * @param {number=} opt_gravityValue
+   */
   adjustAltGameConfigForSlowSpeed: function (opt_gravityValue) {
     if (Runner.slowDown) {
       if (opt_gravityValue) {
@@ -224,28 +224,28 @@ Trex.prototype = {
   },
 
   /**
-     * Setter whether dino is flashing.
-     * @param {boolean} status
-     */
+   * Setter whether dino is flashing.
+   * @param {boolean} status
+   */
   setFlashing: function (status) {
     this.flashing = status;
   },
 
   /**
-     * Setter for the jump velocity.
-     * The approriate drop velocity is also set.
-     * @param {number} setting
-     */
+   * Setter for the jump velocity.
+   * The approriate drop velocity is also set.
+   * @param {number} setting
+   */
   setJumpVelocity(setting) {
     this.config.INIITAL_JUMP_VELOCITY = -setting;
     this.config.DROP_VELOCITY = -setting / 2;
   },
 
   /**
-     * Set the animation status.
-     * @param {!number} deltaTime
-     * @param {Trex.status=} opt_status Optional status to switch to.
-     */
+   * Set the animation status.
+   * @param {!number} deltaTime
+   * @param {Trex.status=} opt_status Optional status to switch to.
+   */
   update(deltaTime, opt_status) {
     this.timer += deltaTime;
 
@@ -293,10 +293,10 @@ Trex.prototype = {
   },
 
   /**
-     * Draw the t-rex to a particular position.
-     * @param {number} x
-     * @param {number} y
-     */
+   * Draw the t-rex to a particular position.
+   * @param {number} x
+   * @param {number} y
+   */
   draw(x, y) {
     let sourceX = x;
     let sourceY = y;
@@ -394,16 +394,16 @@ Trex.prototype = {
   },
 
   /**
-     * Sets a random time for the blink to happen.
-     */
+   * Sets a random time for the blink to happen.
+   */
   setBlinkDelay() {
     this.blinkDelay = Math.ceil(Math.random() * Trex.BLINK_TIMING);
   },
 
   /**
-     * Make t-rex blink at random intervals.
-     * @param {number} time Current time in milliseconds.
-     */
+   * Make t-rex blink at random intervals.
+   * @param {number} time Current time in milliseconds.
+   */
   blink(time) {
     const deltaTime = time - this.animStartTime;
 
@@ -420,9 +420,9 @@ Trex.prototype = {
   },
 
   /**
-     * Initialise a jump.
-     * @param {number} speed
-     */
+   * Initialise a jump.
+   * @param {number} speed
+   */
   startJump(speed) {
     if (!this.jumping) {
       this.update(0, Trex.status.JUMPING);
@@ -439,8 +439,8 @@ Trex.prototype = {
   },
 
   /**
-     * Jump is complete, falling down.
-     */
+   * Jump is complete, falling down.
+   */
   endJump() {
     if (
       this.reachedMinHeight &&
@@ -451,9 +451,9 @@ Trex.prototype = {
   },
 
   /**
-     * Update frame for a jump.
-     * @param {number} deltaTime
-     */
+   * Update frame for a jump.
+   * @param {number} deltaTime
+   */
   updateJump(deltaTime) {
     const msPerFrame = Trex.animFrames[this.status].msPerFrame;
     const framesElapsed = deltaTime / msPerFrame;
@@ -504,16 +504,16 @@ Trex.prototype = {
   },
 
   /**
-     * Set the speed drop. Immediately cancels the current jump.
-     */
+   * Set the speed drop. Immediately cancels the current jump.
+   */
   setSpeedDrop() {
     this.speedDrop = true;
     this.jumpVelocity = 1;
   },
 
   /**
-     * @param {boolean} isDucking
-     */
+   * @param {boolean} isDucking
+   */
   setDuck(isDucking) {
     if (isDucking && this.status !== Trex.status.DUCKING) {
       this.update(0, Trex.status.DUCKING);
@@ -525,8 +525,8 @@ Trex.prototype = {
   },
 
   /**
-     * Reset the t-rex to running at start of game.
-     */
+   * Reset the t-rex to running at start of game.
+   */
   reset() {
     this.xPos = this.xInitialPos;
     this.yPos = this.groundYPos;
