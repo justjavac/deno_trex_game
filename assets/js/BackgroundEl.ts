@@ -1,6 +1,6 @@
 import { IS_HIDPI } from "./constants";
 import Runner from "./Runner";
-import Sprite, { Position } from "./sprite";
+import Sprite, { CloudSprite, Position } from "./sprite";
 import { getRandomNum } from "./utils";
 
 export default class BackgroundEl {
@@ -15,7 +15,6 @@ export default class BackgroundEl {
     POS: 0,
     SPEED: 0,
     Y_POS: 0,
-    MS_PER_FRAME: 0, // only needed when BACKGROUND_EL.FIXED is true
   };
 
   canvas: HTMLCanvasElement;
@@ -29,7 +28,7 @@ export default class BackgroundEl {
   gap: number;
   animTimer: number;
   switchFrames: boolean;
-  spriteConfig: object;
+  spriteConfig: CloudSprite;
 
   /**
    * 背景元素
@@ -56,7 +55,7 @@ export default class BackgroundEl {
     this.animTimer = 0;
     this.switchFrames = false;
 
-    this.spriteConfig = {};
+    this.spriteConfig = null;
     this.init();
   }
 
@@ -65,9 +64,6 @@ export default class BackgroundEl {
    */
   init() {
     this.spriteConfig = Sprite.BACKGROUND_EL[this.type];
-    if (this.spriteConfig.FIXED) {
-      this.xPos = this.spriteConfig.FIXED_X_POS;
-    }
     this.yPos = BackgroundEl.config.Y_POS -
       this.spriteConfig.HEIGHT +
       this.spriteConfig.OFFSET;
@@ -105,28 +101,14 @@ export default class BackgroundEl {
 
   /**
    * 更新背景元素位置
-   * @param speed 速度
    */
-  update(speed: number) {
+  update() {
     // 如果该元素已经移除了，不处理
     if (this.remove) {
       return;
     }
 
-    if (!this.spriteConfig.FIXED) {
-      // Fixed speed, regardless of actual game speed.
-      this.xPos -= BackgroundEl.config.SPEED;
-    } else {
-      this.animTimer += speed;
-      if (this.animTimer > BackgroundEl.config.MS_PER_FRAME) {
-        this.animTimer = 0;
-        this.switchFrames = !this.switchFrames;
-      }
-
-      this.yPos = this.switchFrames
-        ? this.spriteConfig.FIXED_Y_POS_1
-        : this.spriteConfig.FIXED_Y_POS_2;
-    }
+    this.xPos -= BackgroundEl.config.SPEED;
     this.draw();
 
     // 如果在画布上不可见，将其移除

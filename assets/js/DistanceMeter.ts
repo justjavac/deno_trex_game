@@ -49,7 +49,7 @@ export default class DistanceMeter {
 
   currentDistance: number;
   maxScore: number;
-  highScore: string;
+  highScore: string | string[];
   distance?: number;
   container: null;
 
@@ -103,7 +103,8 @@ export default class DistanceMeter {
     this.flashIterations = 0;
     this.invertTrigger = false;
     this.flashingRafId = null;
-    this.highScoreBounds = {};
+    // this.highScoreBounds = {};
+    this.highScoreBounds = null;
     this.highScoreFlashing = false;
 
     this.maxScoreUnits = DistanceMeterConfig.MAX_DISTANCE_UNITS;
@@ -268,7 +269,7 @@ export default class DistanceMeter {
    * 绘制最高分
    */
   drawHighScore() {
-    if (parseInt(this.highScore, 10) > 0) {
+    if (parseInt(this.highScore as string, 10) > 0) {
       this.canvasCtx.save();
       this.canvasCtx.globalAlpha = 0.8;
       for (let i = this.highScore.length - 1; i >= 0; i--) {
