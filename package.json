@@ -1,0 +1,9 @@
+{
+  "name": "deno_trex_game",
+  "private": true,
+  "author": "justjavac <justjavac@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^4.3.4"
+  }
+}

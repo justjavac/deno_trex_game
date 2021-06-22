@@ -10,8 +10,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Chrome T-Rex Game</title>
   <link rel="stylesheet" href="assets/css/offline.css" />
-  <script src="assets/js/offline.js"></script>
-  <script src="assets/js/offline-sprite-definitions.js"></script>
+  <script src="assets/js/offline.js" nomodule></script>
+  <script src="assets/js/offline-sprite-definitions.js" nomodule></script>
 </head>
 
 <body class="offline">
@@ -31,7 +31,11 @@
     <img src="assets/img/forkme_right_darkblue.png" alt="Fork me on GitHub" />
   </a>
 
-  <script>new Runner('.interstitial-wrapper');</script>
+  <script nomodule>new Runner('.interstitial-wrapper');</script>
+  <script type="module">
+    import Runner from './dist/Runner.js';
+    new Runner('.interstitial-wrapper');
+  </script>
 </body>
 
 </html>

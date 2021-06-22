@@ -1,8 +1,8 @@
-import CollisionBox from "./CollisionBox";
-import { FPS, IS_HIDPI, IS_MOBILE } from "./constants";
-import Runner from "./Runner";
-import { Dimensions, ObstacleType, Position } from "./sprite";
-import { getRandomNum } from "./utils";
+import CollisionBox from "./CollisionBox.js";
+import { FPS, IS_HIDPI, IS_MOBILE } from "./constants.js";
+import Runner from "./Runner.js";
+import { Dimensions, ObstacleType, Position } from "./Sprite.js";
+import { getRandomNum } from "./utils.js";
 
 export default class Obstacle {
   static types: ObstacleType[];
@@ -30,8 +30,8 @@ export default class Obstacle {
   // For animated obstacles.
   currentFrame: number;
   timer: number;
-  jumpAlerted: boolean;
-  followingObstacleCreated: boolean;
+  jumpAlerted?: boolean;
+  followingObstacleCreated?: boolean;
 
   /**
    * Obstacle.
@@ -86,7 +86,7 @@ export default class Obstacle {
     // Check if obstacle can be positioned at various heights.
     if (Array.isArray(this.typeConfig.yPos)) {
       const yPosConfig = IS_MOBILE
-        ? this.typeConfig.yPosMobile
+        ? (this.typeConfig.yPosMobile as number[])
         : this.typeConfig.yPos;
       this.yPos =
         yPosConfig[getRandomNum(0, (yPosConfig as number[]).length - 1)];
@@ -175,7 +175,7 @@ export default class Obstacle {
       // Update frame
       if (this.typeConfig.numFrames) {
         this.timer += deltaTime;
-        if (this.timer >= this.typeConfig.frameRate) {
+        if (this.timer >= Number(this.typeConfig.frameRate)) {
           this.currentFrame =
             this.currentFrame === this.typeConfig.numFrames - 1
               ? 0

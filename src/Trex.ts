@@ -1,8 +1,8 @@
-import CollisionBox from "./CollisionBox";
-import { FPS, IS_HIDPI } from "./constants";
-import Runner from "./Runner";
-import Sprite, { Position } from "./sprite";
-import { getTimeStamp } from "./utils";
+import CollisionBox from "./CollisionBox.js";
+import { FPS, IS_HIDPI } from "./constants.js";
+import Runner from "./Runner.js";
+import Sprite, { Position } from "./Sprite.js";
+import { getTimeStamp } from "./utils.js";
 
 /**
  * T-rex player config.
@@ -38,8 +38,7 @@ interface JumpConfig {
 /**
  * Animation states.
  */
-
-enum TrexStatus {
+export enum TrexStatus {
   CRASHED = "CRASHED",
   DUCKING = "DUCKING",
   JUMPING = "JUMPING",
@@ -151,8 +150,7 @@ export default class Trex {
   jumpCount: number;
   jumpspotX: number;
   flashing: boolean;
-  midair: boolean;
-  playingIntro: boolean;
+  playingIntro?: boolean;
   static status: TrexStatus;
 
   /**
@@ -162,9 +160,7 @@ export default class Trex {
    */
   constructor(canvas: HTMLCanvasElement, spritePos: Position) {
     this.canvas = canvas;
-    this.canvasCtx = /** @type {CanvasRenderingContext2D} */ canvas.getContext(
-      "2d",
-    );
+    this.canvasCtx = canvas.getContext("2d")!;
     this.spritePos = spritePos;
     this.xPos = 0;
     this.yPos = 0;
@@ -189,6 +185,11 @@ export default class Trex {
     this.jumpCount = 0;
     this.jumpspotX = 0;
     this.flashing = false;
+    this.groundYPos = Runner.defaultDimensions.HEIGHT -
+      this.config.HEIGHT -
+      Runner.config.BOTTOM_PAD;
+    this.yPos = this.groundYPos;
+    this.minJumpHeight = this.groundYPos - this.config.MIN_JUMP_HEIGHT;
 
     this.init();
   }
@@ -198,12 +199,6 @@ export default class Trex {
    * Sets the t-rex to blink at random intervals.
    */
   init() {
-    this.groundYPos = Runner.defaultDimensions.HEIGHT -
-      this.config.HEIGHT -
-      Runner.config.BOTTOM_PAD;
-    this.yPos = this.groundYPos;
-    this.minJumpHeight = this.groundYPos - this.config.MIN_JUMP_HEIGHT;
-
     this.draw(0, 0);
     this.update(0, TrexStatus.WAITING);
   }
@@ -474,7 +469,6 @@ export default class Trex {
     this.jumping = false;
     this.ducking = false;
     this.update(0, TrexStatus.RUNNING);
-    this.midair = false;
     this.speedDrop = false;
     this.jumpCount = 0;
   }

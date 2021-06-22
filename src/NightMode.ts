@@ -1,7 +1,7 @@
-import { IS_HIDPI } from "./constants";
-import Runner from "./Runner";
-import Sprite, { Position } from "./sprite";
-import { getRandomNum } from "./utils";
+import { IS_HIDPI } from "./constants.js";
+import Runner from "./Runner.js";
+import Sprite, { Position } from "./sprite.js";
+import { getRandomNum } from "./utils.js";
 
 /**
  * @enum {number}

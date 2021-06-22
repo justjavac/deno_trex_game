@@ -1,4 +1,4 @@
-import { IS_IOS } from "./constants";
+import { IS_IOS } from "./constants.js";
 
 export default class GeneratedSoundFx {
   audioCues: boolean;

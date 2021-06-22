@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import CollisionBox from "./CollisionBox";
+import CollisionBox from "./CollisionBox.js";
 
 export interface Position {
   x: number;
@@ -99,6 +99,10 @@ export interface LineSprite {
   YPOS: number;
 }
 
+export interface SpriteBackgroundEl {
+  CLOUD: CloudSprite;
+}
+
 export interface SpriteDefinition {
   LDPI: Stage;
   HDPI: Stage;
@@ -108,9 +112,7 @@ export interface SpriteDefinition {
   BOTTOM_PAD: number;
   TREX: TrexSprite;
   OBSTACLES: ObstacleType[];
-  BACKGROUND_EL: {
-    CLOUD: CloudSprite;
-  };
+  BACKGROUND_EL: SpriteBackgroundEl;
   BACKGROUND_EL_CONFIG: BackgroundElConfig;
   LINES: LineSprite[];
 }

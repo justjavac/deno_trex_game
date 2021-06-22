@@ -1,7 +1,7 @@
-import { IS_HIDPI } from "./constants";
-import Runner from "./Runner";
-import Sprite, { CloudSprite, Position } from "./sprite";
-import { getRandomNum } from "./utils";
+import { IS_HIDPI } from "./constants.js";
+import Runner from "./Runner.js";
+import Sprite, { CloudSprite, Position } from "./Sprite.js";
+import { getRandomNum } from "./utils.js";
 
 export default class BackgroundEl {
   /**
@@ -41,7 +41,7 @@ export default class BackgroundEl {
     type: string,
   ) {
     this.canvas = canvas;
-    this.canvasCtx = this.canvas.getContext("2d");
+    this.canvasCtx = this.canvas.getContext("2d")!;
     this.spritePos = spritePos;
     this.containerWidth = containerWidth;
     this.xPos = containerWidth;
@@ -54,8 +54,7 @@ export default class BackgroundEl {
     );
     this.animTimer = 0;
     this.switchFrames = false;
-
-    this.spriteConfig = null;
+    this.spriteConfig = Sprite.BACKGROUND_EL[this.type as 'CLOUD'];
     this.init();
   }
 
@@ -63,7 +62,6 @@ export default class BackgroundEl {
    * Initialise the element setting the y position.
    */
   init() {
-    this.spriteConfig = Sprite.BACKGROUND_EL[this.type];
     this.yPos = BackgroundEl.config.Y_POS -
       this.spriteConfig.HEIGHT +
       this.spriteConfig.OFFSET;

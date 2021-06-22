@@ -1,4 +1,6 @@
-import { FPS, IS_HIDPI } from "./constants";
+import { FPS, IS_HIDPI } from "./constants.js";
+import { Dimensions, LineSprite } from "./sprite.js";
+import Runner from "./Runner.js";
 
 interface HorizonLineDimensions {
   WIDTH: number;
@@ -22,8 +24,8 @@ export default class HorizonLine {
   spritePos: Position;
   canvas: HTMLCanvasElement;
   canvasCtx: CanvasRenderingContext2D;
-  sourceDimensions: object;
-  dimensions: object;
+  sourceDimensions: Dimensions;
+  dimensions: Dimensions;
 
   sourceXPos: [number, number];
   xPos: number[];
@@ -36,7 +38,7 @@ export default class HorizonLine {
    * @param canvas
    * @param lineConfig Configuration object.
    */
-  constructor(canvas: HTMLCanvasElement, lineConfig: object) {
+  constructor(canvas: HTMLCanvasElement, lineConfig: LineSprite) {
     let sourceX = lineConfig.SOURCE_X;
     let sourceY = lineConfig.SOURCE_Y;
 
@@ -48,7 +50,7 @@ export default class HorizonLine {
     this.spritePos = { x: sourceX, y: sourceY };
     this.canvas = canvas;
     this.canvasCtx = canvas.getContext("2d");
-    this.sourceDimensions = {};
+    this.sourceDimensions = { WIDTH: 0, HEIGHT: 0 };
     this.dimensions = lineConfig;
 
     this.sourceXPos = [

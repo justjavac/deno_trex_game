@@ -1,7 +1,7 @@
-import { IS_HIDPI } from "./constants";
-import Runner from "./Runner";
-import { Position } from "./sprite";
-import { getRandomNum } from "./utils";
+import { IS_HIDPI } from "./constants.js";
+import Runner from "./Runner.js";
+import { Position } from "./Sprite.js";
+import { getRandomNum } from "./utils.js";
 
 enum CloudConfig {
   HEIGHT = 14,
@@ -36,7 +36,7 @@ export default class Cloud {
     containerWidth: number,
   ) {
     this.canvas = canvas;
-    this.canvasCtx = this.canvas.getContext("2d");
+    this.canvasCtx = this.canvas.getContext("2d")!;
     this.spritePos = spritePos;
     this.containerWidth = containerWidth;
     this.xPos = containerWidth;

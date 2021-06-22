@@ -1,8 +1,8 @@
-import { IS_IOS, IS_MOBILE } from "./constants";
-import CollisionBox from "./CollisionBox";
-import Runner from "./Runner";
-import Obstacle from "./Obstacle";
-import Trex from "./Trex";
+import { IS_IOS, IS_MOBILE } from "./constants.js";
+import CollisionBox from "./CollisionBox.js";
+import Runner from "./Runner.js";
+import Obstacle from "./Obstacle.js";
+import Trex from "./Trex.js";
 
 /**
  * 获取指定范围内的随机数字。

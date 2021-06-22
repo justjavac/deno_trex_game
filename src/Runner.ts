@@ -5,21 +5,21 @@ import {
   IS_IOS,
   IS_MOBILE,
   RESOURCE_POSTFIX,
-} from "./constants";
-import DistanceMeter from "./DistanceMeter";
-import GameOverPanel from "./GameOverPanel";
-import GeneratedSoundFx from "./GeneratedSoundFx";
-import Horizon from "./Horizon";
-import Obstacle from "./Obstacle";
-import Sprite from "./sprite";
-import type { Stage } from "./sprite";
-import Trex from "./Trex";
+} from "./constants.js";
+import DistanceMeter from "./DistanceMeter.js";
+import GameOverPanel from "./GameOverPanel.js";
+import GeneratedSoundFx from "./GeneratedSoundFx.js";
+import Horizon from "./Horizon.js";
+import Obstacle from "./Obstacle.js";
+import Sprite from "./Sprite.js";
+import type { Stage } from "./Sprite.js";
+import Trex, {TrexStatus} from "./Trex.js";
 import {
   checkForCollision,
   createCanvas,
   getTimeStamp,
   vibrate,
-} from "./utils";
+} from "./utils.js";
 
 export default class Runner {
   static instance_: Runner;
@@ -277,7 +277,7 @@ export default class Runner {
     }
     Runner.instance_ = this;
 
-    this.outerContainerEl = document.querySelector(outerContainerId);
+    this.outerContainerEl = document.querySelector(outerContainerId)!;
     this.containerEl = null;
     this.snackbarEl = null;
     // A div to intercept touch events. Only set while (playing && useTouch).
@@ -314,7 +314,7 @@ export default class Runner {
     this.paused = false;
     this.inverted = false;
     this.invertTimer = 0;
-    this.resizeTimerId_ = null;
+    this.resizeTimerId_ = 0;
 
     this.playCount = 0;
 
@@ -333,10 +333,6 @@ export default class Runner {
     this.previousGamepad = null;
 
     this.loadImages();
-
-    window["initializeEasterEggHighScore"] = this.initializeHighScore.bind(
-      this,
-    );
   }
 
   /**
@@ -1169,7 +1165,7 @@ export default class Runner {
     this.crashed = true;
     this.distanceMeter.achievement = false;
 
-    this.tRex.update(100, Trex.status.CRASHED);
+    this.tRex.update(100, TrexStatus.CRASHED);
 
     // Game over panel.
     if (!this.gameOverPanel) {
@@ -1212,7 +1208,7 @@ export default class Runner {
     if (!this.crashed) {
       this.setPlayStatus(true);
       this.paused = false;
-      this.tRex.update(0, Trex.status.RUNNING);
+      this.tRex.update(0, TrexStatus.RUNNING);
       this.time = getTimeStamp();
       this.update();
       this.generatedSoundFx.background();

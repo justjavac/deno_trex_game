@@ -1,7 +1,7 @@
-import { IS_HIDPI } from "./constants";
-import { getTimeStamp } from "./utils";
-import Runner from "./Runner";
-import { Position } from "./sprite";
+import { IS_HIDPI } from "./constants.js";
+import { getTimeStamp } from "./utils.js";
+import Runner from "./Runner.js";
+import { Position } from "./Sprite.js";
 
 interface Bounds {
   x: number;
@@ -85,7 +85,7 @@ export default class DistanceMeter {
     canvasWidth: number,
   ) {
     this.canvas = canvas;
-    this.canvasCtx = canvas.getContext("2d");
+    this.canvasCtx = canvas.getContext("2d")!;
     this.image = Runner.imageSprite;
     this.spritePos = spritePos;
     this.x = 0;
@@ -102,10 +102,10 @@ export default class DistanceMeter {
     this.flashTimer = 0;
     this.flashIterations = 0;
     this.invertTrigger = false;
-    this.flashingRafId = null;
-    // this.highScoreBounds = {};
-    this.highScoreBounds = null;
+    this.flashingRafId = 0;
+    this.highScoreBounds = this.getHighScoreBounds()
     this.highScoreFlashing = false;
+    this.frameTimeStamp = getTimeStamp();
 
     this.maxScoreUnits = DistanceMeterConfig.MAX_DISTANCE_UNITS;
     this.init(canvasWidth);
@@ -269,7 +269,7 @@ export default class DistanceMeter {
    * 绘制最高分
    */
   drawHighScore() {
-    if (parseInt(this.highScore as string, 10) > 0) {
+    if (parseInt(String(this.highScore), 10) > 0) {
       this.canvasCtx.save();
       this.canvasCtx.globalAlpha = 0.8;
       for (let i = this.highScore.length - 1; i >= 0; i--) {

@@ -1,7 +1,7 @@
-import { IS_HIDPI } from "./constants";
-import Runner from "./Runner";
-import { Dimensions, Position } from "./sprite";
-import { getTimeStamp } from "./utils";
+import { IS_HIDPI } from "./constants.js";
+import Runner from "./Runner.js";
+import { Dimensions, Position } from "./Sprite.js";
+import { getTimeStamp } from "./utils.js";
 
 const RESTART_ANIM_DURATION = 875;
 const LOGO_PAUSE_DURATION = 875;
