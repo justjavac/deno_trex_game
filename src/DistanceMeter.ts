@@ -103,7 +103,7 @@ export default class DistanceMeter {
     this.flashIterations = 0;
     this.invertTrigger = false;
     this.flashingRafId = 0;
-    this.highScoreBounds = this.getHighScoreBounds()
+    this.highScoreBounds = this.getHighScoreBounds();
     this.highScoreFlashing = false;
     this.frameTimeStamp = getTimeStamp();
 

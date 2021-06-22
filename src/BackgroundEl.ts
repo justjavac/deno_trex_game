@@ -54,7 +54,7 @@ export default class BackgroundEl {
     );
     this.animTimer = 0;
     this.switchFrames = false;
-    this.spriteConfig = Sprite.BACKGROUND_EL[this.type as 'CLOUD'];
+    this.spriteConfig = Sprite.BACKGROUND_EL[this.type as "CLOUD"];
     this.init();
   }
 

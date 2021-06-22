@@ -1,5 +1,5 @@
 import { FPS, IS_HIDPI } from "./constants.js";
-import { Dimensions, LineSprite } from "./Sprite.js";
+import { LineSprite } from "./Sprite.js";
 import Runner from "./Runner.js";
 
 interface HorizonLineDimensions {
@@ -24,8 +24,8 @@ export default class HorizonLine {
   spritePos: Position;
   canvas: HTMLCanvasElement;
   canvasCtx: CanvasRenderingContext2D;
-  sourceDimensions: Dimensions;
-  dimensions: Dimensions;
+  sourceDimensions: HorizonLineDimensions;
+  dimensions: HorizonLineDimensions;
 
   sourceXPos: [number, number];
   xPos: number[];
@@ -49,8 +49,8 @@ export default class HorizonLine {
 
     this.spritePos = { x: sourceX, y: sourceY };
     this.canvas = canvas;
-    this.canvasCtx = canvas.getContext("2d");
-    this.sourceDimensions = { WIDTH: 0, HEIGHT: 0 };
+    this.canvasCtx = canvas.getContext("2d")!;
+    this.sourceDimensions = { WIDTH: 0, HEIGHT: 0, YPOS: 0 };
     this.dimensions = lineConfig;
 
     this.sourceXPos = [
@@ -68,8 +68,9 @@ export default class HorizonLine {
   /**
    * Set the source dimensions of the horizon line.
    */
-  setSourceDimensions(newDimensions) {
-    for (const dimension in newDimensions) {
+  setSourceDimensions(newDimensions: LineSprite) {
+    let dimension: keyof LineSprite;
+    for (dimension in newDimensions) {
       if (dimension !== "SOURCE_X" && dimension !== "SOURCE_Y") {
         if (IS_HIDPI) {
           if (dimension !== "YPOS") {

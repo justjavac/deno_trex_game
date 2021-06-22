@@ -100,7 +100,7 @@ export default class Horizon {
         Obstacle.types[i].minSpeed = Obstacle.types[i].minSpeed / 2;
 
         // Convert variable y position obstacles to fixed.
-        const yPos = Obstacle.types[i].yPos
+        const yPos = Obstacle.types[i].yPos;
         if (Array.isArray(yPos)) {
           Obstacle.types[i].yPos = yPos[0];
           Obstacle.types[i].yPosMobile = yPos[0];
@@ -267,7 +267,7 @@ export default class Horizon {
     ) {
       this.addNewObstacle(currentSpeed);
     } else {
-      const obstacleSpritePos = this.spritePos[obstacleType.type ];
+      const obstacleSpritePos = this.spritePos[obstacleType.type];
 
       this.obstacles.push(
         new Obstacle(

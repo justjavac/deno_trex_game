@@ -1,6 +1,6 @@
 import { IS_HIDPI } from "./constants.js";
 import Runner from "./Runner.js";
-import Sprite, { Position } from "./sprite.js";
+import Sprite, { Position } from "./Sprite.js";
 import { getRandomNum } from "./utils.js";
 
 /**
@@ -58,9 +58,7 @@ export default class NightMode {
   ) {
     this.spritePos = spritePos;
     this.canvas = canvas;
-    this.canvasCtx = /** @type {CanvasRenderingContext2D} */ canvas.getContext(
-      "2d",
-    );
+    this.canvasCtx = canvas.getContext("2d")!;
     this.xPos = containerWidth - 50;
     this.yPos = 30;
     this.currentPhase = 0;

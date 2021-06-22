@@ -22,7 +22,7 @@ export default class GeneratedSoundFx {
         ? new webkitAudioContext()
         : new AudioContext();
       if (IS_IOS) {
-        this.context.onstatechange =  () => {
+        this.context.onstatechange = () => {
           if (this.context.state != "running") {
             this.context.resume();
           }
@@ -102,12 +102,10 @@ export default class GeneratedSoundFx {
 
   loopFootSteps() {
     if (this.audioCues && !this.bgSoundIntervalId) {
-      this.bgSoundIntervalId = setInterval( () => {
-          this.playNote(73.42, this.context.currentTime, 0.05, 0.16);
-          this.playNote(69.3, this.context.currentTime + 0.116, 0.116, 0.16);
-        },
-        280,
-      );
+      this.bgSoundIntervalId = setInterval(() => {
+        this.playNote(73.42, this.context.currentTime, 0.05, 0.16);
+        this.playNote(69.3, this.context.currentTime + 0.116, 0.116, 0.16);
+      }, 280);
     }
   }
 
