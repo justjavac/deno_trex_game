@@ -37,8 +37,6 @@ export default class GameOverPanel {
 
   textImgPos: object;
   restartImgPos: object;
-  altGameEndImgPos: object;
-  altGameModeActive: boolean;
 
   // Retry animation.
   frameTimeStamp: number;
@@ -65,8 +63,6 @@ export default class GameOverPanel {
     textImgPos: object,
     restartImgPos: object,
     dimensions: Dimensions,
-    optAltGameEndImgPos?: object,
-    optAltGameActive?: boolean,
   ) {
     this.canvas = canvas;
     this.canvasCtx = canvas.getContext(
@@ -75,8 +71,6 @@ export default class GameOverPanel {
     this.canvasDimensions = dimensions;
     this.textImgPos = textImgPos;
     this.restartImgPos = restartImgPos;
-    this.altGameEndImgPos = optAltGameEndImgPos;
-    this.altGameModeActive = optAltGameActive;
 
     // Retry animation.
     this.frameTimeStamp = 0;
@@ -103,7 +97,7 @@ export default class GameOverPanel {
     this.currentFrame = AnimConfig.frames.length - 1;
   }
 
-  drawGameOverText(dimensions, optUseAltText: boolean) {
+  drawGameOverText(dimensions) {
     const centerX = this.canvasDimensions.WIDTH / 2;
     let textSourceX = dimensions.TEXT_X;
     let textSourceY = dimensions.TEXT_Y;
@@ -121,21 +115,14 @@ export default class GameOverPanel {
       textSourceWidth *= 2;
       textSourceHeight *= 2;
     }
-
-    if (!optUseAltText) {
-      textSourceX += this.textImgPos.x;
-      textSourceY += this.textImgPos.y;
-    }
-
-    const spriteSource = optUseAltText
-      ? Runner.altCommonImageSprite
-      : Runner.origImageSprite;
-
+    
+    textSourceX += this.textImgPos.x;
+    textSourceY += this.textImgPos.y;
     this.canvasCtx.save();
 
     // Game over text from sprite.
     this.canvasCtx.drawImage(
-      spriteSource,
+      Runner.origImageSprite,
       textSourceX,
       textSourceY,
       textSourceWidth,
@@ -147,38 +134,6 @@ export default class GameOverPanel {
     );
 
     this.canvasCtx.restore();
-  }
-
-  /**
-   * Draw additional adornments for alternative game types.
-   */
-  drawAltGameElements(tRex) {
-    // Additional adornments.
-    if (this.altGameModeActive) {
-      const altGameEndConfig = Runner.spriteDefinition.ALT_GAME_END_CONFIG;
-
-      let altGameEndSourceWidth = altGameEndConfig.WIDTH;
-      let altGameEndSourceHeight = altGameEndConfig.HEIGHT;
-      const altGameEndTargetX = tRex.xPos + altGameEndConfig.X_OFFSET;
-      const altGameEndTargetY = tRex.yPos + altGameEndConfig.Y_OFFSET;
-
-      if (IS_HIDPI) {
-        altGameEndSourceWidth *= 2;
-        altGameEndSourceHeight *= 2;
-      }
-
-      this.canvasCtx.drawImage(
-        Runner.altCommonImageSprite,
-        this.altGameEndImgPos.x,
-        this.altGameEndImgPos.y,
-        altGameEndSourceWidth,
-        altGameEndSourceHeight,
-        altGameEndTargetX,
-        altGameEndTargetY,
-        altGameEndConfig.WIDTH,
-        altGameEndConfig.HEIGHT,
-      );
-    }
   }
 
   /**
@@ -216,17 +171,10 @@ export default class GameOverPanel {
 
   /**
    * Draw the panel.
-   * @param {boolean} optAltGameModeActive
-   * @param {!Trex} optTrex
    */
-  draw(optAltGameModeActive: boolean, optTrex: Trex) {
-    if (optAltGameModeActive) {
-      this.altGameModeActive = optAltGameModeActive;
-    }
-
-    this.drawGameOverText(GameOverPanelDimensions, false);
+  draw() {
+    this.drawGameOverText(GameOverPanelDimensions);
     this.drawRestartButton();
-    this.drawAltGameElements(optTrex);
     this.update();
   }
 
@@ -236,8 +184,6 @@ export default class GameOverPanel {
   update() {
     const now = getTimeStamp();
     const deltaTime = now - (this.frameTimeStamp || now);
-    const altTextConfig =
-      Runner.spriteDefinitionByType.original.ALT_GAME_OVER_TEXT_CONFIG;
 
     this.frameTimeStamp = now;
     this.animTimer += deltaTime;
@@ -260,33 +206,10 @@ export default class GameOverPanel {
         this.drawRestartButton();
       }
     } else if (
-      !this.altGameModeActive &&
       this.currentFrame == AnimConfig.frames.length
     ) {
       this.reset();
       return;
-    }
-
-    // Game over text
-    if (this.altGameModeActive) {
-      if (
-        this.flashCounter < FLASH_ITERATIONS &&
-        this.flashTimer > altTextConfig.FLASH_DURATION
-      ) {
-        this.flashTimer = 0;
-        this.originalText = !this.originalText;
-
-        this.clearGameOverTextBounds();
-        if (this.originalText) {
-          this.drawGameOverText(GameOverPanelDimensions, false);
-          this.flashCounter++;
-        } else {
-          this.drawGameOverText(altTextConfig, true);
-        }
-      } else if (this.flashCounter >= FLASH_ITERATIONS) {
-        this.reset();
-        return;
-      }
     }
 
     this.gameOverRafId = requestAnimationFrame(this.update.bind(this));

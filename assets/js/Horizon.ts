@@ -23,7 +23,6 @@ export default class Horizon {
   cloudFrequency: number;
   spritePos: object;
   nightMode: NightMode;
-  altGameModeActive: boolean;
 
   // Cloud
   clouds = [];
@@ -62,7 +61,6 @@ export default class Horizon {
     this.cloudFrequency = HorizonConfig.CLOUD_FREQUENCY;
     this.spritePos = spritePos;
     this.nightMode = null;
-    this.altGameModeActive = false;
 
     // Cloud
     this.clouds = [];
@@ -127,7 +125,6 @@ export default class Horizon {
     this.clouds = [];
     this.backgroundEls = [];
 
-    this.altGameModeActive = true;
     this.spritePos = spritePos;
 
     Obstacle.types = Runner.spriteDefinition.OBSTACLES;
@@ -163,18 +160,12 @@ export default class Horizon {
   ) {
     this.runningTime += deltaTime;
 
-    if (this.altGameModeActive) {
-      this.updateBackgroundEls(deltaTime, currentSpeed);
-    }
-
     for (let i = 0; i < this.horizonLines.length; i++) {
       this.horizonLines[i].update(deltaTime, currentSpeed);
     }
 
-    if (!this.altGameModeActive || Runner.spriteDefinition.HAS_CLOUDS) {
       this.nightMode.update(showNightMode);
       this.updateClouds(deltaTime, currentSpeed);
-    }
 
     if (updateObstacles) {
       this.updateObstacles(deltaTime, currentSpeed);
@@ -301,9 +292,7 @@ export default class Horizon {
    * @param {number} currentSpeed
    */
   addNewObstacle(currentSpeed: number) {
-    const obstacleCount = this.altGameModeActive
-      ? Obstacle.types.length - 1
-      : Obstacle.types.length - 2;
+    const obstacleCount = Obstacle.types.length - 2;
     const obstacleTypeIndex = obstacleCount > 0
       ? getRandomNum(0, obstacleCount)
       : 0;
@@ -328,7 +317,6 @@ export default class Horizon {
           this.gapCoefficient,
           currentSpeed,
           obstacleType.width,
-          this.altGameModeActive,
         ),
       );
 

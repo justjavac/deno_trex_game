@@ -182,10 +182,6 @@ static updateCanvasScaling(
   // Logical dimensions of the container.
   dimensions: object;
 
-  gameType: null;
-  altGameImageSprite: null;
-  altGameModeActive: false;
-  altGameModeFlashTimer: null;
   fadeInTimer: number;
 
   canvas: HTMLCanvasElement;
@@ -259,12 +255,8 @@ static updateCanvasScaling(
     // Logical dimensions of the container.
     this.dimensions = Runner.defaultDimensions;
 
-    this.gameType = null;
     Runner.spriteDefinition = Runner.spriteDefinitionByType["original"];
 
-    this.altGameImageSprite = null;
-    this.altGameModeActive = false;
-    this.altGameModeFlashTimer = null;
     this.fadeInTimer = 0;
 
     this.canvas = null;
@@ -348,27 +340,6 @@ static updateCanvasScaling(
   }
 
   /**
-   * Creates an on page image element from the base 64 encoded string source.
-   * @param {string} resourceName Name in data object,
-   * @return {HTMLImageElement} The created element.
-   */
-  createImageElement(resourceName: string): HTMLImageElement {
-    const imgSrc = loadTimeData && loadTimeData.valueExists(resourceName)
-      ? loadTimeData.getString(resourceName)
-      : null;
-
-    if (imgSrc) {
-      const el: HTMLImageElement = /** @type {HTMLImageElement} */ document
-        .createElement("img");
-      el.id = resourceName;
-      el.src = imgSrc;
-      document.getElementById("offline-resources").appendChild(el);
-      return el;
-    }
-    return null;
-  }
-
-  /**
    * Cache the appropriate image sprite from the page and get the sprite sheet
    * definition.
    */
@@ -383,21 +354,7 @@ static updateCanvasScaling(
     Runner.imageSprite =
       /** @type {HTMLImageElement} */
       document.getElementById(RESOURCE_POSTFIX + scale);
-
-    if (this.gameType) {
-      Runner.altGameImageSprite =
-        /** @type {HTMLImageElement} */
-        this.createImageElement("altGameSpecificImage" + scale);
-      Runner.altCommonImageSprite =
-        /** @type {HTMLImageElement} */
-        this.createImageElement("altGameCommonImage" + scale);
-    }
     Runner.origImageSprite = Runner.imageSprite;
-
-    // Disable the alt game mode if the sprites can't be loaded.
-    if (!Runner.altGameImageSprite || !Runner.altCommonImageSprite) {
-      this.altGameModeActive = false;
-    }
 
     if (Runner.imageSprite.complete) {
       this.init();
@@ -589,7 +546,7 @@ static updateCanvasScaling(
       // Game over panel.
       if (this.crashed && this.gameOverPanel) {
         this.gameOverPanel.updateDimensions(this.dimensions.WIDTH);
-        this.gameOverPanel.draw(this.altGameModeActive, this.tRex);
+        this.gameOverPanel.draw(this.tRex);
       }
     }
   }
@@ -683,25 +640,6 @@ static updateCanvasScaling(
   }
 
   /**
-   * Enable the alt game mode. Switching out the sprites.
-   */
-  enableAltGameMode() {
-    Runner.imageSprite = Runner.altGameImageSprite;
-    Runner.spriteDefinition = Runner.spriteDefinitionByType[Runner.gameType];
-
-    if (IS_HIDPI) {
-      this.spriteDef = Runner.spriteDefinition.HDPI;
-    } else {
-      this.spriteDef = Runner.spriteDefinition.LDPI;
-    }
-
-    this.altGameModeActive = true;
-    this.tRex.enableAltGameMode(this.spriteDef.TREX);
-    this.horizon.enableAltGameMode(this.spriteDef);
-    this.generatedSoundFx.background();
-  }
-
-  /**
    * Update the game frame and schedules the next one.
    */
   update() {
@@ -710,32 +648,12 @@ static updateCanvasScaling(
     const now = getTimeStamp();
     let deltaTime = now - (this.time || now);
 
-    // Flashing when switching game modes.
-    if (this.altGameModeFlashTimer < 0 || this.altGameModeFlashTimer === 0) {
-      this.altGameModeFlashTimer = null;
-      this.tRex.setFlashing(false);
-      this.enableAltGameMode();
-    } else if (this.altGameModeFlashTimer > 0) {
-      this.altGameModeFlashTimer -= deltaTime;
-      this.tRex.update(deltaTime);
-      deltaTime = 0;
-    }
-
     this.time = now;
 
     if (this.playing) {
       this.clearCanvas();
 
-      // Additional fade in - Prevents jump when switching sprites
-      if (
-        this.altGameModeActive &&
-        this.fadeInTimer <= this.config.FADE_DURATION
-      ) {
-        this.fadeInTimer += deltaTime / 1000;
-        this.canvasCtx.globalAlpha = this.fadeInTimer;
-      } else {
-        this.canvasCtx.globalAlpha = 1;
-      }
+      this.canvasCtx.globalAlpha = 1;
 
       if (this.tRex.jumping) {
         this.tRex.updateJump(deltaTime);
@@ -996,8 +914,7 @@ static updateCanvasScaling(
         if (
           Runner.keycodes.JUMP[e.keyCode] ||
           e.type === Runner.events.TOUCHSTART ||
-          isMobileMouseInput ||
-          (Runner.keycodes.DUCK[e.keyCode] && this.altGameModeActive)
+          isMobileMouseInput
         ) {
           e.preventDefault();
           // Starting the game for the first time.
@@ -1028,7 +945,6 @@ static updateCanvasScaling(
           }
           // Ducking is disabled on alt game modes.
         } else if (
-          !this.altGameModeActive &&
           this.playing &&
           Runner.keycodes.DUCK[e.keyCode]
         ) {
@@ -1296,7 +1212,7 @@ static updateCanvasScaling(
       }
     }
 
-    this.gameOverPanel.draw(this.altGameModeActive, this.tRex);
+    this.gameOverPanel.draw();
 
     // Update the high score.
     if (this.distanceRan > this.highestScore) {

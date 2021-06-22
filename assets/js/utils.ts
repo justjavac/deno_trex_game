@@ -1,5 +1,8 @@
 import { IS_IOS, IS_MOBILE } from "./constants";
 import CollisionBox from "./CollisionBox";
+import Runner from "./Runner";
+import Obstacle from "./Obstacle";
+import Trex from "./Trex";
 
 /**
  * 获取指定范围内的随机数字。
@@ -25,17 +28,17 @@ export function vibrate(duration: number) {
  * @param {Element} container Element to append canvas to.
  * @param {number} width
  * @param {number} height
- * @param {string=} opt_classname
+ * @param {string=} optClassname
  */
 export function createCanvas(
   container: Element,
   width: number,
   height: number,
-  opt_classname: string | undefined,
+  optClassname: string | undefined,
 ) {
   const canvas = document.createElement("canvas");
-  canvas.className = opt_classname
-    ? Runner.classes.CANVAS + " " + opt_classname
+  canvas.className = optClassname
+    ? Runner.classes.CANVAS + " " + optClassname
     : Runner.classes.CANVAS;
   canvas.width = width;
   canvas.height = height;
@@ -53,17 +56,15 @@ export function getTimeStamp() {
  * Check for a collision.
  * @param obstacle
  * @param tRex T-rex object.
- * @param opt_canvasCtx Optional canvas context for
+ * @param optCanvasCtx Optional canvas context for
  *    drawing collision boxes.
  * @return {Array<CollisionBox>|undefined}
  */
 export function checkForCollision(
   obstacle: Obstacle,
   tRex: Trex,
-  opt_canvasCtx: CanvasRenderingContext2D | undefined,
+  optCanvasCtx: CanvasRenderingContext2D | undefined,
 ): Array<CollisionBox> | undefined {
-  const obstacleBoxXPos = Runner.defaultDimensions.WIDTH + obstacle.xPos;
-
   // Adjustments are made to the bounding box as there is a 1 pixel white
   // border around the t-rex and obstacles.
   const tRexBox = new CollisionBox(
@@ -81,14 +82,14 @@ export function checkForCollision(
   );
 
   // Debug outer box
-  if (opt_canvasCtx) {
-    drawCollisionBoxes(opt_canvasCtx, tRexBox, obstacleBox);
+  if (optCanvasCtx) {
+    drawCollisionBoxes(optCanvasCtx, tRexBox, obstacleBox);
   }
 
   // Simple outer bounds check.
   if (boxCompare(tRexBox, obstacleBox)) {
     const collisionBoxes = obstacle.collisionBoxes;
-    let tRexCollisionBoxes = tRex.ducking
+    const tRexCollisionBoxes = tRex.ducking
       ? Trex.collisionBoxes.DUCKING
       : Trex.collisionBoxes.RUNNING;
 
@@ -107,8 +108,8 @@ export function checkForCollision(
         const crashed = boxCompare(adjTrexBox, adjObstacleBox);
 
         // Draw boxes for debug.
-        if (opt_canvasCtx) {
-          drawCollisionBoxes(opt_canvasCtx, adjTrexBox, adjObstacleBox);
+        if (optCanvasCtx) {
+          drawCollisionBoxes(optCanvasCtx, adjTrexBox, adjObstacleBox);
         }
 
         if (crashed) {

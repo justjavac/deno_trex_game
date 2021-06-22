@@ -22,7 +22,6 @@ export default class Obstacle {
   collisionBoxes: CollisionBox[];
   gap: number;
   speedOffset: number;
-  altGameModeActive: boolean;
   imageSprite: CanvasImageSource;
 
   // For animated obstacles.
@@ -38,7 +37,6 @@ export default class Obstacle {
  * @param {number} gapCoefficient Mutipler in determining the gap.
  * @param {number} speed
  * @param {number=} optXOffset
- * @param {boolean=} optIsAltGameMode
  */
   constructor(
     canvasCtx: CanvasRenderingContext2D,
@@ -48,7 +46,6 @@ export default class Obstacle {
     gapCoefficient: number,
     speed: number,
     optXOffset: number | undefined,
-    optIsAltGameMode: boolean | undefined,
   ) {
     this.canvasCtx = canvasCtx;
     this.spritePos = spriteImgPos;
@@ -63,12 +60,7 @@ export default class Obstacle {
     this.collisionBoxes = [];
     this.gap = 0;
     this.speedOffset = 0;
-    this.altGameModeActive = optIsAltGameMode;
-    this.imageSprite = this.typeConfig.type == "COLLECTABLE"
-      ? Runner.altCommonImageSprite
-      : this.altGameModeActive
-      ? Runner.altGameImageSprite
-      : Runner.imageSprite;
+    this.imageSprite = Runner.imageSprite
 
     // For animated obstacles.
     this.currentFrame = 0;

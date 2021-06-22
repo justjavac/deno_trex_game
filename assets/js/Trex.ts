@@ -148,7 +148,6 @@ export default class Trex {
   speedDrop: boolean;
   jumpCount: number;
   jumpspotX: number;
-  altGameModeEnabled: boolean;
   flashing: boolean;
   midair: boolean;
   playingIntro: boolean;
@@ -186,7 +185,6 @@ export default class Trex {
     this.speedDrop = false;
     this.jumpCount = 0;
     this.jumpspotX = 0;
-    this.altGameModeEnabled = false;
     this.flashing = false;
 
     this.init();
@@ -215,73 +213,6 @@ export default class Trex {
       ? Trex.slowJumpConfig
       : Trex.normalJumpConfig;
     Trex.config = Object.assign(Trex.config, jumpConfig);
-
-    this.adjustAltGameConfigForSlowSpeed();
-  }
-
-  /**
-   * Enables the alternative game. Redefines the dino config.
-   * @param {Object} spritePos New positioning within image sprite.
-   */
-  enableAltGameMode(spritePos: object) {
-    this.altGameModeEnabled = true;
-    this.spritePos = spritePos;
-    const spriteDefinition = Runner.spriteDefinition["TREX"];
-
-    // Update animation frames.
-    Trex.animFrames.RUNNING.frames = [
-      spriteDefinition.RUNNING_1.x,
-      spriteDefinition.RUNNING_2.x,
-    ];
-    Trex.animFrames.CRASHED.frames = [spriteDefinition.CRASHED.x];
-
-    if (typeof spriteDefinition.JUMPING.x == "object") {
-      Trex.animFrames.JUMPING.frames = spriteDefinition.JUMPING.x;
-    } else {
-      Trex.animFrames.JUMPING.frames = [spriteDefinition.JUMPING.x];
-    }
-
-    Trex.animFrames.DUCKING.frames = [
-      spriteDefinition.RUNNING_1.x,
-      spriteDefinition.RUNNING_2.x,
-    ];
-
-    // Update Trex config
-    Trex.config.GRAVITY = spriteDefinition.GRAVITY || Trex.config.GRAVITY;
-    (Trex.config.HEIGHT = spriteDefinition.RUNNING_1.h),
-      (Trex.config.INITIAL_JUMP_VELOCITY =
-        spriteDefinition.INITIAL_JUMP_VELOCITY);
-    Trex.config.MAX_JUMP_HEIGHT = spriteDefinition.MAX_JUMP_HEIGHT;
-    Trex.config.MIN_JUMP_HEIGHT = spriteDefinition.MIN_JUMP_HEIGHT;
-    Trex.config.WIDTH = spriteDefinition.RUNNING_1.w;
-    Trex.config.WIDTH_JUMP = spriteDefinition.JUMPING.w;
-    Trex.config.INVERT_JUMP = spriteDefinition.INVERT_JUMP;
-
-    this.adjustAltGameConfigForSlowSpeed(spriteDefinition.GRAVITY);
-    this.config = Trex.config;
-
-    // Adjust bottom horizon placement.
-    this.groundYPos = Runner.defaultDimensions.HEIGHT -
-      this.config.HEIGHT -
-      Runner.spriteDefinition["BOTTOM_PAD"];
-    this.yPos = this.groundYPos;
-    this.reset();
-  }
-
-  /**
-   * Slow speeds adjustments for the alt game modes.
-   * @param optGravityValue
-   */
-  adjustAltGameConfigForSlowSpeed(optGravityValue?: number) {
-    if (Runner.slowDown) {
-      if (optGravityValue) {
-        Trex.config.GRAVITY = optGravityValue / 1.5;
-      }
-      Trex.config.MIN_JUMP_HEIGHT *= 1.5;
-      Trex.config.MAX_JUMP_HEIGHT *= 1.5;
-      Trex.config.INITIAL_JUMP_VELOCITY = Trex.config.INITIAL_JUMP_VELOCITY *
-        1.5;
-    }
   }
 
   /**
@@ -344,13 +275,11 @@ export default class Trex {
       this.timer = 0;
     }
 
-    if (!this.altGameModeEnabled) {
       // Speed drop becomes duck if the down key is still being pressed.
       if (this.speedDrop && this.yPos === this.groundYPos) {
         this.speedDrop = false;
         this.setDuck(true);
       }
-    }
   }
 
   /**
@@ -368,15 +297,6 @@ export default class Trex {
     const outputHeight = sourceHeight;
 
     let jumpOffset = Runner.spriteDefinition.TREX.JUMPING.xOffset;
-
-    // Width of sprite changes on jump.
-    if (
-      this.altGameModeEnabled &&
-      this.jumping &&
-      this.status !== TrexStatus.CRASHED
-    ) {
-      sourceWidth = this.config.WIDTH_JUMP;
-    }
 
     if (IS_HIDPI) {
       sourceX *= 2;
@@ -401,7 +321,6 @@ export default class Trex {
 
     // Ducking.
     if (
-      !this.altGameModeEnabled &&
       this.ducking &&
       this.status !== TrexStatus.CRASHED
     ) {
@@ -414,23 +333,6 @@ export default class Trex {
         this.xPos,
         this.yPos,
         this.config.WIDTH_DUCK,
-        outputHeight,
-      );
-    } else if (
-      this.altGameModeEnabled &&
-      this.jumping &&
-      this.status !== TrexStatus.CRASHED
-    ) {
-      // Jumping with adjustments.
-      this.canvasCtx.drawImage(
-        Runner.imageSprite,
-        sourceX,
-        sourceY,
-        sourceWidth,
-        sourceHeight,
-        this.xPos - jumpOffset,
-        this.yPos,
-        this.config.WIDTH_JUMP,
         outputHeight,
       );
     } else {
