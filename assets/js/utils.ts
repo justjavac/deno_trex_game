@@ -25,21 +25,14 @@ export function vibrate(duration: number) {
 
 /**
  * Create canvas element.
- * @param {Element} container Element to append canvas to.
- * @param {number} width
- * @param {number} height
- * @param {string=} optClassname
  */
 export function createCanvas(
   container: Element,
   width: number,
   height: number,
-  optClassname: string | undefined,
 ) {
   const canvas = document.createElement("canvas");
-  canvas.className = optClassname
-    ? Runner.classes.CANVAS + " " + optClassname
-    : Runner.classes.CANVAS;
+  canvas.className = Runner.classes.CANVAS;
   canvas.width = width;
   canvas.height = height;
   container.appendChild(canvas);
@@ -58,12 +51,11 @@ export function getTimeStamp() {
  * @param tRex T-rex object.
  * @param optCanvasCtx Optional canvas context for
  *    drawing collision boxes.
- * @return {Array<CollisionBox>|undefined}
  */
 export function checkForCollision(
   obstacle: Obstacle,
   tRex: Trex,
-  optCanvasCtx: CanvasRenderingContext2D | undefined,
+  optCanvasCtx?: CanvasRenderingContext2D,
 ): Array<CollisionBox> | undefined {
   // Adjustments are made to the bounding box as there is a 1 pixel white
   // border around the t-rex and obstacles.

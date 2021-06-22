@@ -1,4 +1,5 @@
 import { IS_HIDPI } from "./constants";
+import Runner from "./Runner";
 import { getRandomNum } from "./utils";
 
 enum CloudConfig {

@@ -1,7 +1,12 @@
 import BackgroundEl from "./BackgroundEl";
 import Cloud from "./Cloud";
 import Obstacle from "./Obstacle";
+import Runner from "./Runner";
+import HorizonLine from "./HorizonLine";
+import Sprite from "./sprite";
+import NightMode from "./NightMode";
 import { getRandomNum } from "./utils";
+
 /**
  * Horizon config.
  */
@@ -26,17 +31,17 @@ export default class Horizon {
   nightMode: NightMode;
 
   // Cloud
-  clouds = [];
-  cloudSpeed = HorizonConfig.BG_CLOUD_SPEED;
+  clouds: Cloud[];
+  cloudSpeed: number;
 
   // Background elements
-  backgroundEls = [];
-  lastEl = null;
-  backgroundSpeed = HorizonConfig.BG_CLOUD_SPEED;
+  backgroundEls: BackgroundEl[];
+  lastEl: object;
+  backgroundSpeed: number;
 
   // Horizon
-  horizonLine = null;
-  horizonLines = [];
+  horizonLine: HorizonLine;
+  horizonLines: HorizonLine[];
 
   /**
    * Horizon background class.
@@ -82,12 +87,12 @@ export default class Horizon {
    * Initialise the horizon. Just add the line and a cloud. No obstacles.
    */
   init() {
-    Obstacle.types = Runner.spriteDefinitionByType.OBSTACLES;
+    Obstacle.types = Sprite.OBSTACLES;
     this.addCloud();
     // Multiple Horizon lines
-    for (let i = 0; i < Runner.spriteDefinition.LINES.length; i++) {
+    for (let i = 0; i < Sprite.LINES.length; i++) {
       this.horizonLines.push(
-        new HorizonLine(this.canvas, Runner.spriteDefinition.LINES[i]),
+        new HorizonLine(this.canvas, Sprite.LINES[i]),
       );
     }
 
@@ -128,18 +133,18 @@ export default class Horizon {
 
     this.spritePos = spritePos;
 
-    Obstacle.types = Runner.spriteDefinition.OBSTACLES;
+    Obstacle.types = Sprite.OBSTACLES;
     this.adjustObstacleSpeed();
 
-    Obstacle.MAX_GAP_COEFFICIENT = Runner.spriteDefinition.MAX_GAP_COEFFICIENT;
-    Obstacle.MAX_OBSTACLE_LENGTH = Runner.spriteDefinition.MAX_OBSTACLE_LENGTH;
+    Obstacle.MAX_GAP_COEFFICIENT = Sprite.MAX_GAP_COEFFICIENT;
+    Obstacle.MAX_OBSTACLE_LENGTH = Sprite.MAX_OBSTACLE_LENGTH;
 
-    BackgroundEl.config = Runner.spriteDefinition.BACKGROUND_EL_CONFIG;
+    BackgroundEl.config = Sprite.BACKGROUND_EL_CONFIG;
 
     this.horizonLines = [];
-    for (let i = 0; i < Runner.spriteDefinition.LINES.length; i++) {
+    for (let i = 0; i < Sprite.LINES.length; i++) {
       this.horizonLines.push(
-        new HorizonLine(this.canvas, Runner.spriteDefinition.LINES[i]),
+        new HorizonLine(this.canvas, Sprite.LINES[i]),
       );
     }
     this.reset();
@@ -157,7 +162,7 @@ export default class Horizon {
     deltaTime: number,
     currentSpeed: number,
     updateObstacles: boolean,
-    showNightMode: boolean,
+    showNightMode = false,
   ) {
     this.runningTime += deltaTime;
 
@@ -382,7 +387,7 @@ export default class Horizon {
    */
   addBackgroundEl() {
     const backgroundElTypes = Object.keys(
-      Runner.spriteDefinition.BACKGROUND_EL,
+      Sprite.BACKGROUND_EL,
     );
 
     if (backgroundElTypes.length > 0) {

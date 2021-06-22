@@ -1,4 +1,6 @@
 import { IS_HIDPI } from "./constants";
+import Runner from "./Runner";
+import Sprite from "./sprite";
 import { getRandomNum } from "./utils";
 
 /**
@@ -68,7 +70,7 @@ export default class BackgroundEl {
    * Initialise the element setting the y position.
    */
   init() {
-    this.spriteConfig = Runner.spriteDefinition.BACKGROUND_EL[this.type];
+    this.spriteConfig = Sprite.BACKGROUND_EL[this.type];
     if (this.spriteConfig.FIXED) {
       this.xPos = this.spriteConfig.FIXED_X_POS;
     }

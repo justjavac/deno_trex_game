@@ -1,5 +1,7 @@
 import CollisionBox from "./CollisionBox";
 import { FPS, IS_HIDPI } from "./constants";
+import Runner from "./Runner";
+import Sprite from "./sprite";
 import { getTimeStamp } from "./utils";
 
 /**
@@ -151,6 +153,7 @@ export default class Trex {
   flashing: boolean;
   midair: boolean;
   playingIntro: boolean;
+  static status: any;
 
   /**
    * T-rex game character.
@@ -296,7 +299,7 @@ export default class Trex {
     let sourceHeight = this.config.HEIGHT;
     const outputHeight = sourceHeight;
 
-    let jumpOffset = Runner.spriteDefinition.TREX.JUMPING.xOffset;
+    let jumpOffset = Sprite.TREX.JUMPING.xOffset;
 
     if (IS_HIDPI) {
       sourceX *= 2;

@@ -7,7 +7,12 @@ import {
   RESOURCE_POSTFIX,
 } from "./constants";
 import DistanceMeter from "./DistanceMeter";
+import GameOverPanel from "./GameOverPanel";
+import GeneratedSoundFx from "./GeneratedSoundFx";
+import Horizon from "./Horizon";
 import Obstacle from "./Obstacle";
+import Sprite from "./sprite";
+import type { Stage } from "./sprite";
 import Trex from "./Trex";
 import {
   checkForCollision,
@@ -139,7 +144,20 @@ export default class Runner {
   };
 
   static origImageSprite: HTMLImageElement;
-  spriteDef: object;
+  spriteDef: Stage;
+  gameOverPanel: GameOverPanel;
+  static slowDown: boolean;
+  horizon: Horizon;
+  isDarkMode: boolean;
+  playingIntro: boolean;
+  updatePending: boolean;
+  static audioCues: boolean;
+  static isMobileMouseInput: any;
+  invertTrigger: boolean;
+  static generatedSoundFx: GeneratedSoundFx;
+  slowSpeedCheckbox: any;
+  raqId: number;
+  flashTimer: any;
 
   /**
  * Updates the canvas size taking into
@@ -149,10 +167,7 @@ export default class Runner {
  * See article by Paul Lewis:
  * http://www.html5rocks.com/en/tutorials/canvas/hidpi/
  *
- * @param {HTMLCanvasElement} canvas
- * @param {number=} optWidth
- * @param {number=} optWeight
- * @return {boolean} Whether the canvas was scaled.
+ * @return Whether the canvas was scaled.
  */
   static updateCanvasScaling(
     canvas: HTMLCanvasElement,
@@ -200,9 +215,9 @@ export default class Runner {
   // A div to intercept touch events. Only set while (playing && useTouch).
   touchController: HTMLDivElement;
 
-  config: object;
+  config: typeof Runner.config & typeof Runner.normalConfig;
   // Logical dimensions of the container.
-  dimensions: object;
+  dimensions: typeof Runner.defaultDimensions;
 
   fadeInTimer: number;
 
@@ -237,8 +252,11 @@ export default class Runner {
   // Sound FX.
   audioBuffer: AudioBuffer;
 
-  /** @type {Object} */
-  soundFx: object;
+  soundFx: {
+    BUTTON_PRESS?: AudioBuffer;
+    HIT?: AudioBuffer;
+    SCORE?: AudioBuffer;
+  };
   generatedSoundFx: GeneratedSoundFx;
 
   // Global web audio context for playing sounds.
@@ -259,7 +277,7 @@ export default class Runner {
    * @param optConfig
    * @implements {EventListener}
    */
-  constructor(outerContainerId: string, optConfig?: object) {
+  constructor(outerContainerId: string) {
     // Singleton
     if (Runner.instance_) {
       return Runner.instance_;
@@ -272,12 +290,9 @@ export default class Runner {
     // A div to intercept touch events. Only set while (playing && useTouch).
     this.touchController = null;
 
-    this.config = optConfig ||
-      Object.assign(Runner.config, Runner.normalConfig);
+    this.config = Object.assign(Runner.config, Runner.normalConfig);
     // Logical dimensions of the container.
     this.dimensions = Runner.defaultDimensions;
-
-    Runner.spriteDefinition = Runner.spriteDefinitionByType;
 
     this.fadeInTimer = 0;
 
@@ -313,7 +328,6 @@ export default class Runner {
     // Sound FX.
     this.audioBuffer = null;
 
-    /** @type {Object} */
     this.soundFx = {};
     this.generatedSoundFx = null;
 
@@ -337,40 +351,15 @@ export default class Runner {
   }
 
   /**
-   * Setting individual settings for debugging.
-   * @param {string} setting
-   * @param {number|string} value
-   */
-  updateConfigSetting(setting: string, value: number | string) {
-    if (setting in this.config && value !== undefined) {
-      this.config[setting] = value;
-
-      switch (setting) {
-        case "GRAVITY":
-        case "MIN_JUMP_HEIGHT":
-        case "SPEED_DROP_COEFFICIENT":
-          this.tRex.config[setting] = value;
-          break;
-        case "INITIAL_JUMP_VELOCITY":
-          this.tRex.setJumpVelocity(value);
-          break;
-        case "SPEED":
-          this.setSpeed(/** @type {number} */ value);
-          break;
-      }
-    }
-  }
-
-  /**
    * Cache the appropriate image sprite from the page and get the sprite sheet
    * definition.
    */
   loadImages() {
     let scale = "1x";
-    this.spriteDef = Runner.spriteDefinition.LDPI;
+    this.spriteDef = Sprite.LDPI;
     if (IS_HIDPI) {
       scale = "2x";
-      this.spriteDef = Runner.spriteDefinition.HDPI;
+      this.spriteDef = Sprite.HDPI;
     }
 
     Runner.imageSprite = document.getElementById(
@@ -396,14 +385,14 @@ export default class Runner {
     if (!IS_IOS) {
       this.audioContext = new AudioContext();
 
-      const resourceTemplate = document.getElementById(
+      const resourceTemplate = (document.getElementById(
         this.config.RESOURCE_TEMPLATE_ID,
-      ).content;
+      ) as HTMLTemplateElement).content;
 
       for (const sound in Runner.sounds) {
-        const soundSrc = resourceTemplate.getElementById(
+        const soundSrc = (resourceTemplate.getElementById(
           Runner.sounds[sound],
-        ).src;
+        ) as HTMLAudioElement).src;
         fetch(soundSrc)
           .then((response) => {
             return response.arrayBuffer();
@@ -420,10 +409,10 @@ export default class Runner {
 
   /**
    * Sets the game speed. Adjust the speed accordingly if on a smaller screen.
-   * @param {number=} opt_speed
+   * @param {number=} optSpeed
    */
-  setSpeed(opt_speed: number | undefined) {
-    const speed = opt_speed || this.currentSpeed;
+  setSpeed(optSpeed?: number) {
+    const speed = optSpeed || this.currentSpeed;
 
     // Reduce the speed on smaller mobile screens.
     if (this.dimensions.WIDTH < DEFAULT_WIDTH) {
@@ -432,8 +421,8 @@ export default class Runner {
         : ((speed * this.dimensions.WIDTH) / DEFAULT_WIDTH) *
           this.config.MOBILE_SPEED_COEFFICIENT;
       this.currentSpeed = mobileSpeed > speed ? speed : mobileSpeed;
-    } else if (opt_speed) {
-      this.currentSpeed = opt_speed;
+    } else if (optSpeed) {
+      this.currentSpeed = optSpeed;
     }
   }
 
@@ -568,7 +557,7 @@ export default class Runner {
       // Game over panel.
       if (this.crashed && this.gameOverPanel) {
         this.gameOverPanel.updateDimensions(this.dimensions.WIDTH);
-        this.gameOverPanel.draw(this.tRex);
+        this.gameOverPanel.draw();
       }
     }
   }
@@ -693,7 +682,7 @@ export default class Runner {
       if (this.playingIntro) {
         this.horizon.update(0, this.currentSpeed, hasObstacles);
       } else if (!this.crashed) {
-        const showNightMode = this.isDarkMode ^ this.inverted;
+        const showNightMode = this.isDarkMode !== this.inverted;
         deltaTime = !this.activated ? 0 : deltaTime;
         this.horizon.update(
           deltaTime,
@@ -704,7 +693,7 @@ export default class Runner {
       }
 
       // Check for collisions.
-      let collision = hasObstacles &&
+      const collision = hasObstacles &&
         checkForCollision(this.horizon.obstacles[0], this.tRex);
 
       // For a11y, audio cues.
@@ -952,9 +941,6 @@ export default class Runner {
             this.loadSounds();
             this.setPlayStatus(true);
             this.update();
-            if (window.errorPageController) {
-              errorPageController.trackEasterEgg();
-            }
           }
           // Start jump.
           if (!this.tRex.jumping && !this.tRex.ducking) {
@@ -1020,9 +1006,8 @@ export default class Runner {
 
   /**
    * Process gamepad connected event.
-   * @param {Event} e
    */
-  onGamepadConnected(e: Event) {
+  onGamepadConnected() {
     if (!this.pollingGamepads) {
       this.pollGamepadState();
     }
@@ -1122,7 +1107,7 @@ export default class Runner {
       if (this.distanceMeter.hasClickedOnHighScore(e) && this.highestScore) {
         if (this.distanceMeter.isHighScoreFlashing()) {
           // Subsequent click, reset the high score.
-          this.saveHighScore(0, true);
+          this.saveHighScore(0);
           this.distanceMeter.resetHighScore();
         } else {
           // First click, flash the high score.
@@ -1177,9 +1162,6 @@ export default class Runner {
     this.syncHighestScore = true;
     highScore = Math.ceil(highScore);
     if (highScore < this.highestScore) {
-      if (window.errorPageController) {
-        errorPageController.updateEasterEggHighScore(this.highestScore);
-      }
       return;
     }
     this.highestScore = highScore;
@@ -1188,21 +1170,11 @@ export default class Runner {
 
   /**
    * Sets the current high score and saves to the profile if available.
-   * @param {number} distanceRan Total distance ran.
-   * @param {boolean=} opt_resetScore Whether to reset the score.
+   * @param distanceRan Total distance ran.
    */
-  saveHighScore(distanceRan: number, opt_resetScore: boolean | undefined) {
+  saveHighScore(distanceRan: number) {
     this.highestScore = Math.ceil(distanceRan);
     this.distanceMeter.setHighScore(this.highestScore);
-
-    // Store the new high score in the profile.
-    if (this.syncHighestScore && window.errorPageController) {
-      if (opt_resetScore) {
-        errorPageController.resetEasterEggHighScore();
-      } else {
-        errorPageController.updateEasterEggHighScore(this.highestScore);
-      }
-    }
   }
 
   /**
@@ -1220,9 +1192,7 @@ export default class Runner {
 
     // Game over panel.
     if (!this.gameOverPanel) {
-      const origSpriteDef = IS_HIDPI
-        ? Runner.spriteDefinitionByType.HDPI
-        : Runner.spriteDefinitionByType.LDPI;
+      const origSpriteDef = IS_HIDPI ? Sprite.HDPI : Sprite.LDPI;
 
       if (this.canvas) {
         this.gameOverPanel = new GameOverPanel(
@@ -1346,7 +1316,7 @@ export default class Runner {
   /**
    * Pause the game if the tab is not in focus.
    */
-  onVisibilityChange(e) {
+  onVisibilityChange(e: Event) {
     if (
       document.hidden ||
       document.webkitHidden ||
@@ -1362,7 +1332,6 @@ export default class Runner {
 
   /**
    * Play a sound.
-   * @param {AudioBuffer} soundBuffer
    */
   playSound(soundBuffer: AudioBuffer) {
     if (soundBuffer) {
@@ -1375,7 +1344,7 @@ export default class Runner {
 
   /**
    * Inverts the current page / canvas colors.
-   * @param {boolean} reset Whether to reset colors.
+   * @param reset Whether to reset colors.
    */
   invert(reset: boolean) {
     const htmlEl = document.firstElementChild;

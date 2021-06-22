@@ -21,10 +21,14 @@ export interface ObstacleType {
   width: number;
   height: number;
   yPos: number | number[];
+  yPosMobile?: number | number[];
   multipleSpeed: number;
   minGap: number;
   minSpeed: number;
   collisionBoxes: CollisionBox[];
+  numFrames?: number;
+  frameRate?: number;
+  speedOffset?: number;
 }
 
 export interface Stage {

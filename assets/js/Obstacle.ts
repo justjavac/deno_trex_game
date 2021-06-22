@@ -5,6 +5,7 @@ import { ObstacleType } from "./sprite";
 import { getRandomNum } from "./utils";
 
 export default class Obstacle {
+  static types: ObstacleType[];
   /** Coefficient for calculating the maximum gap. */
   static MAX_GAP_COEFFICIENT = 1.5;
 
@@ -29,6 +30,7 @@ export default class Obstacle {
   // For animated obstacles.
   currentFrame: number;
   timer: number;
+  jumpAlerted: any;
 
   /**
  * Obstacle.
