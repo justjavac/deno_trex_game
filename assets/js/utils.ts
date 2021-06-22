@@ -1,9 +1,10 @@
-import { IS_MOBILE } from './constants'
+import { IS_IOS, IS_MOBILE } from "./constants";
+import CollisionBox from "./CollisionBox";
 
 /**
  * 获取指定范围内的随机数字。
- * @param 最小值
- * @param 最大值
+ * @param min 最小值
+ * @param max 最大值
  */
 export function getRandomNum(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -11,9 +12,9 @@ export function getRandomNum(min: number, max: number) {
 
 /**
  * 在手机设备上震动。
- * @param 震动的持续时间，单位毫秒。
+ * @param duration 震动的持续时间，单位毫秒。
  */
- export function vibrate(duration: number) {
+export function vibrate(duration: number) {
   if (IS_MOBILE && window.navigator.vibrate) {
     window.navigator.vibrate(duration);
   }
@@ -25,9 +26,13 @@ export function getRandomNum(min: number, max: number) {
  * @param {number} width
  * @param {number} height
  * @param {string=} opt_classname
- * @return {HTMLCanvasElement}
  */
- export function createCanvas(container: Element, width: number, height: number, opt_classname: string | undefined): HTMLCanvasElement {
+export function createCanvas(
+  container: Element,
+  width: number,
+  height: number,
+  opt_classname: string | undefined,
+) {
   const canvas = document.createElement("canvas");
   canvas.className = opt_classname
     ? Runner.classes.CANVAS + " " + opt_classname
@@ -39,23 +44,24 @@ export function getRandomNum(min: number, max: number) {
   return canvas;
 }
 
-/**
- * Return the current timestamp.
- * @return {number}
- */
-function getTimeStamp() {
+/** 获取当前时间 */
+export function getTimeStamp() {
   return IS_IOS ? new Date().getTime() : performance.now();
 }
 
 /**
  * Check for a collision.
- * @param {!Obstacle} obstacle
- * @param {!Trex} tRex T-rex object.
- * @param {CanvasRenderingContext2D=} opt_canvasCtx Optional canvas context for
+ * @param obstacle
+ * @param tRex T-rex object.
+ * @param opt_canvasCtx Optional canvas context for
  *    drawing collision boxes.
  * @return {Array<CollisionBox>|undefined}
  */
-function checkForCollision(obstacle, tRex, opt_canvasCtx) {
+export function checkForCollision(
+  obstacle: Obstacle,
+  tRex: Trex,
+  opt_canvasCtx: CanvasRenderingContext2D | undefined,
+): Array<CollisionBox> | undefined {
   const obstacleBoxXPos = Runner.defaultDimensions.WIDTH + obstacle.xPos;
 
   // Adjustments are made to the bounding box as there is a 1 pixel white
@@ -114,12 +120,15 @@ function checkForCollision(obstacle, tRex, opt_canvasCtx) {
 }
 
 /**
-   * Adjust the collision box.
-   * @param {!CollisionBox} box The original box.
-   * @param {!CollisionBox} adjustment Adjustment box.
-   * @return {CollisionBox} The adjusted collision box object.
-   */
-function createAdjustedCollisionBox(box, adjustment) {
+ * 调整碰撞盒子
+ * @param box 原始盒子
+ * @param adjustment 调整盒子
+ * @return 调整之后的盒子
+ */
+function createAdjustedCollisionBox(
+  box: CollisionBox,
+  adjustment: CollisionBox,
+) {
   return new CollisionBox(
     box.x + adjustment.x,
     box.y + adjustment.y,
@@ -129,9 +138,13 @@ function createAdjustedCollisionBox(box, adjustment) {
 }
 
 /**
-   * Draw the collision boxes for debug.
-   */
-function drawCollisionBoxes(canvasCtx, tRexBox, obstacleBox) {
+ * 绘制碰撞盒子用于调试
+ */
+function drawCollisionBoxes(
+  canvasCtx: CanvasRenderingContext2D,
+  tRexBox: CollisionBox,
+  obstacleBox: CollisionBox,
+) {
   canvasCtx.save();
   canvasCtx.strokeStyle = "#f00";
   canvasCtx.strokeRect(tRexBox.x, tRexBox.y, tRexBox.width, tRexBox.height);
@@ -146,29 +159,12 @@ function drawCollisionBoxes(canvasCtx, tRexBox, obstacleBox) {
   canvasCtx.restore();
 }
 
-/**
-   * Compare two collision boxes for a collision.
-   * @param {CollisionBox} tRexBox
-   * @param {CollisionBox} obstacleBox
-   * @return {boolean} Whether the boxes intersected.
-   */
-function boxCompare(tRexBox, obstacleBox) {
-  let crashed = false;
-  const tRexBoxX = tRexBox.x;
-  const tRexBoxY = tRexBox.y;
-
-  const obstacleBoxX = obstacleBox.x;
-  const obstacleBoxY = obstacleBox.y;
-
-  // Axis-Aligned Bounding Box method.
-  if (
-    tRexBox.x < obstacleBoxX + obstacleBox.width &&
-    tRexBox.x + tRexBox.width > obstacleBoxX &&
+/** 判断两个盒子是否碰撞 */
+function boxCompare(tRexBox: CollisionBox, obstacleBox: CollisionBox) {
+  return (
+    tRexBox.x < obstacleBox.x + obstacleBox.width &&
+    tRexBox.x + tRexBox.width > obstacleBox.x &&
     tRexBox.y < obstacleBox.y + obstacleBox.height &&
     tRexBox.height + tRexBox.y > obstacleBox.y
-  ) {
-    crashed = true;
-  }
-
-  return crashed;
+  );
 }
