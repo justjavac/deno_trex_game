@@ -323,10 +323,7 @@ export default class Trex {
     }
 
     // Ducking.
-    if (
-      this.ducking &&
-      this.status !== TrexStatus.CRASHED
-    ) {
+    if (this.ducking && this.status !== TrexStatus.CRASHED) {
       this.canvasCtx.drawImage(
         Runner.imageSprite,
         sourceX,
@@ -432,18 +429,12 @@ export default class Trex {
     this.jumpVelocity += this.config.GRAVITY * framesElapsed;
 
     // Minimum height has been reached.
-    if (
-      this.yPos < this.minJumpHeight ||
-      this.speedDrop
-    ) {
+    if (this.yPos < this.minJumpHeight || this.speedDrop) {
       this.reachedMinHeight = true;
     }
 
     // Reached max height.
-    if (
-      this.yPos < this.config.MAX_JUMP_HEIGHT ||
-      this.speedDrop
-    ) {
+    if (this.yPos < this.config.MAX_JUMP_HEIGHT || this.speedDrop) {
       this.endJump();
     }
 

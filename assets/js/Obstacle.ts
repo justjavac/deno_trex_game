@@ -30,14 +30,14 @@ export default class Obstacle {
   // For animated obstacles.
   currentFrame: number;
   timer: number;
-  jumpAlerted: any;
+  jumpAlerted: boolean;
   followingObstacleCreated: boolean;
 
   /**
- * Obstacle.
- * @param {number} gapCoefficient Mutipler in determining the gap.
- * @param {number=} optXOffset
- */
+   * Obstacle.
+   * @param {number} gapCoefficient Mutipler in determining the gap.
+   * @param {number=} optXOffset
+   */
   constructor(
     canvasCtx: CanvasRenderingContext2D,
     type: ObstacleType,
@@ -88,7 +88,8 @@ export default class Obstacle {
       const yPosConfig = IS_MOBILE
         ? this.typeConfig.yPosMobile
         : this.typeConfig.yPos;
-      this.yPos = yPosConfig[getRandomNum(0, yPosConfig.length - 1)];
+      this.yPos =
+        yPosConfig[getRandomNum(0, (yPosConfig as number[]).length - 1)];
     } else {
       this.yPos = this.typeConfig.yPos;
     }
@@ -126,8 +127,8 @@ export default class Obstacle {
   }
 
   /**
- * Draw and crop based on size.
- */
+   * Draw and crop based on size.
+   */
   draw() {
     let sourceWidth = this.typeConfig.width;
     let sourceHeight = this.typeConfig.height;
@@ -160,10 +161,10 @@ export default class Obstacle {
   }
 
   /**
- * Obstacle frame update.
- * @param {number} deltaTime
- * @param {number} speed
- */
+   * Obstacle frame update.
+   * @param {number} deltaTime
+   * @param {number} speed
+   */
   update(deltaTime: number, speed: number) {
     if (!this.remove) {
       if (this.typeConfig.speedOffset) {
@@ -191,12 +192,12 @@ export default class Obstacle {
   }
 
   /**
- * Calculate a random gap size.
- * - Minimum gap gets wider as speed increses
- * @param {number} gapCoefficient
- * @param {number} speed
- * @return {number} The gap size.
- */
+   * Calculate a random gap size.
+   * - Minimum gap gets wider as speed increses
+   * @param {number} gapCoefficient
+   * @param {number} speed
+   * @return {number} The gap size.
+   */
   getGap(gapCoefficient: number, speed: number): number {
     const minGap = Math.round(
       this.width * speed + this.typeConfig.minGap * gapCoefficient,
@@ -206,17 +207,17 @@ export default class Obstacle {
   }
 
   /**
- * Check if obstacle is visible.
- * @return Whether the obstacle is in the game area.
- */
+   * Check if obstacle is visible.
+   * @return Whether the obstacle is in the game area.
+   */
   isVisible() {
     return this.xPos + this.width > 0;
   }
 
   /**
- * Make a copy of the collision boxes, since these will change based on
- * obstacle type and size.
- */
+   * Make a copy of the collision boxes, since these will change based on
+   * obstacle type and size.
+   */
   cloneCollisionBoxes() {
     const collisionBoxes = this.typeConfig.collisionBoxes;
 

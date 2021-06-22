@@ -187,10 +187,8 @@ export default class NightMode {
       const x = getRandomNum(segmentSize * i, segmentSize * (i + 1));
       const y = getRandomNum(0, NightMode.config.STAR_MAX_Y);
       const sourceY = IS_HIDPI
-        ? Sprite.HDPI.STAR.y +
-          NightMode.config.STAR_SIZE * 2 * i
-        : Sprite.LDPI.STAR.y +
-          NightMode.config.STAR_SIZE * i;
+        ? Sprite.HDPI.STAR.y + NightMode.config.STAR_SIZE * 2 * i
+        : Sprite.LDPI.STAR.y + NightMode.config.STAR_SIZE * i;
 
       this.stars[i] = { x, y, sourceY };
     }

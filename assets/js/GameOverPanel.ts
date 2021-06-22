@@ -46,14 +46,14 @@ export default class GameOverPanel {
   originalText: boolean;
 
   /**
- * Game over panel.
- * @param canvas
- * @param textImgPos
- * @param restartImgPos
- * @param dimensions Canvas dimensions.
- * @param optAltGameEndImgPos
- * @param optAltGameActive
- */
+   * Game over panel.
+   * @param canvas
+   * @param textImgPos
+   * @param restartImgPos
+   * @param dimensions Canvas dimensions.
+   * @param optAltGameEndImgPos
+   * @param optAltGameActive
+   */
   constructor(
     canvas: HTMLCanvasElement,
     textImgPos: Position,
@@ -61,9 +61,7 @@ export default class GameOverPanel {
     dimensions: Dimensions,
   ) {
     this.canvas = canvas;
-    this.canvasCtx = canvas.getContext(
-      "2d",
-    );
+    this.canvasCtx = canvas.getContext("2d");
     this.canvasDimensions = dimensions;
     this.textImgPos = textImgPos;
     this.restartImgPos = restartImgPos;
@@ -186,10 +184,7 @@ export default class GameOverPanel {
     this.flashTimer += deltaTime;
 
     // Restart Button
-    if (
-      this.currentFrame == 0 &&
-      this.animTimer > LOGO_PAUSE_DURATION
-    ) {
+    if (this.currentFrame == 0 && this.animTimer > LOGO_PAUSE_DURATION) {
       this.animTimer = 0;
       this.currentFrame++;
       this.drawRestartButton();
@@ -201,9 +196,7 @@ export default class GameOverPanel {
         this.currentFrame++;
         this.drawRestartButton();
       }
-    } else if (
-      this.currentFrame == AnimConfig.frames.length
-    ) {
+    } else if (this.currentFrame == AnimConfig.frames.length) {
       this.reset();
       return;
     }

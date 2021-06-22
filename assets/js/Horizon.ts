@@ -91,9 +91,7 @@ export default class Horizon {
     this.addCloud();
     // Multiple Horizon lines
     for (let i = 0; i < Sprite.LINES.length; i++) {
-      this.horizonLines.push(
-        new HorizonLine(this.canvas, Sprite.LINES[i]),
-      );
+      this.horizonLines.push(new HorizonLine(this.canvas, Sprite.LINES[i]));
     }
 
     this.nightMode = new NightMode(
@@ -160,7 +158,7 @@ export default class Horizon {
     elSpeed: number,
     bgElArray: (Cloud | BackgroundEl)[],
     maxBgEl: number,
-    bgElAddFunction: ()=>void,
+    bgElAddFunction: () => void,
     frequency: number,
   ) {
     const numElements = bgElArray.length;
@@ -356,9 +354,7 @@ export default class Horizon {
    * Add a random background element to the horizon.
    */
   addBackgroundEl() {
-    const backgroundElTypes = Object.keys(
-      Sprite.BACKGROUND_EL,
-    );
+    const backgroundElTypes = Object.keys(Sprite.BACKGROUND_EL);
 
     if (backgroundElTypes.length > 0) {
       let index = getRandomNum(0, backgroundElTypes.length - 1);

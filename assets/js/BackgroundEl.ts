@@ -5,9 +5,9 @@ import { getRandomNum } from "./utils";
 
 export default class BackgroundEl {
   /**
- * Background element object config.
- * Real values assigned when game type changes.
- */
+   * Background element object config.
+   * Real values assigned when game type changes.
+   */
   static config = {
     MAX_BG_ELS: 0,
     MAX_GAP: 0,
@@ -42,8 +42,7 @@ export default class BackgroundEl {
     type: string,
   ) {
     this.canvas = canvas;
-    this.canvasCtx = this.canvas
-      .getContext("2d");
+    this.canvasCtx = this.canvas.getContext("2d");
     this.spritePos = spritePos;
     this.containerWidth = containerWidth;
     this.xPos = containerWidth;
