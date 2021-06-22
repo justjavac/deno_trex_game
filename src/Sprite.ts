@@ -22,7 +22,7 @@ export interface Dimensions {
  * minSpeed: Minimum speed which the obstacle can make an appearance.
  */
 export interface ObstacleType {
-  type: string;
+  type: keyof Stage;
   width: number;
   height: number;
   yPos: number | number[];

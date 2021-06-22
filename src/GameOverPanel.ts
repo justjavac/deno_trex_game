@@ -61,7 +61,7 @@ export default class GameOverPanel {
     dimensions: Dimensions,
   ) {
     this.canvas = canvas;
-    this.canvasCtx = canvas.getContext("2d");
+    this.canvasCtx = canvas.getContext("2d")!;
     this.canvasDimensions = dimensions;
     this.textImgPos = textImgPos;
     this.restartImgPos = restartImgPos;
@@ -70,8 +70,6 @@ export default class GameOverPanel {
     this.frameTimeStamp = 0;
     this.animTimer = 0;
     this.currentFrame = 0;
-
-    this.gameOverRafId = null;
 
     this.flashTimer = 0;
     this.flashCounter = 0;
@@ -91,7 +89,7 @@ export default class GameOverPanel {
     this.currentFrame = AnimConfig.frames.length - 1;
   }
 
-  drawGameOverText(dimensions) {
+  drawGameOverText(dimensions: typeof GameOverPanelDimensions) {
     const centerX = this.canvasDimensions.WIDTH / 2;
     let textSourceX = dimensions.TEXT_X;
     let textSourceY = dimensions.TEXT_Y;
@@ -225,7 +223,7 @@ export default class GameOverPanel {
   reset() {
     if (this.gameOverRafId) {
       cancelAnimationFrame(this.gameOverRafId);
-      this.gameOverRafId = null;
+      this.gameOverRafId = undefined;
     }
     this.animTimer = 0;
     this.frameTimeStamp = 0;

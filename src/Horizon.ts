@@ -3,7 +3,7 @@ import Cloud from "./Cloud.js";
 import Obstacle from "./Obstacle.js";
 import Runner from "./Runner.js";
 import HorizonLine from "./HorizonLine.js";
-import Sprite, { Dimensions, Stage } from "./sprite.js";
+import Sprite, { Dimensions, Stage } from "./Sprite.js";
 import NightMode from "./NightMode.js";
 import { getRandomNum } from "./utils.js";
 
@@ -36,13 +36,11 @@ export default class Horizon {
 
   // Background elements
   backgroundEls: BackgroundEl[];
-  lastEl: string;
+  lastEl?: string;
   backgroundSpeed: number;
 
   // Horizon
-  horizonLine: HorizonLine;
   horizonLines: HorizonLine[];
-  runningTime: number;
 
   /**
    * Horizon background class.
@@ -58,7 +56,7 @@ export default class Horizon {
     gapCoefficient: number,
   ) {
     this.canvas = canvas;
-    this.canvasCtx = this.canvas.getContext("2d");
+    this.canvasCtx = this.canvas.getContext("2d")!;
     this.dimensions = dimensions;
     this.gapCoefficient = gapCoefficient;
     this.obstacles = [];
@@ -66,7 +64,6 @@ export default class Horizon {
     this.horizonOffsets = [0, 0];
     this.cloudFrequency = HorizonConfig.CLOUD_FREQUENCY;
     this.spritePos = spritePos;
-    this.nightMode = null;
 
     // Cloud
     this.clouds = [];
@@ -74,19 +71,10 @@ export default class Horizon {
 
     // Background elements
     this.backgroundEls = [];
-    this.lastEl = null;
     this.backgroundSpeed = HorizonConfig.BG_CLOUD_SPEED;
 
     // Horizon
-    this.horizonLine = null;
     this.horizonLines = [];
-    this.init();
-  }
-
-  /**
-   * Initialise the horizon. Just add the line and a cloud. No obstacles.
-   */
-  init() {
     Obstacle.types = Sprite.OBSTACLES;
     this.addCloud();
     // Multiple Horizon lines
@@ -112,9 +100,10 @@ export default class Horizon {
         Obstacle.types[i].minSpeed = Obstacle.types[i].minSpeed / 2;
 
         // Convert variable y position obstacles to fixed.
-        if (typeof Obstacle.types[i].yPos == "object") {
-          Obstacle.types[i].yPos = Obstacle.types[i].yPos[0];
-          Obstacle.types[i].yPosMobile = Obstacle.types[i].yPos[0];
+        const yPos = Obstacle.types[i].yPos
+        if (Array.isArray(yPos)) {
+          Obstacle.types[i].yPos = yPos[0];
+          Obstacle.types[i].yPosMobile = yPos[0];
         }
       }
     }
@@ -132,8 +121,6 @@ export default class Horizon {
     updateObstacles: boolean,
     showNightMode = false,
   ) {
-    this.runningTime += deltaTime;
-
     for (let i = 0; i < this.horizonLines.length; i++) {
       this.horizonLines[i].update(deltaTime, currentSpeed);
     }
@@ -280,7 +267,7 @@ export default class Horizon {
     ) {
       this.addNewObstacle(currentSpeed);
     } else {
-      const obstacleSpritePos = this.spritePos[obstacleType.type];
+      const obstacleSpritePos = this.spritePos[obstacleType.type ];
 
       this.obstacles.push(
         new Obstacle(
@@ -307,7 +294,7 @@ export default class Horizon {
    * Maximum duplication is set in config value MAX_OBSTACLE_DUPLICATION.
    * @return {boolean}
    */
-  duplicateObstacleCheck(nextObstacleType): boolean {
+  duplicateObstacleCheck(nextObstacleType: string): boolean {
     let duplicateCount = 0;
 
     for (let i = 0; i < this.obstacleHistory.length; i++) {

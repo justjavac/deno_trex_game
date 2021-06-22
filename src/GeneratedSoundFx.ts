@@ -2,8 +2,8 @@ import { IS_IOS } from "./constants.js";
 
 export default class GeneratedSoundFx {
   audioCues: boolean;
-  context: AudioContext;
-  panner: StereoPannerNode;
+  context!: AudioContext;
+  panner: StereoPannerNode | null;
   bgSoundIntervalId?: number;
 
   /**
@@ -11,7 +11,6 @@ export default class GeneratedSoundFx {
    */
   constructor() {
     this.audioCues = false;
-    this.context = null;
     this.panner = null;
   }
 
@@ -23,11 +22,11 @@ export default class GeneratedSoundFx {
         ? new webkitAudioContext()
         : new AudioContext();
       if (IS_IOS) {
-        this.context.onstatechange = function () {
+        this.context.onstatechange =  () => {
           if (this.context.state != "running") {
             this.context.resume();
           }
-        }.bind(this);
+        };
         this.context.resume();
       }
       this.panner = this.context.createStereoPanner
@@ -103,11 +102,10 @@ export default class GeneratedSoundFx {
 
   loopFootSteps() {
     if (this.audioCues && !this.bgSoundIntervalId) {
-      this.bgSoundIntervalId = setInterval(
-        function () {
+      this.bgSoundIntervalId = setInterval( () => {
           this.playNote(73.42, this.context.currentTime, 0.05, 0.16);
           this.playNote(69.3, this.context.currentTime + 0.116, 0.116, 0.16);
-        }.bind(this),
+        },
         280,
       );
     }
@@ -116,7 +114,7 @@ export default class GeneratedSoundFx {
   cancelFootSteps() {
     if (this.audioCues && this.bgSoundIntervalId) {
       clearInterval(this.bgSoundIntervalId);
-      this.bgSoundIntervalId = null;
+      this.bgSoundIntervalId = 0;
       this.playNote(103.83, this.context.currentTime, 0.232, 0.02);
       this.playNote(116.54, this.context.currentTime + 0.116, 0.232, 0.02);
     }

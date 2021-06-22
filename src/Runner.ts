@@ -437,8 +437,7 @@ export default class Runner {
 
     this.generatedSoundFx = new GeneratedSoundFx();
 
-    this.canvasCtx = /** @type {CanvasRenderingContext2D} */ this.canvas
-      .getContext("2d");
+    this.canvasCtx = this.canvas.getContext("2d")!;
     this.canvasCtx.fillStyle = "#f7f7f7";
     this.canvasCtx.fill();
     Runner.updateCanvasScaling(this.canvas);

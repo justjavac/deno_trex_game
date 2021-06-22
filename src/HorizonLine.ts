@@ -1,5 +1,5 @@
 import { FPS, IS_HIDPI } from "./constants.js";
-import { Dimensions, LineSprite } from "./sprite.js";
+import { Dimensions, LineSprite } from "./Sprite.js";
 import Runner from "./Runner.js";
 
 interface HorizonLineDimensions {
