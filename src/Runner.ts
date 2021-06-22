@@ -10,7 +10,6 @@ import DistanceMeter from "./DistanceMeter.js";
 import GameOverPanel from "./GameOverPanel.js";
 import GeneratedSoundFx from "./GeneratedSoundFx.js";
 import Horizon from "./Horizon.js";
-import Obstacle from "./Obstacle.js";
 import Sprite from "./Sprite.js";
 import type { Stage } from "./Sprite.js";
 import Trex, {TrexStatus} from "./Trex.js";
@@ -22,8 +21,6 @@ import {
 } from "./utils.js";
 
 export default class Runner {
-  static instance_: Runner;
-
   static imageSprite: HTMLImageElement;
 
   /**
@@ -142,20 +139,11 @@ export default class Runner {
   } as const;
 
   static origImageSprite: HTMLImageElement;
-  spriteDef: Stage;
-  gameOverPanel: GameOverPanel;
   static slowDown: boolean;
-  horizon: Horizon;
-  isDarkMode: boolean;
-  playingIntro: boolean;
-  updatePending: boolean;
   static audioCues: boolean;
   static isMobileMouseInput: boolean;
-  invertTrigger: boolean;
   static generatedSoundFx: GeneratedSoundFx;
-  slowSpeedCheckbox: HTMLInputElement;
-  raqId: number;
-
+  
   /**
    * Updates the canvas size taking into
    * account the backing store pixel ratio and
@@ -204,14 +192,14 @@ export default class Runner {
     return false;
   }
 
-  outerContainerEl!: HTMLDivElement;
+  outerContainerEl: HTMLDivElement;
   containerEl!: HTMLDivElement;
   // A div to intercept touch events. Only set while (playing && useTouch).
   touchController?: HTMLDivElement;
 
-  config!: typeof Runner.config & typeof Runner.normalConfig;
+  config: typeof Runner.config & typeof Runner.normalConfig;
   // Logical dimensions of the container.
-  dimensions!: typeof Runner.defaultDimensions;
+  dimensions: typeof Runner.defaultDimensions;
 
   fadeInTimer: number;
 
@@ -231,8 +219,6 @@ export default class Runner {
   msPerFrame: number;
   currentSpeed: number;
 
-  obstacles: Obstacle[];
-
   activated: boolean; // Whether the easter egg has been activated.
   playing: boolean; // Whether the game is currently in play state.
   crashed: boolean;
@@ -248,12 +234,22 @@ export default class Runner {
   generatedSoundFx: GeneratedSoundFx;
 
   // Global web audio context for playing sounds.
-  audioContext: AudioContext;
+  audioContext!: AudioContext;
 
   // Gamepad state.
   pollingGamepads: boolean;
   gamepadIndex?: number;
-  previousGamepad!: Gamepad | null;
+  previousGamepad: Gamepad | null;
+
+  spriteDef: Stage;
+  gameOverPanel: GameOverPanel;
+  horizon!: Horizon;
+  isDarkMode: boolean;
+  playingIntro?: boolean;
+  updatePending?: boolean;
+  invertTrigger?: boolean;
+  slowSpeedCheckbox: HTMLInputElement;
+  raqId: number;
 
   /**
    * T-Rex runner.
@@ -262,12 +258,6 @@ export default class Runner {
    * @implements {EventListener}
    */
   constructor(outerContainerId: string) {
-    // Singleton
-    if (Runner.instance_) {
-      return Runner.instance_;
-    }
-    Runner.instance_ = this;
-
     this.outerContainerEl = document.querySelector(outerContainerId)!;
 
     this.config = Object.assign(Runner.config, Runner.normalConfig);
@@ -288,8 +278,6 @@ export default class Runner {
     this.currentSpeed = this.config.SPEED;
     Runner.slowDown = false;
 
-    this.obstacles = [];
-
     this.activated = false; // Whether the easter egg has been activated.
     this.playing = false; // Whether the game is currently in play state.
     this.crashed = false;
@@ -302,9 +290,6 @@ export default class Runner {
     this.raqId = 0;
 
     this.soundFx = {};
-
-    // Global web audio context for playing sounds.
-    this.audioContext = null;
 
     // Gamepad state.
     this.pollingGamepads = false;
@@ -320,6 +305,15 @@ export default class Runner {
     this.containerEl.className = Runner.classes.CONTAINER;
 
     this.generatedSoundFx = new GeneratedSoundFx();
+    
+    // Handle dark mode
+    const darkModeMediaQuery = window.matchMedia(
+      "(prefers-color-scheme: dark)",
+    );
+    this.isDarkMode = darkModeMediaQuery && darkModeMediaQuery.matches;
+    darkModeMediaQuery.addListener((e) => {
+      this.isDarkMode = e.matches;
+    });
 
     this.loadImages();
   }
@@ -446,14 +440,6 @@ export default class Runner {
       this.debounceResize.bind(this),
     );
 
-    // Handle dark mode
-    const darkModeMediaQuery = window.matchMedia(
-      "(prefers-color-scheme: dark)",
-    );
-    this.isDarkMode = darkModeMediaQuery && darkModeMediaQuery.matches;
-    darkModeMediaQuery.addListener((e) => {
-      this.isDarkMode = e.matches;
-    });
   }
 
   /**
