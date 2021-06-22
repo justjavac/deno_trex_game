@@ -2,10 +2,114 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import CollisionBox from "./CollisionBox";
+
+export interface Position {
+  x: number;
+  y: number;
+}
+
+/**
+ * Obstacle definitions.
+ * minGap: minimum pixel space between obstacles.
+ * multipleSpeed: Speed at which multiples are allowed.
+ * speedOffset: speed faster / slower than the horizon.
+ * minSpeed: Minimum speed which the obstacle can make an appearance.
+ */
+export interface ObstacleType {
+  type: string;
+  width: number;
+  height: number;
+  yPos: number | number[];
+  multipleSpeed: number;
+  minGap: number;
+  minSpeed: number;
+  collisionBoxes: CollisionBox[];
+}
+
+export interface Stage {
+  BACKGROUND_EL: Position;
+  CACTUS_LARGE: Position;
+  CACTUS_SMALL: Position;
+  OBSTACLE_2: Position;
+  OBSTACLE: Position;
+  CLOUD: Position;
+  HORIZON: Position;
+  MOON: Position;
+  PTERODACTYL: Position;
+  RESTART: Position;
+  TEXT_SPRITE: Position;
+  TREX: Position;
+  STAR: Position;
+  COLLECTABLE: Position;
+}
+
+export interface Offset {
+  x: number;
+  w: number;
+  h: number;
+  xOffset: number;
+}
+
+export interface TrexSprite {
+  WAITING_1: Offset;
+  WAITING_2: Offset;
+  RUNNING_1: Offset;
+  RUNNING_2: Offset;
+  JUMPING: Offset;
+  CRASHED: Offset;
+  COLLISION_BOXES: CollisionBox[];
+}
+
+export interface CloudSprite {
+  HEIGHT: number;
+  MAX_CLOUD_GAP: number;
+  MAX_SKY_LEVEL: number;
+  MIN_CLOUD_GAP: number;
+  MIN_SKY_LEVEL: number;
+  OFFSET: number;
+  WIDTH: number;
+  X_POS: number;
+  Y_POS: number;
+}
+
+export interface BackgroundElConfig {
+  MAX_BG_ELS: number;
+  MAX_GAP: number;
+  MIN_GAP: number;
+  POS: number;
+  SPEED: number;
+  Y_POS: number;
+}
+
+export interface LineSprite {
+  SOURCE_X: number;
+  SOURCE_Y: number;
+  WIDTH: number;
+  HEIGHT: number;
+  YPOS: number;
+}
+
+export interface SpriteDefinition {
+  LDPI: Stage;
+  HDPI: Stage;
+  MAX_GAP_COEFFICIENT: number;
+  MAX_OBSTACLE_LENGTH: number;
+  HAS_CLOUDS: number;
+  BOTTOM_PAD: number;
+  TREX: TrexSprite;
+  OBSTACLES: ObstacleType[];
+  BACKGROUND_EL: {
+    CLOUD: CloudSprite;
+  };
+  BACKGROUND_EL_CONFIG: BackgroundElConfig;
+  LINES: LineSprite[];
+}
+
 /**
  * T-Rex runner sprite definitions.
  */
-Runner.spriteDefinitionByType = {
+const Sprite: SpriteDefinition = {
   LDPI: {
     BACKGROUND_EL: { x: 86, y: 2 },
     CACTUS_LARGE: { x: 332, y: 2 },
@@ -21,7 +125,6 @@ Runner.spriteDefinitionByType = {
     TREX: { x: 848, y: 2 },
     STAR: { x: 645, y: 2 },
     COLLECTABLE: { x: 2, y: 2 },
-    ALT_GAME_END: { x: 121, y: 2 },
   },
   HDPI: {
     BACKGROUND_EL: { x: 166, y: 2 },
@@ -38,7 +141,6 @@ Runner.spriteDefinitionByType = {
     TREX: { x: 1678, y: 2 },
     STAR: { x: 1276, y: 2 },
     COLLECTABLE: { x: 4, y: 4 },
-    ALT_GAME_END: { x: 242, y: 4 },
   },
   MAX_GAP_COEFFICIENT: 1.5,
   MAX_OBSTACLE_LENGTH: 3,
@@ -60,7 +162,6 @@ Runner.spriteDefinitionByType = {
       new CollisionBox(9, 34, 15, 4),
     ],
   },
-  /** @type {Array<ObstacleType>} */
   OBSTACLES: [
     {
       type: "CACTUS_SMALL",
@@ -143,17 +244,6 @@ Runner.spriteDefinitionByType = {
     Y_POS: 125,
   },
   LINES: [{ SOURCE_X: 2, SOURCE_Y: 52, WIDTH: 600, HEIGHT: 12, YPOS: 127 }],
-  ALT_GAME_END_CONFIG: {
-    WIDTH: 15,
-    HEIGHT: 17,
-    X_OFFSET: 0,
-    Y_OFFSET: 0,
-  },
-  ALT_GAME_OVER_TEXT_CONFIG: {
-    TEXT_X: 14,
-    TEXT_Y: 2,
-    TEXT_WIDTH: 108,
-    TEXT_HEIGHT: 15,
-    FLASH_DURATION: 1500,
-  },
 };
+
+export default Sprite;

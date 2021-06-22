@@ -1,5 +1,7 @@
 import CollisionBox from "./CollisionBox";
 import { FPS, IS_HIDPI, IS_MOBILE } from "./constants";
+import Runner from "./Runner";
+import { ObstacleType } from "./sprite";
 import { getRandomNum } from "./utils";
 
 export default class Obstacle {
@@ -60,7 +62,7 @@ export default class Obstacle {
     this.collisionBoxes = [];
     this.gap = 0;
     this.speedOffset = 0;
-    this.imageSprite = Runner.imageSprite
+    this.imageSprite = Runner.imageSprite;
 
     // For animated obstacles.
     this.currentFrame = 0;

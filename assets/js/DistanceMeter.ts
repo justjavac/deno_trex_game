@@ -1,5 +1,6 @@
 import { IS_HIDPI } from "./constants";
 import { getTimeStamp } from "./utils";
+import Runner from "./Runner";
 
 interface Bounds {
   x: number;
@@ -40,7 +41,7 @@ enum DistanceMeterConfig {
 export default class DistanceMeter {
   canvas: HTMLCanvasElement;
   canvasCtx: CanvasRenderingContext2D;
-  image: object;
+  image: HTMLImageElement;
   spritePos: object;
   x: number;
   y: number;

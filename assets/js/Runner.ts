@@ -1,7 +1,25 @@
-
+import {
+  DEFAULT_WIDTH,
+  FPS,
+  IS_HIDPI,
+  IS_IOS,
+  IS_MOBILE,
+  RESOURCE_POSTFIX,
+} from "./constants";
+import DistanceMeter from "./DistanceMeter";
+import Obstacle from "./Obstacle";
+import Trex from "./Trex";
+import {
+  checkForCollision,
+  createCanvas,
+  getTimeStamp,
+  vibrate,
+} from "./utils";
 
 export default class Runner {
   static instance_: Runner;
+
+  static imageSprite: HTMLImageElement;
 
   /**
    * Default game configuration.
@@ -120,6 +138,9 @@ export default class Runner {
     GAMEPADCONNECTED: "gamepadconnected",
   };
 
+  static origImageSprite: HTMLImageElement;
+  spriteDef: object;
+
   /**
  * Updates the canvas size taking into
  * account the backing store pixel ratio and
@@ -133,44 +154,45 @@ export default class Runner {
  * @param {number=} optWeight
  * @return {boolean} Whether the canvas was scaled.
  */
-static updateCanvasScaling(
-  canvas: HTMLCanvasElement,
-  optWidth?: number,
-  optWeight?: number,
-): boolean {
-  const context: CanvasRenderingContext2D =
-    /** @type {CanvasRenderingContext2D} */ canvas.getContext("2d");
+  static updateCanvasScaling(
+    canvas: HTMLCanvasElement,
+    optWidth?: number,
+    optWeight?: number,
+  ): boolean {
+    const context: CanvasRenderingContext2D =
+      /** @type {CanvasRenderingContext2D} */ canvas.getContext("2d");
 
-  // Query the various pixel ratios
-  const devicePixelRatio = Math.floor(window.devicePixelRatio) || 1;
-  /** @suppress {missingProperties} */
-  const backingStoreRatio = Math.floor(context.webkitBackingStorePixelRatio) ||
-    1;
-  const ratio = devicePixelRatio / backingStoreRatio;
+    // Query the various pixel ratios
+    const devicePixelRatio = Math.floor(window.devicePixelRatio) || 1;
+    /** @suppress {missingProperties} */
+    const backingStoreRatio =
+      Math.floor(context.webkitBackingStorePixelRatio) ||
+      1;
+    const ratio = devicePixelRatio / backingStoreRatio;
 
-  // Upscale the canvas if the two ratios don't match
-  if (devicePixelRatio !== backingStoreRatio) {
-    const oldWidth = optWidth || canvas.width;
-    const oldHeight = optWeight || canvas.height;
+    // Upscale the canvas if the two ratios don't match
+    if (devicePixelRatio !== backingStoreRatio) {
+      const oldWidth = optWidth || canvas.width;
+      const oldHeight = optWeight || canvas.height;
 
-    canvas.width = oldWidth * ratio;
-    canvas.height = oldHeight * ratio;
+      canvas.width = oldWidth * ratio;
+      canvas.height = oldHeight * ratio;
 
-    canvas.style.width = oldWidth + "px";
-    canvas.style.height = oldHeight + "px";
+      canvas.style.width = oldWidth + "px";
+      canvas.style.height = oldHeight + "px";
 
-    // Scale the context to counter the fact that we've manually scaled
-    // our canvas element.
-    context.scale(ratio, ratio);
-    return true;
-  } else if (devicePixelRatio === 1) {
-    // Reset the canvas width / height. Fixes scaling bug when the page is
-    // zoomed and the devicePixelRatio changes accordingly.
-    canvas.style.width = canvas.width + "px";
-    canvas.style.height = canvas.height + "px";
+      // Scale the context to counter the fact that we've manually scaled
+      // our canvas element.
+      context.scale(ratio, ratio);
+      return true;
+    } else if (devicePixelRatio === 1) {
+      // Reset the canvas width / height. Fixes scaling bug when the page is
+      // zoomed and the devicePixelRatio changes accordingly.
+      canvas.style.width = canvas.width + "px";
+      canvas.style.height = canvas.height + "px";
+    }
+    return false;
   }
-  return false;
-};
 
   outerContainerEl: HTMLDivElement;
   containerEl: HTMLDivElement;
@@ -255,7 +277,7 @@ static updateCanvasScaling(
     // Logical dimensions of the container.
     this.dimensions = Runner.defaultDimensions;
 
-    Runner.spriteDefinition = Runner.spriteDefinitionByType["original"];
+    Runner.spriteDefinition = Runner.spriteDefinitionByType;
 
     this.fadeInTimer = 0;
 
@@ -351,9 +373,9 @@ static updateCanvasScaling(
       this.spriteDef = Runner.spriteDefinition.HDPI;
     }
 
-    Runner.imageSprite =
-      /** @type {HTMLImageElement} */
-      document.getElementById(RESOURCE_POSTFIX + scale);
+    Runner.imageSprite = document.getElementById(
+      RESOURCE_POSTFIX + scale,
+    ) as HTMLImageElement;
     Runner.origImageSprite = Runner.imageSprite;
 
     if (Runner.imageSprite.complete) {
@@ -1199,8 +1221,8 @@ static updateCanvasScaling(
     // Game over panel.
     if (!this.gameOverPanel) {
       const origSpriteDef = IS_HIDPI
-        ? Runner.spriteDefinitionByType.original.HDPI
-        : Runner.spriteDefinitionByType.original.LDPI;
+        ? Runner.spriteDefinitionByType.HDPI
+        : Runner.spriteDefinitionByType.LDPI;
 
       if (this.canvas) {
         this.gameOverPanel = new GameOverPanel(

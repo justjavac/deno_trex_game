@@ -1,4 +1,5 @@
 import { IS_HIDPI } from "./constants";
+import Runner from "./Runner";
 import { getRandomNum } from "./utils";
 
 /**
@@ -131,14 +132,14 @@ export default class NightMode {
     let moonSourceX = this.spritePos.x + NightMode.phases[this.currentPhase];
     const moonOutputWidth = moonSourceWidth;
     let starSize = NightMode.config.STAR_SIZE;
-    let starSourceX = Runner.spriteDefinitionByType.original.LDPI.STAR.x;
+    let starSourceX = Runner.spriteDefinitionByType.LDPI.STAR.x;
 
     if (IS_HIDPI) {
       moonSourceWidth *= 2;
       moonSourceHeight *= 2;
       moonSourceX = this.spritePos.x + NightMode.phases[this.currentPhase] * 2;
       starSize *= 2;
-      starSourceX = Runner.spriteDefinitionByType.original.HDPI.STAR.x;
+      starSourceX = Runner.spriteDefinitionByType.HDPI.STAR.x;
     }
 
     this.canvasCtx.save();
@@ -188,9 +189,9 @@ export default class NightMode {
       const x = getRandomNum(segmentSize * i, segmentSize * (i + 1));
       const y = getRandomNum(0, NightMode.config.STAR_MAX_Y);
       const sourceY = IS_HIDPI
-        ? Runner.spriteDefinitionByType.original.HDPI.STAR.y +
+        ? Runner.spriteDefinitionByType.HDPI.STAR.y +
           NightMode.config.STAR_SIZE * 2 * i
-        : Runner.spriteDefinitionByType.original.LDPI.STAR.y +
+        : Runner.spriteDefinitionByType.LDPI.STAR.y +
           NightMode.config.STAR_SIZE * i;
 
       this.stars[i] = { x, y, sourceY };

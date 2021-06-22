@@ -28,7 +28,7 @@ function Runner(outerContainerId, optConfig) {
   this.dimensions = Runner.defaultDimensions;
 
   this.gameType = null;
-  Runner.spriteDefinition = Runner.spriteDefinitionByType["original"];
+  Runner.spriteDefinition = Runner.spriteDefinitionByType;
 
   this.altGameImageSprite = null;
   this.altGameModeActive = false;
@@ -1207,8 +1207,8 @@ Runner.prototype = {
     // Game over panel.
     if (!this.gameOverPanel) {
       const origSpriteDef = IS_HIDPI
-        ? Runner.spriteDefinitionByType.original.HDPI
-        : Runner.spriteDefinitionByType.original.LDPI;
+        ? Runner.spriteDefinitionByType.HDPI
+        : Runner.spriteDefinitionByType.LDPI;
 
       if (this.canvas) {
         this.gameOverPanel = new GameOverPanel(
@@ -1852,7 +1852,7 @@ GameOverPanel.prototype = {
     const now = getTimeStamp();
     const deltaTime = now - (this.frameTimeStamp || now);
     const altTextConfig =
-      Runner.spriteDefinitionByType.original.ALT_GAME_OVER_TEXT_CONFIG;
+      Runner.spriteDefinitionByType.ALT_GAME_OVER_TEXT_CONFIG;
 
     this.frameTimeStamp = now;
     this.animTimer += deltaTime;
@@ -3613,14 +3613,14 @@ NightMode.prototype = {
     let moonSourceX = this.spritePos.x + NightMode.phases[this.currentPhase];
     const moonOutputWidth = moonSourceWidth;
     let starSize = NightMode.config.STAR_SIZE;
-    let starSourceX = Runner.spriteDefinitionByType.original.LDPI.STAR.x;
+    let starSourceX = Runner.spriteDefinitionByType.LDPI.STAR.x;
 
     if (IS_HIDPI) {
       moonSourceWidth *= 2;
       moonSourceHeight *= 2;
       moonSourceX = this.spritePos.x + NightMode.phases[this.currentPhase] * 2;
       starSize *= 2;
-      starSourceX = Runner.spriteDefinitionByType.original.HDPI.STAR.x;
+      starSourceX = Runner.spriteDefinitionByType.HDPI.STAR.x;
     }
 
     this.canvasCtx.save();
@@ -3672,12 +3672,10 @@ NightMode.prototype = {
       this.stars[i].y = getRandomNum(0, NightMode.config.STAR_MAX_Y);
 
       if (IS_HIDPI) {
-        this.stars[i].sourceY =
-          Runner.spriteDefinitionByType.original.HDPI.STAR.y +
+        this.stars[i].sourceY = Runner.spriteDefinitionByType.HDPI.STAR.y +
           NightMode.config.STAR_SIZE * 2 * i;
       } else {
-        this.stars[i].sourceY =
-          Runner.spriteDefinitionByType.original.LDPI.STAR.y +
+        this.stars[i].sourceY = Runner.spriteDefinitionByType.LDPI.STAR.y +
           NightMode.config.STAR_SIZE * i;
       }
     }
@@ -3898,7 +3896,7 @@ Horizon.prototype = {
    * Initialise the horizon. Just add the line and a cloud. No obstacles.
    */
   init() {
-    Obstacle.types = Runner.spriteDefinitionByType.original.OBSTACLES;
+    Obstacle.types = Runner.spriteDefinitionByType.OBSTACLES;
     this.addCloud();
     // Multiple Horizon lines
     for (let i = 0; i < Runner.spriteDefinition.LINES.length; i++) {

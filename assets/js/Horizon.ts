@@ -1,5 +1,6 @@
 import BackgroundEl from "./BackgroundEl";
 import Cloud from "./Cloud";
+import Obstacle from "./Obstacle";
 import { getRandomNum } from "./utils";
 /**
  * Horizon config.
@@ -81,7 +82,7 @@ export default class Horizon {
    * Initialise the horizon. Just add the line and a cloud. No obstacles.
    */
   init() {
-    Obstacle.types = Runner.spriteDefinitionByType.original.OBSTACLES;
+    Obstacle.types = Runner.spriteDefinitionByType.OBSTACLES;
     this.addCloud();
     // Multiple Horizon lines
     for (let i = 0; i < Runner.spriteDefinition.LINES.length; i++) {
@@ -164,8 +165,8 @@ export default class Horizon {
       this.horizonLines[i].update(deltaTime, currentSpeed);
     }
 
-      this.nightMode.update(showNightMode);
-      this.updateClouds(deltaTime, currentSpeed);
+    this.nightMode.update(showNightMode);
+    this.updateClouds(deltaTime, currentSpeed);
 
     if (updateObstacles) {
       this.updateObstacles(deltaTime, currentSpeed);

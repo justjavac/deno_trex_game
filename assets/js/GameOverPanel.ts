@@ -1,9 +1,9 @@
 import { IS_HIDPI } from "./constants";
+import Runner from "./Runner";
 import { getTimeStamp } from "./utils";
 
 const RESTART_ANIM_DURATION = 875;
 const LOGO_PAUSE_DURATION = 875;
-const FLASH_ITERATIONS = 5;
 
 /**
  * Animation frames spec.
@@ -115,7 +115,7 @@ export default class GameOverPanel {
       textSourceWidth *= 2;
       textSourceHeight *= 2;
     }
-    
+
     textSourceX += this.textImgPos.x;
     textSourceY += this.textImgPos.y;
     this.canvasCtx.save();

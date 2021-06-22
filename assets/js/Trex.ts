@@ -275,11 +275,11 @@ export default class Trex {
       this.timer = 0;
     }
 
-      // Speed drop becomes duck if the down key is still being pressed.
-      if (this.speedDrop && this.yPos === this.groundYPos) {
-        this.speedDrop = false;
-        this.setDuck(true);
-      }
+    // Speed drop becomes duck if the down key is still being pressed.
+    if (this.speedDrop && this.yPos === this.groundYPos) {
+      this.speedDrop = false;
+      this.setDuck(true);
+    }
   }
 
   /**
