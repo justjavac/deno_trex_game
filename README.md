@@ -1,6 +1,6 @@
 # Chrome T-Rex Game
 
-[![ci](https://github.com/justjavac/deno_deploy_versailles/actions/workflows/ci.yml/badge.svg)](https://github.com/justjavac/deno_deploy_versailles/actions/workflows/ci.yml)
+[![ci](https://github.com/justjavac/deno_trex_game/actions/workflows/ci.yml/badge.svg)](https://github.com/justjavac/deno_trex_game/actions/workflows/ci.yml)
 
 Chrome offline T-rex game.
 
