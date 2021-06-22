@@ -1,213 +1,333 @@
-/**
- * T-Rex runner.
- * @param {string} outerContainerId Outer containing element id.
- * @param {!Object=} optConfig
- * @constructor
- * @implements {EventListener}
- * @export
+
+
+export default class Runner {
+  static instance_: Runner;
+
+  /**
+   * Default game configuration.
+   * Shared config for all  versions of the game. Additional parameters are
+   * defined in Runner.normalConfig and Runner.slowConfig.
+   */
+  static config = {
+    AUDIOCUE_PROXIMITY_THRESHOLD: 190,
+    AUDIOCUE_PROXIMITY_THRESHOLD_MOBILE_A11Y: 250,
+    BG_CLOUD_SPEED: 0.2,
+    BOTTOM_PAD: 10,
+    // Scroll Y threshold at which the game can be activated.
+    CANVAS_IN_VIEW_OFFSET: -10,
+    CLEAR_TIME: 3000,
+    CLOUD_FREQUENCY: 0.5,
+    FADE_DURATION: 1,
+    FLASH_DURATION: 1000,
+    GAMEOVER_CLEAR_TIME: 1200,
+    INITIAL_JUMP_VELOCITY: 12,
+    INVERT_FADE_DURATION: 12000,
+    MAX_BLINK_COUNT: 3,
+    MAX_CLOUDS: 6,
+    MAX_OBSTACLE_LENGTH: 3,
+    MAX_OBSTACLE_DUPLICATION: 2,
+    RESOURCE_TEMPLATE_ID: "audio-resources",
+    SPEED: 6,
+    SPEED_DROP_COEFFICIENT: 3,
+    ARCADE_MODE_INITIAL_TOP_POSITION: 35,
+    ARCADE_MODE_TOP_POSITION_PERCENT: 0.1,
+  };
+
+  static normalConfig = {
+    ACCELERATION: 0.001,
+    AUDIOCUE_PROXIMITY_THRESHOLD: 190,
+    AUDIOCUE_PROXIMITY_THRESHOLD_MOBILE_A11Y: 250,
+    GAP_COEFFICIENT: 0.6,
+    INVERT_DISTANCE: 700,
+    MAX_SPEED: 13,
+    MOBILE_SPEED_COEFFICIENT: 1.2,
+    SPEED: 6,
+  };
+
+  static slowConfig = {
+    ACCELERATION: 0.0005,
+    AUDIOCUE_PROXIMITY_THRESHOLD: 170,
+    AUDIOCUE_PROXIMITY_THRESHOLD_MOBILE_A11Y: 220,
+    GAP_COEFFICIENT: 0.3,
+    INVERT_DISTANCE: 350,
+    MAX_SPEED: 9,
+    MOBILE_SPEED_COEFFICIENT: 1.5,
+    SPEED: 4.2,
+  };
+
+  /**
+   * Default dimensions.
+   */
+  static defaultDimensions = {
+    WIDTH: DEFAULT_WIDTH,
+    HEIGHT: 150,
+  };
+
+  /**
+   * CSS class names.
+   * @enum {string}
+   */
+  static classes = {
+    ARCADE_MODE: "arcade-mode",
+    CANVAS: "runner-canvas",
+    CONTAINER: "runner-container",
+    CRASHED: "crashed",
+    ICON: "icon-offline",
+    INVERTED: "inverted",
+    SNACKBAR: "snackbar",
+    SNACKBAR_SHOW: "snackbar-show",
+    TOUCH_CONTROLLER: "controller",
+  };
+
+  /**
+   * Sound FX. Reference to the ID of the audio tag on interstitial page.
+   * @enum {string}
+   */
+  static sounds = {
+    BUTTON_PRESS: "offline-sound-press",
+    HIT: "offline-sound-hit",
+    SCORE: "offline-sound-reached",
+  };
+
+  /**
+   * Key code mapping.
+   * @enum {Object}
+   */
+  static keycodes = {
+    JUMP: { 38: 1, 32: 1 }, // Up, spacebar
+    DUCK: { 40: 1 }, // Down
+    RESTART: { 13: 1 }, // Enter
+  };
+
+  /**
+   * Runner event names.
+   * @enum {string}
+   */
+  static events = {
+    ANIM_END: "webkitAnimationEnd",
+    CLICK: "click",
+    KEYDOWN: "keydown",
+    KEYUP: "keyup",
+    POINTERDOWN: "pointerdown",
+    POINTERUP: "pointerup",
+    RESIZE: "resize",
+    TOUCHEND: "touchend",
+    TOUCHSTART: "touchstart",
+    VISIBILITY: "visibilitychange",
+    BLUR: "blur",
+    FOCUS: "focus",
+    LOAD: "load",
+    GAMEPADCONNECTED: "gamepadconnected",
+  };
+
+  /**
+ * Updates the canvas size taking into
+ * account the backing store pixel ratio and
+ * the device pixel ratio.
+ *
+ * See article by Paul Lewis:
+ * http://www.html5rocks.com/en/tutorials/canvas/hidpi/
+ *
+ * @param {HTMLCanvasElement} canvas
+ * @param {number=} optWidth
+ * @param {number=} optWeight
+ * @return {boolean} Whether the canvas was scaled.
  */
-function Runner(outerContainerId, optConfig) {
-  // Singleton
-  if (Runner.instance_) {
-    return Runner.instance_;
+static updateCanvasScaling(
+  canvas: HTMLCanvasElement,
+  optWidth?: number,
+  optWeight?: number,
+): boolean {
+  const context: CanvasRenderingContext2D =
+    /** @type {CanvasRenderingContext2D} */ canvas.getContext("2d");
+
+  // Query the various pixel ratios
+  const devicePixelRatio = Math.floor(window.devicePixelRatio) || 1;
+  /** @suppress {missingProperties} */
+  const backingStoreRatio = Math.floor(context.webkitBackingStorePixelRatio) ||
+    1;
+  const ratio = devicePixelRatio / backingStoreRatio;
+
+  // Upscale the canvas if the two ratios don't match
+  if (devicePixelRatio !== backingStoreRatio) {
+    const oldWidth = optWidth || canvas.width;
+    const oldHeight = optWeight || canvas.height;
+
+    canvas.width = oldWidth * ratio;
+    canvas.height = oldHeight * ratio;
+
+    canvas.style.width = oldWidth + "px";
+    canvas.style.height = oldHeight + "px";
+
+    // Scale the context to counter the fact that we've manually scaled
+    // our canvas element.
+    context.scale(ratio, ratio);
+    return true;
+  } else if (devicePixelRatio === 1) {
+    // Reset the canvas width / height. Fixes scaling bug when the page is
+    // zoomed and the devicePixelRatio changes accordingly.
+    canvas.style.width = canvas.width + "px";
+    canvas.style.height = canvas.height + "px";
   }
-  Runner.instance_ = this;
+  return false;
+};
 
-  this.outerContainerEl = document.querySelector(outerContainerId);
-  this.containerEl = null;
-  this.snackbarEl = null;
+  outerContainerEl: HTMLDivElement;
+  containerEl: HTMLDivElement;
+  snackbarEl: HTMLDivElement;
   // A div to intercept touch events. Only set while (playing && useTouch).
-  this.touchController = null;
+  touchController: HTMLDivElement;
 
-  this.config = optConfig || Object.assign(Runner.config, Runner.normalConfig);
+  config: object;
   // Logical dimensions of the container.
-  this.dimensions = Runner.defaultDimensions;
+  dimensions: object;
 
-  this.gameType = null;
-  Runner.spriteDefinition = Runner.spriteDefinitionByType["original"];
+  gameType: null;
+  altGameImageSprite: null;
+  altGameModeActive: false;
+  altGameModeFlashTimer: null;
+  fadeInTimer: number;
 
-  this.altGameImageSprite = null;
-  this.altGameModeActive = false;
-  this.altGameModeFlashTimer = null;
-  this.fadeInTimer = 0;
+  canvas: HTMLCanvasElement;
+  canvasCtx: CanvasRenderingContext2D;
 
-  this.canvas = null;
-  this.canvasCtx = null;
+  tRex: Trex;
 
-  this.tRex = null;
+  distanceMeter: DistanceMeter;
+  distanceRan: number;
 
-  this.distanceMeter = null;
-  this.distanceRan = 0;
+  highestScore: number;
+  syncHighestScore: boolean;
 
-  this.highestScore = 0;
-  this.syncHighestScore = false;
+  time: number;
+  runningTime: number;
+  msPerFrame: number;
+  currentSpeed: number;
 
-  this.time = 0;
-  this.runningTime = 0;
-  this.msPerFrame = 1000 / FPS;
-  this.currentSpeed = this.config.SPEED;
-  Runner.slowDown = false;
+  obstacles: Obstacle[];
 
-  this.obstacles = [];
+  activated: boolean; // Whether the easter egg has been activated.
+  playing: boolean; // Whether the game is currently in play state.
+  crashed: boolean;
+  paused: boolean;
+  inverted: boolean;
+  invertTimer: number;
+  resizeTimerId_: number;
 
-  this.activated = false; // Whether the easter egg has been activated.
-  this.playing = false; // Whether the game is currently in play state.
-  this.crashed = false;
-  this.paused = false;
-  this.inverted = false;
-  this.invertTimer = 0;
-  this.resizeTimerId_ = null;
-
-  this.playCount = 0;
+  playCount: number;
 
   // Sound FX.
-  this.audioBuffer = null;
+  audioBuffer: AudioBuffer;
 
   /** @type {Object} */
-  this.soundFx = {};
-  this.generatedSoundFx = null;
+  soundFx: object;
+  generatedSoundFx: GeneratedSoundFx;
 
   // Global web audio context for playing sounds.
-  this.audioContext = null;
+  audioContext: AudioContext;
 
   // Images.
-  this.images = {};
-  this.imagesLoaded = 0;
+  images: object;
+  imagesLoaded: number;
 
   // Gamepad state.
-  this.pollingGamepads = false;
-  this.gamepadIndex = undefined;
-  this.previousGamepad = null;
+  pollingGamepads: boolean;
+  gamepadIndex: number;
+  previousGamepad: Gamepad;
 
-  this.loadImages();
+  /**
+   * T-Rex runner.
+   * @param outerContainerId Outer containing element id.
+   * @param optConfig
+   * @implements {EventListener}
+   */
+  constructor(outerContainerId: string, optConfig?: object) {
+    // Singleton
+    if (Runner.instance_) {
+      return Runner.instance_;
+    }
+    Runner.instance_ = this;
 
-  window["initializeEasterEggHighScore"] = this.initializeHighScore.bind(this);
-}
+    this.outerContainerEl = document.querySelector(outerContainerId);
+    this.containerEl = null;
+    this.snackbarEl = null;
+    // A div to intercept touch events. Only set while (playing && useTouch).
+    this.touchController = null;
 
-/**
- * Default game configuration.
- * Shared config for all  versions of the game. Additional parameters are
- * defined in Runner.normalConfig and Runner.slowConfig.
- */
-Runner.config = {
-  AUDIOCUE_PROXIMITY_THRESHOLD: 190,
-  AUDIOCUE_PROXIMITY_THRESHOLD_MOBILE_A11Y: 250,
-  BG_CLOUD_SPEED: 0.2,
-  BOTTOM_PAD: 10,
-  // Scroll Y threshold at which the game can be activated.
-  CANVAS_IN_VIEW_OFFSET: -10,
-  CLEAR_TIME: 3000,
-  CLOUD_FREQUENCY: 0.5,
-  FADE_DURATION: 1,
-  FLASH_DURATION: 1000,
-  GAMEOVER_CLEAR_TIME: 1200,
-  INITIAL_JUMP_VELOCITY: 12,
-  INVERT_FADE_DURATION: 12000,
-  MAX_BLINK_COUNT: 3,
-  MAX_CLOUDS: 6,
-  MAX_OBSTACLE_LENGTH: 3,
-  MAX_OBSTACLE_DUPLICATION: 2,
-  RESOURCE_TEMPLATE_ID: "audio-resources",
-  SPEED: 6,
-  SPEED_DROP_COEFFICIENT: 3,
-  ARCADE_MODE_INITIAL_TOP_POSITION: 35,
-  ARCADE_MODE_TOP_POSITION_PERCENT: 0.1,
-};
+    this.config = optConfig ||
+      Object.assign(Runner.config, Runner.normalConfig);
+    // Logical dimensions of the container.
+    this.dimensions = Runner.defaultDimensions;
 
-Runner.normalConfig = {
-  ACCELERATION: 0.001,
-  AUDIOCUE_PROXIMITY_THRESHOLD: 190,
-  AUDIOCUE_PROXIMITY_THRESHOLD_MOBILE_A11Y: 250,
-  GAP_COEFFICIENT: 0.6,
-  INVERT_DISTANCE: 700,
-  MAX_SPEED: 13,
-  MOBILE_SPEED_COEFFICIENT: 1.2,
-  SPEED: 6,
-};
+    this.gameType = null;
+    Runner.spriteDefinition = Runner.spriteDefinitionByType["original"];
 
-Runner.slowConfig = {
-  ACCELERATION: 0.0005,
-  AUDIOCUE_PROXIMITY_THRESHOLD: 170,
-  AUDIOCUE_PROXIMITY_THRESHOLD_MOBILE_A11Y: 220,
-  GAP_COEFFICIENT: 0.3,
-  INVERT_DISTANCE: 350,
-  MAX_SPEED: 9,
-  MOBILE_SPEED_COEFFICIENT: 1.5,
-  SPEED: 4.2,
-};
+    this.altGameImageSprite = null;
+    this.altGameModeActive = false;
+    this.altGameModeFlashTimer = null;
+    this.fadeInTimer = 0;
 
-/**
- * Default dimensions.
- */
-Runner.defaultDimensions = {
-  WIDTH: DEFAULT_WIDTH,
-  HEIGHT: 150,
-};
+    this.canvas = null;
+    this.canvasCtx = null;
 
-/**
- * CSS class names.
- * @enum {string}
- */
-Runner.classes = {
-  ARCADE_MODE: "arcade-mode",
-  CANVAS: "runner-canvas",
-  CONTAINER: "runner-container",
-  CRASHED: "crashed",
-  ICON: "icon-offline",
-  INVERTED: "inverted",
-  SNACKBAR: "snackbar",
-  SNACKBAR_SHOW: "snackbar-show",
-  TOUCH_CONTROLLER: "controller",
-};
+    this.tRex = null;
 
-/**
- * Sound FX. Reference to the ID of the audio tag on interstitial page.
- * @enum {string}
- */
-Runner.sounds = {
-  BUTTON_PRESS: "offline-sound-press",
-  HIT: "offline-sound-hit",
-  SCORE: "offline-sound-reached",
-};
+    this.distanceMeter = null;
+    this.distanceRan = 0;
 
-/**
- * Key code mapping.
- * @enum {Object}
- */
-Runner.keycodes = {
-  JUMP: { 38: 1, 32: 1 }, // Up, spacebar
-  DUCK: { 40: 1 }, // Down
-  RESTART: { 13: 1 }, // Enter
-};
+    this.highestScore = 0;
+    this.syncHighestScore = false;
 
-/**
- * Runner event names.
- * @enum {string}
- */
-Runner.events = {
-  ANIM_END: "webkitAnimationEnd",
-  CLICK: "click",
-  KEYDOWN: "keydown",
-  KEYUP: "keyup",
-  POINTERDOWN: "pointerdown",
-  POINTERUP: "pointerup",
-  RESIZE: "resize",
-  TOUCHEND: "touchend",
-  TOUCHSTART: "touchstart",
-  VISIBILITY: "visibilitychange",
-  BLUR: "blur",
-  FOCUS: "focus",
-  LOAD: "load",
-  GAMEPADCONNECTED: "gamepadconnected",
-};
+    this.time = 0;
+    this.runningTime = 0;
+    this.msPerFrame = 1000 / FPS;
+    this.currentSpeed = this.config.SPEED;
+    Runner.slowDown = false;
 
-Runner.prototype = {
+    this.obstacles = [];
+
+    this.activated = false; // Whether the easter egg has been activated.
+    this.playing = false; // Whether the game is currently in play state.
+    this.crashed = false;
+    this.paused = false;
+    this.inverted = false;
+    this.invertTimer = 0;
+    this.resizeTimerId_ = null;
+
+    this.playCount = 0;
+
+    // Sound FX.
+    this.audioBuffer = null;
+
+    /** @type {Object} */
+    this.soundFx = {};
+    this.generatedSoundFx = null;
+
+    // Global web audio context for playing sounds.
+    this.audioContext = null;
+
+    // Images.
+    this.images = {};
+    this.imagesLoaded = 0;
+
+    // Gamepad state.
+    this.pollingGamepads = false;
+    this.gamepadIndex = undefined;
+    this.previousGamepad = null;
+
+    this.loadImages();
+
+    window["initializeEasterEggHighScore"] = this.initializeHighScore.bind(
+      this,
+    );
+  }
+
   /**
    * Setting individual settings for debugging.
    * @param {string} setting
    * @param {number|string} value
    */
-  updateConfigSetting(setting, value) {
+  updateConfigSetting(setting: string, value: number | string) {
     if (setting in this.config && value !== undefined) {
       this.config[setting] = value;
 
@@ -221,33 +341,32 @@ Runner.prototype = {
           this.tRex.setJumpVelocity(value);
           break;
         case "SPEED":
-          this.setSpeed(/** @type {number} */ (value));
+          this.setSpeed(/** @type {number} */ value);
           break;
       }
     }
-  },
+  }
 
   /**
    * Creates an on page image element from the base 64 encoded string source.
    * @param {string} resourceName Name in data object,
    * @return {HTMLImageElement} The created element.
    */
-  createImageElement(resourceName) {
+  createImageElement(resourceName: string): HTMLImageElement {
     const imgSrc = loadTimeData && loadTimeData.valueExists(resourceName)
       ? loadTimeData.getString(resourceName)
       : null;
 
     if (imgSrc) {
-      const el = /** @type {HTMLImageElement} */ (
-        document.createElement("img")
-      );
+      const el: HTMLImageElement = /** @type {HTMLImageElement} */ document
+        .createElement("img");
       el.id = resourceName;
       el.src = imgSrc;
       document.getElementById("offline-resources").appendChild(el);
       return el;
     }
     return null;
-  },
+  }
 
   /**
    * Cache the appropriate image sprite from the page and get the sprite sheet
@@ -263,15 +382,15 @@ Runner.prototype = {
 
     Runner.imageSprite =
       /** @type {HTMLImageElement} */
-      (document.getElementById(RESOURCE_POSTFIX + scale));
+      document.getElementById(RESOURCE_POSTFIX + scale);
 
     if (this.gameType) {
       Runner.altGameImageSprite =
         /** @type {HTMLImageElement} */
-        (this.createImageElement("altGameSpecificImage" + scale));
+        this.createImageElement("altGameSpecificImage" + scale);
       Runner.altCommonImageSprite =
         /** @type {HTMLImageElement} */
-        (this.createImageElement("altGameCommonImage" + scale));
+        this.createImageElement("altGameCommonImage" + scale);
     }
     Runner.origImageSprite = Runner.imageSprite;
 
@@ -289,7 +408,7 @@ Runner.prototype = {
         this.init.bind(this),
       );
     }
-  },
+  }
 
   /**
    * Load and decode base 64 encoded sounds.
@@ -318,13 +437,13 @@ Runner.prototype = {
           });
       }
     }
-  },
+  }
 
   /**
    * Sets the game speed. Adjust the speed accordingly if on a smaller screen.
    * @param {number=} opt_speed
    */
-  setSpeed(opt_speed) {
+  setSpeed(opt_speed: number | undefined) {
     const speed = opt_speed || this.currentSpeed;
 
     // Reduce the speed on smaller mobile screens.
@@ -337,7 +456,7 @@ Runner.prototype = {
     } else if (opt_speed) {
       this.currentSpeed = opt_speed;
     }
-  },
+  }
 
   /**
    * Game initialiser.
@@ -361,9 +480,8 @@ Runner.prototype = {
 
     this.generatedSoundFx = new GeneratedSoundFx();
 
-    this.canvasCtx = /** @type {CanvasRenderingContext2D} */ (
-      this.canvas.getContext("2d")
-    );
+    this.canvasCtx = /** @type {CanvasRenderingContext2D} */ this.canvas
+      .getContext("2d");
     this.canvasCtx.fillStyle = "#f7f7f7";
     this.canvasCtx.fill();
     Runner.updateCanvasScaling(this.canvas);
@@ -404,7 +522,7 @@ Runner.prototype = {
     darkModeMediaQuery.addListener((e) => {
       this.isDarkMode = e.matches;
     });
-  },
+  }
 
   /**
    * Create the touch controller. A div that covers whole screen.
@@ -415,7 +533,7 @@ Runner.prototype = {
     this.touchController.addEventListener(Runner.events.TOUCHSTART, this);
     this.touchController.addEventListener(Runner.events.TOUCHEND, this);
     this.outerContainerEl.appendChild(this.touchController);
-  },
+  }
 
   /**
    * Debounce the resize event.
@@ -424,7 +542,7 @@ Runner.prototype = {
     if (!this.resizeTimerId_) {
       this.resizeTimerId_ = setInterval(this.adjustDimensions.bind(this), 250);
     }
-  },
+  }
 
   /**
    * Adjust game space dimensions on resize.
@@ -474,7 +592,7 @@ Runner.prototype = {
         this.gameOverPanel.draw(this.altGameModeActive, this.tRex);
       }
     }
-  },
+  }
 
   /**
    * Play the game intro.
@@ -509,7 +627,7 @@ Runner.prototype = {
     } else if (this.crashed) {
       this.restart();
     }
-  },
+  }
 
   /**
    * Update the game status to started.
@@ -541,7 +659,7 @@ Runner.prototype = {
       Runner.events.FOCUS,
       this.onVisibilityChange.bind(this),
     );
-  },
+  }
 
   clearCanvas() {
     this.canvasCtx.clearRect(
@@ -550,7 +668,7 @@ Runner.prototype = {
       this.dimensions.WIDTH,
       this.dimensions.HEIGHT,
     );
-  },
+  }
 
   /**
    * Checks whether the canvas area is in the viewport of the browser
@@ -562,7 +680,7 @@ Runner.prototype = {
       this.containerEl.getBoundingClientRect().top >
         Runner.config.CANVAS_IN_VIEW_OFFSET
     );
-  },
+  }
 
   /**
    * Enable the alt game mode. Switching out the sprites.
@@ -581,7 +699,7 @@ Runner.prototype = {
     this.tRex.enableAltGameMode(this.spriteDef.TREX);
     this.horizon.enableAltGameMode(this.spriteDef);
     this.generatedSoundFx.background();
-  },
+  }
 
   /**
    * Update the game frame and schedules the next one.
@@ -719,13 +837,13 @@ Runner.prototype = {
       this.tRex.update(deltaTime);
       this.scheduleNextUpdate();
     }
-  },
+  }
 
   /**
    * Event handler.
    * @param {Event} e
    */
-  handleEvent(e) {
+  handleEvent(e: Event) {
     return function (evtType, events) {
       switch (evtType) {
         case events.KEYDOWN:
@@ -743,13 +861,13 @@ Runner.prototype = {
           break;
       }
     }.bind(this)(e.type, Runner.events);
-  },
+  }
 
   /**
    * Initialize audio cues if activated by focus on the canvas element.
    * @param {Event} e
    */
-  handleCanvasKeyPress(e) {
+  handleCanvasKeyPress(e: Event) {
     if (!this.activated) {
       this.toggleSpeed();
       Runner.audioCues = true;
@@ -759,17 +877,17 @@ Runner.prototype = {
     } else if (e.keyCode && Runner.keycodes.JUMP[e.keyCode]) {
       this.onKeyDown(e);
     }
-  },
+  }
 
   /**
    * Prevent space key press from scrolling.
    * @param {Event} e
    */
-  preventScrolling(e) {
+  preventScrolling(e: Event) {
     if (e.keyCode === 32) {
       e.preventDefault();
     }
-  },
+  }
 
   /**
    * Toggle speed setting if toggle is shown.
@@ -790,7 +908,7 @@ Runner.prototype = {
         this.horizon.adjustObstacleSpeed();
       }
     }
-  },
+  }
 
   /**
    * Bind relevant key / mouse / touch listeners.
@@ -823,7 +941,7 @@ Runner.prototype = {
       // Gamepad
       window.addEventListener(Runner.events.GAMEPADCONNECTED, this);
     }
-  },
+  }
 
   /**
    * Remove all listeners.
@@ -844,13 +962,13 @@ Runner.prototype = {
     if (this.isArcadeMode()) {
       window.removeEventListener(Runner.events.GAMEPADCONNECTED, this);
     }
-  },
+  }
 
   /**
    * Process keydown.
    * @param {Event} e
    */
-  onKeyDown(e) {
+  onKeyDown(e: Event) {
     // Prevent native page scrolling whilst tapping on mobile.
     if (IS_MOBILE && this.playing) {
       e.preventDefault();
@@ -925,13 +1043,13 @@ Runner.prototype = {
         }
       }
     }
-  },
+  }
 
   /**
    * Process key up.
    * @param {Event} e
    */
-  onKeyUp(e) {
+  onKeyUp(e: Event) {
     const keyCode = String(e.keyCode);
     const isjumpKey = Runner.keycodes.JUMP[keyCode] ||
       e.type === Runner.events.TOUCHEND ||
@@ -960,17 +1078,17 @@ Runner.prototype = {
       this.tRex.reset();
       this.play();
     }
-  },
+  }
 
   /**
    * Process gamepad connected event.
    * @param {Event} e
    */
-  onGamepadConnected(e) {
+  onGamepadConnected(e: Event) {
     if (!this.pollingGamepads) {
       this.pollGamepadState();
     }
-  },
+  }
 
   /**
    * rAF loop for gamepad polling.
@@ -981,14 +1099,14 @@ Runner.prototype = {
 
     this.pollingGamepads = true;
     requestAnimationFrame(this.pollGamepadState.bind(this));
-  },
+  }
 
   /**
    * Polls for a gamepad with the jump button pressed. If one is found this
    * becomes the "active" gamepad and all others are ignored.
-   * @param {!Array<Gamepad>} gamepads
+   * @param gamepads
    */
-  pollForActiveGamepad(gamepads) {
+  pollForActiveGamepad(gamepads: Gamepad[]) {
     for (let i = 0; i < gamepads.length; ++i) {
       if (
         gamepads[i] &&
@@ -1000,14 +1118,14 @@ Runner.prototype = {
         return;
       }
     }
-  },
+  }
 
   /**
    * Polls the chosen gamepad for button presses and generates KeyboardEvents
    * to integrate with the rest of the game logic.
    * @param {!Array<Gamepad>} gamepads
    */
-  pollActiveGamepad(gamepads) {
+  pollActiveGamepad(gamepads: Array<Gamepad>) {
     if (this.gamepadIndex === undefined) {
       this.pollForActiveGamepad(gamepads);
       return;
@@ -1031,7 +1149,7 @@ Runner.prototype = {
     }
 
     this.previousGamepad = gamepad;
-  },
+  }
 
   /**
    * Generates a key event based on a gamepad button.
@@ -1039,7 +1157,7 @@ Runner.prototype = {
    * @param {number} buttonIndex
    * @param {number} keyCode
    */
-  pollGamepadButton(gamepad, buttonIndex, keyCode) {
+  pollGamepadButton(gamepad: Gamepad, buttonIndex: number, keyCode: number) {
     const state = gamepad.buttons[buttonIndex].pressed;
     let previousState = false;
     if (this.previousGamepad) {
@@ -1053,14 +1171,14 @@ Runner.prototype = {
       );
       document.dispatchEvent(e);
     }
-  },
+  }
 
   /**
    * Handle interactions on the game over screen state.
    * A user is able to tap the high score twice to reset it.
    * @param {Event} e
    */
-  handleGameOverClicks(e) {
+  handleGameOverClicks(e: Event) {
     if (e.target != this.slowSpeedCheckbox) {
       e.preventDefault();
       if (this.distanceMeter.hasClickedOnHighScore(e) && this.highestScore) {
@@ -1077,7 +1195,7 @@ Runner.prototype = {
         this.restart();
       }
     }
-  },
+  }
 
   /**
    * Returns whether the event was a left click on canvas.
@@ -1085,7 +1203,7 @@ Runner.prototype = {
    * @param {Event} e
    * @return {boolean}
    */
-  isLeftClickOnCanvas(e) {
+  isLeftClickOnCanvas(e: Event): boolean {
     return (
       e.button != null &&
       e.button < 2 &&
@@ -1093,7 +1211,7 @@ Runner.prototype = {
       (e.target === this.canvas ||
         (IS_MOBILE && Runner.audioCues && e.target === this.containerEl))
     );
-  },
+  }
 
   /**
    * RequestAnimationFrame wrapper.
@@ -1103,21 +1221,21 @@ Runner.prototype = {
       this.updatePending = true;
       this.raqId = requestAnimationFrame(this.update.bind(this));
     }
-  },
+  }
 
   /**
    * Whether the game is running.
    * @return {boolean}
    */
-  isRunning() {
+  isRunning(): boolean {
     return !!this.raqId;
-  },
+  }
 
   /**
    * Set the initial high score as stored in the user's profile.
    * @param {number} highScore
    */
-  initializeHighScore(highScore) {
+  initializeHighScore(highScore: number) {
     this.syncHighestScore = true;
     highScore = Math.ceil(highScore);
     if (highScore < this.highestScore) {
@@ -1128,14 +1246,14 @@ Runner.prototype = {
     }
     this.highestScore = highScore;
     this.distanceMeter.setHighScore(this.highestScore);
-  },
+  }
 
   /**
    * Sets the current high score and saves to the profile if available.
    * @param {number} distanceRan Total distance ran.
    * @param {boolean=} opt_resetScore Whether to reset the score.
    */
-  saveHighScore(distanceRan, opt_resetScore) {
+  saveHighScore(distanceRan: number, opt_resetScore: boolean | undefined) {
     this.highestScore = Math.ceil(distanceRan);
     this.distanceMeter.setHighScore(this.highestScore);
 
@@ -1147,7 +1265,7 @@ Runner.prototype = {
         errorPageController.updateEasterEggHighScore(this.highestScore);
       }
     }
-  },
+  }
 
   /**
    * Game over state.
@@ -1191,7 +1309,7 @@ Runner.prototype = {
     if (Runner.audioCues) {
       this.generatedSoundFx.stopAll();
     }
-  },
+  }
 
   stop() {
     this.setPlayStatus(false);
@@ -1199,7 +1317,7 @@ Runner.prototype = {
     cancelAnimationFrame(this.raqId);
     this.raqId = 0;
     this.generatedSoundFx.stopAll();
-  },
+  }
 
   play() {
     if (!this.crashed) {
@@ -1210,7 +1328,7 @@ Runner.prototype = {
       this.update();
       this.generatedSoundFx.background();
     }
-  },
+  }
 
   restart() {
     if (!this.raqId) {
@@ -1235,24 +1353,24 @@ Runner.prototype = {
       this.gameOverPanel.reset();
       this.generatedSoundFx.background();
     }
-  },
+  }
 
   setPlayStatus(isPlaying) {
     if (this.touchController) {
       this.touchController.classList.toggle("hidden", !isPlaying);
     }
     this.playing = isPlaying;
-  },
+  }
 
   /**
    * Whether the game should go into arcade mode.
    * @return {boolean}
    */
-  isArcadeMode() {
+  isArcadeMode(): boolean {
     // In RTL languages the title is wrapped with the left to right mark
     // control characters &#x202A; and &#x202C but are invisible.
     return true;
-  },
+  }
 
   /**
    * Hides offline messaging for a fullscreen game only experience.
@@ -1260,7 +1378,7 @@ Runner.prototype = {
   setArcadeMode() {
     document.body.classList.add(Runner.classes.ARCADE_MODE);
     this.setArcadeModeContainerScale();
-  },
+  }
 
   /**
    * Sets the scaling for arcade mode.
@@ -1285,7 +1403,7 @@ Runner.prototype = {
 
     this.containerEl.style.transform = "scale(" + scale + ") translateY(" +
       translateY + "px)";
-  },
+  }
 
   /**
    * Pause the game if the tab is not in focus.
@@ -1302,26 +1420,26 @@ Runner.prototype = {
       this.tRex.reset();
       this.play();
     }
-  },
+  }
 
   /**
    * Play a sound.
    * @param {AudioBuffer} soundBuffer
    */
-  playSound(soundBuffer) {
+  playSound(soundBuffer: AudioBuffer) {
     if (soundBuffer) {
       const sourceNode = this.audioContext.createBufferSource();
       sourceNode.buffer = soundBuffer;
       sourceNode.connect(this.audioContext.destination);
       sourceNode.start(0);
     }
-  },
+  }
 
   /**
    * Inverts the current page / canvas colors.
    * @param {boolean} reset Whether to reset colors.
    */
-  invert(reset) {
+  invert(reset: boolean) {
     const htmlEl = document.firstElementChild;
 
     if (reset) {
@@ -1334,54 +1452,5 @@ Runner.prototype = {
         this.invertTrigger,
       );
     }
-  },
-};
-
-/**
- * Updates the canvas size taking into
- * account the backing store pixel ratio and
- * the device pixel ratio.
- *
- * See article by Paul Lewis:
- * http://www.html5rocks.com/en/tutorials/canvas/hidpi/
- *
- * @param {HTMLCanvasElement} canvas
- * @param {number=} opt_width
- * @param {number=} opt_height
- * @return {boolean} Whether the canvas was scaled.
- */
-Runner.updateCanvasScaling = function (canvas, opt_width, opt_height) {
-  const context = /** @type {CanvasRenderingContext2D} */ (
-    canvas.getContext("2d")
-  );
-
-  // Query the various pixel ratios
-  const devicePixelRatio = Math.floor(window.devicePixelRatio) || 1;
-  /** @suppress {missingProperties} */
-  const backingStoreRatio = Math.floor(context.webkitBackingStorePixelRatio) ||
-    1;
-  const ratio = devicePixelRatio / backingStoreRatio;
-
-  // Upscale the canvas if the two ratios don't match
-  if (devicePixelRatio !== backingStoreRatio) {
-    const oldWidth = opt_width || canvas.width;
-    const oldHeight = opt_height || canvas.height;
-
-    canvas.width = oldWidth * ratio;
-    canvas.height = oldHeight * ratio;
-
-    canvas.style.width = oldWidth + "px";
-    canvas.style.height = oldHeight + "px";
-
-    // Scale the context to counter the fact that we've manually scaled
-    // our canvas element.
-    context.scale(ratio, ratio);
-    return true;
-  } else if (devicePixelRatio === 1) {
-    // Reset the canvas width / height. Fixes scaling bug when the page is
-    // zoomed and the devicePixelRatio changes accordingly.
-    canvas.style.width = canvas.width + "px";
-    canvas.style.height = canvas.height + "px";
   }
-  return false;
-};
+}

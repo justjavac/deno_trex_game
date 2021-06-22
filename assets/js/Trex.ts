@@ -1,6 +1,6 @@
 import CollisionBox from "./CollisionBox";
-import { FPS, IS_HIDPI } from './constants'
-import { getTimeStamp } from './utils'
+import { FPS, IS_HIDPI } from "./constants";
+import { getTimeStamp } from "./utils";
 
 /**
  * T-rex player config.
@@ -137,7 +137,7 @@ export default class Trex {
   animStartTime: number;
   timer: number;
   msPerFrame: number;
-  config: TrexConfig & JumpConfig ;
+  config: TrexConfig & JumpConfig;
   // Current status.
   status: TrexStatus;
   jumping: boolean;
