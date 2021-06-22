@@ -1,7 +1,7 @@
 import CollisionBox from "./CollisionBox";
 import { FPS, IS_HIDPI } from "./constants";
 import Runner from "./Runner";
-import Sprite from "./sprite";
+import Sprite, { Position } from "./sprite";
 import { getTimeStamp } from "./utils";
 
 /**
@@ -126,7 +126,7 @@ export default class Trex {
 
   canvas: HTMLCanvasElement;
   canvasCtx: CanvasRenderingContext2D;
-  spritePos: object;
+  spritePos: Position;
   xPos: number;
   yPos: number;
   xInitialPos: number;
@@ -158,9 +158,9 @@ export default class Trex {
   /**
    * T-rex game character.
    * @param {HTMLCanvasElement} canvas
-   * @param {Object} spritePos Positioning within image sprite.
+   * @param spritePos Positioning within image sprite.
    */
-  constructor(canvas: HTMLCanvasElement, spritePos: object) {
+  constructor(canvas: HTMLCanvasElement, spritePos: Position) {
     this.canvas = canvas;
     this.canvasCtx = /** @type {CanvasRenderingContext2D} */ canvas.getContext(
       "2d",
@@ -232,7 +232,7 @@ export default class Trex {
    * @param {number} setting
    */
   setJumpVelocity(setting: number) {
-    this.config.INIITAL_JUMP_VELOCITY = -setting;
+    this.config.INITIAL_JUMP_VELOCITY = -setting;
     this.config.DROP_VELOCITY = -setting / 2;
   }
 
