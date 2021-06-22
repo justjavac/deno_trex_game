@@ -1,55 +1,84 @@
-/**
- * Horizon background class.
- * @param {HTMLCanvasElement} canvas
- * @param {Object} spritePos Sprite positioning.
- * @param {Object} dimensions Canvas dimensions.
- * @param {number} gapCoefficient
- * @constructor
- */
-function Horizon(canvas, spritePos, dimensions, gapCoefficient) {
-  this.canvas = canvas;
-  this.canvasCtx = /** @type {CanvasRenderingContext2D} */ (
-    this.canvas.getContext("2d")
-  );
-  this.config = Horizon.config;
-  this.dimensions = dimensions;
-  this.gapCoefficient = gapCoefficient;
-  this.obstacles = [];
-  this.obstacleHistory = [];
-  this.horizonOffsets = [0, 0];
-  this.cloudFrequency = this.config.CLOUD_FREQUENCY;
-  this.spritePos = spritePos;
-  this.nightMode = null;
-  this.altGameModeActive = false;
-
-  // Cloud
-  this.clouds = [];
-  this.cloudSpeed = this.config.BG_CLOUD_SPEED;
-
-  // Background elements
-  this.backgroundEls = [];
-  this.lastEl = null;
-  this.backgroundSpeed = this.config.BG_CLOUD_SPEED;
-
-  // Horizon
-  this.horizonLine = null;
-  this.horizonLines = [];
-  this.init();
-}
-
+import BackgroundEl from "./BackgroundEl";
+import Cloud from "./Cloud";
+import { getRandomNum } from "./utils";
 /**
  * Horizon config.
- * @enum {number}
  */
-Horizon.config = {
-  BG_CLOUD_SPEED: 0.2,
-  BUMPY_THRESHOLD: 0.3,
-  CLOUD_FREQUENCY: 0.5,
-  HORIZON_HEIGHT: 16,
-  MAX_CLOUDS: 6,
-};
+enum HorizonConfig {
+  BG_CLOUD_SPEED = 0.2,
+  BUMPY_THRESHOLD = 0.3,
+  CLOUD_FREQUENCY = 0.5,
+  HORIZON_HEIGHT = 16,
+  MAX_CLOUDS = 6,
+}
 
-Horizon.prototype = {
+export default class Horizon {
+  canvas: HTMLCanvasElement;
+  canvasCtx: CanvasRenderingContext2D;
+  dimensions: object;
+  gapCoefficient: number;
+  obstacles: Obstacle[];
+  obstacleHistory: any[];
+  horizonOffsets: [number, number];
+  cloudFrequency: number;
+  spritePos: object;
+  nightMode: NightMode;
+  altGameModeActive: boolean;
+
+  // Cloud
+  clouds = [];
+  cloudSpeed = HorizonConfig.BG_CLOUD_SPEED;
+
+  // Background elements
+  backgroundEls = [];
+  lastEl = null;
+  backgroundSpeed = HorizonConfig.BG_CLOUD_SPEED;
+
+  // Horizon
+  horizonLine = null;
+  horizonLines = [];
+
+  /**
+   * Horizon background class.
+   * @param {HTMLCanvasElement} canvas
+   * @param {Object} spritePos Sprite positioning.
+   * @param {Object} dimensions Canvas dimensions.
+   * @param {number} gapCoefficient
+   * @constructor
+   */
+  constructor(
+    canvas: HTMLCanvasElement,
+    spritePos: object,
+    dimensions: object,
+    gapCoefficient: number,
+  ) {
+    this.canvas = canvas;
+    this.canvasCtx = this.canvas.getContext("2d");
+    this.dimensions = dimensions;
+    this.gapCoefficient = gapCoefficient;
+    this.obstacles = [];
+    this.obstacleHistory = [];
+    this.horizonOffsets = [0, 0];
+    this.cloudFrequency = HorizonConfig.CLOUD_FREQUENCY;
+    this.spritePos = spritePos;
+    this.nightMode = null;
+    this.altGameModeActive = false;
+
+    // Cloud
+    this.clouds = [];
+    this.cloudSpeed = HorizonConfig.BG_CLOUD_SPEED;
+
+    // Background elements
+    this.backgroundEls = [];
+    this.lastEl = null;
+    this.backgroundSpeed = HorizonConfig.BG_CLOUD_SPEED;
+
+    // Horizon
+    this.horizonLine = null;
+    this.horizonLines = [];
+    this.init();
+  }
+
   /**
    * Initialise the horizon. Just add the line and a cloud. No obstacles.
    */
@@ -68,12 +97,12 @@ Horizon.prototype = {
       this.spritePos.MOON,
       this.dimensions.WIDTH,
     );
-  },
+  }
 
   /**
    * Update obstacle definitions based on the speed of the game.
    */
-  adjustObstacleSpeed: function () {
+  adjustObstacleSpeed() {
     for (let i = 0; i < Obstacle.types.length; i++) {
       if (Runner.slowDown) {
         Obstacle.types[i].multipleSpeed = Obstacle.types[i].multipleSpeed / 2;
@@ -87,13 +116,13 @@ Horizon.prototype = {
         }
       }
     }
-  },
+  }
 
   /**
    * Update sprites to correspond to change in sprite sheet.
    * @param {number} spritePos
    */
-  enableAltGameMode: function (spritePos) {
+  enableAltGameMode(spritePos: number) {
     // Clear existing horizon objects.
     this.clouds = [];
     this.backgroundEls = [];
@@ -116,7 +145,7 @@ Horizon.prototype = {
       );
     }
     this.reset();
-  },
+  }
 
   /**
    * @param {number} deltaTime
@@ -126,7 +155,12 @@ Horizon.prototype = {
    *     ease in section.
    * @param {boolean} showNightMode Night mode activated.
    */
-  update(deltaTime, currentSpeed, updateObstacles, showNightMode) {
+  update(
+    deltaTime: number,
+    currentSpeed: number,
+    updateObstacles: boolean,
+    showNightMode: boolean,
+  ) {
     this.runningTime += deltaTime;
 
     if (this.altGameModeActive) {
@@ -145,7 +179,7 @@ Horizon.prototype = {
     if (updateObstacles) {
       this.updateObstacles(deltaTime, currentSpeed);
     }
-  },
+  }
 
   /**
    * Update background element positions. Also handles creating new elements.
@@ -155,7 +189,13 @@ Horizon.prototype = {
    * @param {Function} bgElAddFunction
    * @param {number} frequency
    */
-  updateBackgroundEl(elSpeed, bgElArray, maxBgEl, bgElAddFunction, frequency) {
+  updateBackgroundEl(
+    elSpeed: number,
+    bgElArray: Array<object>,
+    maxBgEl: number,
+    bgElAddFunction: Function,
+    frequency: number,
+  ) {
     const numElements = bgElArray.length;
 
     if (numElements) {
@@ -176,32 +216,32 @@ Horizon.prototype = {
     } else {
       bgElAddFunction();
     }
-  },
+  }
 
   /**
    * Update the cloud positions.
    * @param {number} deltaTime
    * @param {number} speed
    */
-  updateClouds(deltaTime, speed) {
+  updateClouds(deltaTime: number, speed: number) {
     const elSpeed = (this.cloudSpeed / 1000) * deltaTime * speed;
     this.updateBackgroundEl(
       elSpeed,
       this.clouds,
-      this.config.MAX_CLOUDS,
+      HorizonConfig.MAX_CLOUDS,
       this.addCloud.bind(this),
       this.cloudFrequency,
     );
 
     // Remove expired elements.
     this.clouds = this.clouds.filter((obj) => !obj.remove);
-  },
+  }
 
   /**
    * Update the background element positions.
    * @param {number} deltaTime
    */
-  updateBackgroundEls(deltaTime) {
+  updateBackgroundEls(deltaTime: number) {
     this.updateBackgroundEl(
       deltaTime,
       this.backgroundEls,
@@ -212,14 +252,14 @@ Horizon.prototype = {
 
     // Remove expired elements.
     this.backgroundEls = this.backgroundEls.filter((obj) => !obj.remove);
-  },
+  }
 
   /**
    * Update the obstacle positions.
    * @param {number} deltaTime
    * @param {number} currentSpeed
    */
-  updateObstacles(deltaTime, currentSpeed) {
+  updateObstacles(deltaTime: number, currentSpeed: number) {
     const updatedObstacles = this.obstacles.slice(0);
 
     for (let i = 0; i < this.obstacles.length; i++) {
@@ -250,17 +290,17 @@ Horizon.prototype = {
       // Create new obstacles.
       this.addNewObstacle(currentSpeed);
     }
-  },
+  }
 
   removeFirstObstacle() {
     this.obstacles.shift();
-  },
+  }
 
   /**
    * Add a new obstacle.
    * @param {number} currentSpeed
    */
-  addNewObstacle(currentSpeed) {
+  addNewObstacle(currentSpeed: number) {
     const obstacleCount = this.altGameModeActive
       ? Obstacle.types.length - 1
       : Obstacle.types.length - 2;
@@ -298,14 +338,14 @@ Horizon.prototype = {
         this.obstacleHistory.splice(Runner.config.MAX_OBSTACLE_DUPLICATION);
       }
     }
-  },
+  }
 
   /**
    * Returns whether the previous two obstacles are the same as the next one.
    * Maximum duplication is set in config value MAX_OBSTACLE_DUPLICATION.
    * @return {boolean}
    */
-  duplicateObstacleCheck(nextObstacleType) {
+  duplicateObstacleCheck(nextObstacleType): boolean {
     let duplicateCount = 0;
 
     for (let i = 0; i < this.obstacleHistory.length; i++) {
@@ -314,7 +354,7 @@ Horizon.prototype = {
         : 0;
     }
     return duplicateCount >= Runner.config.MAX_OBSTACLE_DUPLICATION;
-  },
+  }
 
   /**
    * Reset the horizon layer.
@@ -327,17 +367,17 @@ Horizon.prototype = {
     }
 
     this.nightMode.reset();
-  },
+  }
 
   /**
    * Update the canvas width and scaling.
    * @param {number} width Canvas width.
    * @param {number} height Canvas height.
    */
-  resize(width, height) {
+  resize(width: number, height: number) {
     this.canvas.width = width;
     this.canvas.height = height;
-  },
+  }
 
   /**
    * Add a new cloud to the horizon.
@@ -346,7 +386,7 @@ Horizon.prototype = {
     this.clouds.push(
       new Cloud(this.canvas, this.spritePos.CLOUD, this.dimensions.WIDTH),
     );
-  },
+  }
 
   /**
    * Add a random background element to the horizon.
@@ -376,7 +416,5 @@ Horizon.prototype = {
         ),
       );
     }
-  },
-};
-
-export default Horizon;
+  }
+}

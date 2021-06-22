@@ -1,60 +1,27 @@
-/**
- * Game over panel.
- * @param {!HTMLCanvasElement} canvas
- * @param {Object} textImgPos
- * @param {Object} restartImgPos
- * @param {!Object} dimensions Canvas dimensions.
- * @param {Object=} opt_altGameEndImgPos
- * @param {boolean=} opt_altGameActive
- * @constructor
- */
-function GameOverPanel(
-  canvas,
-  textImgPos,
-  restartImgPos,
-  dimensions,
-  opt_altGameEndImgPos,
-  opt_altGameActive,
-) {
-  this.canvas = canvas;
-  this.canvasCtx = /** @type {CanvasRenderingContext2D} */ (
-    canvas.getContext("2d")
-  );
-  this.canvasDimensions = dimensions;
-  this.textImgPos = textImgPos;
-  this.restartImgPos = restartImgPos;
-  this.altGameEndImgPos = opt_altGameEndImgPos;
-  this.altGameModeActive = opt_altGameActive;
+import { IS_HIDPI } from "./constants";
+import { getTimeStamp } from "./utils";
 
-  // Retry animation.
-  this.frameTimeStamp = 0;
-  this.animTimer = 0;
-  this.currentFrame = 0;
-
-  this.gameOverRafId = null;
-
-  this.flashTimer = 0;
-  this.flashCounter = 0;
-  this.originalText = true;
-}
-
-GameOverPanel.RESTART_ANIM_DURATION = 875;
-GameOverPanel.LOGO_PAUSE_DURATION = 875;
-GameOverPanel.FLASH_ITERATIONS = 5;
+const RESTART_ANIM_DURATION = 875;
+const LOGO_PAUSE_DURATION = 875;
+const FLASH_ITERATIONS = 5;
 
 /**
  * Animation frames spec.
  */
-GameOverPanel.animConfig = {
+const AnimConfig = {
   frames: [0, 36, 72, 108, 144, 180, 216, 252],
-  msPerFrame: GameOverPanel.RESTART_ANIM_DURATION / 8,
+  msPerFrame: RESTART_ANIM_DURATION / 8,
 };
+
+interface Dimensions {
+  WIDTH: number;
+  HEIGHT: number;
+}
 
 /**
  * Dimensions used in the panel.
- * @enum {number}
  */
-GameOverPanel.dimensions = {
+const GameOverPanelDimensions = {
   TEXT_X: 0,
   TEXT_Y: 13,
   TEXT_WIDTH: 191,
@@ -63,21 +30,80 @@ GameOverPanel.dimensions = {
   RESTART_HEIGHT: 32,
 };
 
-GameOverPanel.prototype = {
+export default class GameOverPanel {
+  canvas: HTMLCanvasElement;
+  canvasCtx: CanvasRenderingContext2D;
+  canvasDimensions: Dimensions;
+
+  textImgPos: object;
+  restartImgPos: object;
+  altGameEndImgPos: object;
+  altGameModeActive: boolean;
+
+  // Retry animation.
+  frameTimeStamp: number;
+  animTimer: number;
+  currentFrame: number;
+
+  gameOverRafId?: number;
+
+  flashTimer: number;
+  flashCounter: number;
+  originalText: boolean;
+
+  /**
+ * Game over panel.
+ * @param canvas
+ * @param textImgPos
+ * @param restartImgPos
+ * @param dimensions Canvas dimensions.
+ * @param optAltGameEndImgPos
+ * @param optAltGameActive
+ */
+  constructor(
+    canvas: HTMLCanvasElement,
+    textImgPos: object,
+    restartImgPos: object,
+    dimensions: Dimensions,
+    optAltGameEndImgPos?: object,
+    optAltGameActive?: boolean,
+  ) {
+    this.canvas = canvas;
+    this.canvasCtx = canvas.getContext(
+      "2d",
+    );
+    this.canvasDimensions = dimensions;
+    this.textImgPos = textImgPos;
+    this.restartImgPos = restartImgPos;
+    this.altGameEndImgPos = optAltGameEndImgPos;
+    this.altGameModeActive = optAltGameActive;
+
+    // Retry animation.
+    this.frameTimeStamp = 0;
+    this.animTimer = 0;
+    this.currentFrame = 0;
+
+    this.gameOverRafId = null;
+
+    this.flashTimer = 0;
+    this.flashCounter = 0;
+    this.originalText = true;
+  }
+
   /**
    * Update the panel dimensions.
-   * @param {number} width New canvas width.
-   * @param {number} opt_height Optional new canvas height.
+   * @param width New canvas width.
+   * @param optHeight Optional new canvas height.
    */
-  updateDimensions(width, opt_height) {
+  updateDimensions(width: number, optHeight?: number) {
     this.canvasDimensions.WIDTH = width;
-    if (opt_height) {
-      this.canvasDimensions.HEIGHT = opt_height;
+    if (optHeight) {
+      this.canvasDimensions.HEIGHT = optHeight;
     }
-    this.currentFrame = GameOverPanel.animConfig.frames.length - 1;
-  },
+    this.currentFrame = AnimConfig.frames.length - 1;
+  }
 
-  drawGameOverText(dimensions, opt_useAltText) {
+  drawGameOverText(dimensions, optUseAltText: boolean) {
     const centerX = this.canvasDimensions.WIDTH / 2;
     let textSourceX = dimensions.TEXT_X;
     let textSourceY = dimensions.TEXT_Y;
@@ -96,12 +122,12 @@ GameOverPanel.prototype = {
       textSourceHeight *= 2;
     }
 
-    if (!opt_useAltText) {
+    if (!optUseAltText) {
       textSourceX += this.textImgPos.x;
       textSourceY += this.textImgPos.y;
     }
 
-    const spriteSource = opt_useAltText
+    const spriteSource = optUseAltText
       ? Runner.altCommonImageSprite
       : Runner.origImageSprite;
 
@@ -121,7 +147,7 @@ GameOverPanel.prototype = {
     );
 
     this.canvasCtx.restore();
-  },
+  }
 
   /**
    * Draw additional adornments for alternative game types.
@@ -153,18 +179,17 @@ GameOverPanel.prototype = {
         altGameEndConfig.HEIGHT,
       );
     }
-  },
+  }
 
   /**
    * Draw restart button.
    */
   drawRestartButton() {
-    const dimensions = GameOverPanel.dimensions;
-    let framePosX = GameOverPanel.animConfig.frames[this.currentFrame];
-    let restartSourceWidth = dimensions.RESTART_WIDTH;
-    let restartSourceHeight = dimensions.RESTART_HEIGHT;
+    let framePosX = AnimConfig.frames[this.currentFrame];
+    let restartSourceWidth = GameOverPanelDimensions.RESTART_WIDTH;
+    let restartSourceHeight = GameOverPanelDimensions.RESTART_HEIGHT;
     const restartTargetX = this.canvasDimensions.WIDTH / 2 -
-      dimensions.RESTART_WIDTH / 2;
+      GameOverPanelDimensions.RESTART_WIDTH / 2;
     const restartTargetY = this.canvasDimensions.HEIGHT / 2;
 
     if (IS_HIDPI) {
@@ -183,27 +208,27 @@ GameOverPanel.prototype = {
       restartSourceHeight,
       restartTargetX,
       restartTargetY,
-      dimensions.RESTART_WIDTH,
-      dimensions.RESTART_HEIGHT,
+      GameOverPanelDimensions.RESTART_WIDTH,
+      GameOverPanelDimensions.RESTART_HEIGHT,
     );
     this.canvasCtx.restore();
-  },
+  }
 
   /**
    * Draw the panel.
-   * @param {boolean} opt_altGameModeActive
-   * @param {!Trex} opt_tRex
+   * @param {boolean} optAltGameModeActive
+   * @param {!Trex} optTrex
    */
-  draw(opt_altGameModeActive, opt_tRex) {
-    if (opt_altGameModeActive) {
-      this.altGameModeActive = opt_altGameModeActive;
+  draw(optAltGameModeActive: boolean, optTrex: Trex) {
+    if (optAltGameModeActive) {
+      this.altGameModeActive = optAltGameModeActive;
     }
 
-    this.drawGameOverText(GameOverPanel.dimensions, false);
+    this.drawGameOverText(GameOverPanelDimensions, false);
     this.drawRestartButton();
-    this.drawAltGameElements(opt_tRex);
+    this.drawAltGameElements(optTrex);
     this.update();
-  },
+  }
 
   /**
    * Update animation frames.
@@ -221,22 +246,22 @@ GameOverPanel.prototype = {
     // Restart Button
     if (
       this.currentFrame == 0 &&
-      this.animTimer > GameOverPanel.LOGO_PAUSE_DURATION
+      this.animTimer > LOGO_PAUSE_DURATION
     ) {
       this.animTimer = 0;
       this.currentFrame++;
       this.drawRestartButton();
     } else if (
       this.currentFrame > 0 &&
-      this.currentFrame < GameOverPanel.animConfig.frames.length
+      this.currentFrame < AnimConfig.frames.length
     ) {
-      if (this.animTimer >= GameOverPanel.animConfig.msPerFrame) {
+      if (this.animTimer >= AnimConfig.msPerFrame) {
         this.currentFrame++;
         this.drawRestartButton();
       }
     } else if (
       !this.altGameModeActive &&
-      this.currentFrame == GameOverPanel.animConfig.frames.length
+      this.currentFrame == AnimConfig.frames.length
     ) {
       this.reset();
       return;
@@ -245,7 +270,7 @@ GameOverPanel.prototype = {
     // Game over text
     if (this.altGameModeActive) {
       if (
-        this.flashCounter < GameOverPanel.FLASH_ITERATIONS &&
+        this.flashCounter < FLASH_ITERATIONS &&
         this.flashTimer > altTextConfig.FLASH_DURATION
       ) {
         this.flashTimer = 0;
@@ -253,19 +278,19 @@ GameOverPanel.prototype = {
 
         this.clearGameOverTextBounds();
         if (this.originalText) {
-          this.drawGameOverText(GameOverPanel.dimensions, false);
+          this.drawGameOverText(GameOverPanelDimensions, false);
           this.flashCounter++;
         } else {
           this.drawGameOverText(altTextConfig, true);
         }
-      } else if (this.flashCounter >= GameOverPanel.FLASH_ITERATIONS) {
+      } else if (this.flashCounter >= FLASH_ITERATIONS) {
         this.reset();
         return;
       }
     }
 
     this.gameOverRafId = requestAnimationFrame(this.update.bind(this));
-  },
+  }
 
   /**
    * Clear game over text.
@@ -276,14 +301,14 @@ GameOverPanel.prototype = {
     this.canvasCtx.clearRect(
       Math.round(
         this.canvasDimensions.WIDTH / 2 -
-          GameOverPanel.dimensions.TEXT_WIDTH / 2,
+          GameOverPanelDimensions.TEXT_WIDTH / 2,
       ),
       Math.round((this.canvasDimensions.HEIGHT - 25) / 3),
-      GameOverPanel.dimensions.TEXT_WIDTH,
-      GameOverPanel.dimensions.TEXT_HEIGHT + 4,
+      GameOverPanelDimensions.TEXT_WIDTH,
+      GameOverPanelDimensions.TEXT_HEIGHT + 4,
     );
     this.canvasCtx.restore();
-  },
+  }
 
   reset() {
     if (this.gameOverRafId) {
@@ -296,5 +321,5 @@ GameOverPanel.prototype = {
     this.flashTimer = 0;
     this.flashCounter = 0;
     this.originalText = true;
-  },
-};
+  }
+}

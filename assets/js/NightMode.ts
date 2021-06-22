@@ -1,48 +1,82 @@
-/**
- * Nightmode shows a moon and stars on the horizon.
- * @param {HTMLCanvasElement} canvas
- * @param {number} spritePos
- * @param {number} containerWidth
- * @constructor
- */
-function NightMode(canvas, spritePos, containerWidth) {
-  this.spritePos = spritePos;
-  this.canvas = canvas;
-  this.canvasCtx = /** @type {CanvasRenderingContext2D} */ (
-    canvas.getContext("2d")
-  );
-  this.xPos = containerWidth - 50;
-  this.yPos = 30;
-  this.currentPhase = 0;
-  this.opacity = 0;
-  this.containerWidth = containerWidth;
-  this.stars = [];
-  this.drawStars = false;
-  this.placeStars();
-}
+import { IS_HIDPI } from "./constants";
+import { getRandomNum } from "./utils";
 
 /**
  * @enum {number}
  */
-NightMode.config = {
-  FADE_SPEED: 0.035,
-  HEIGHT: 40,
-  MOON_SPEED: 0.25,
-  NUM_STARS: 2,
-  STAR_SIZE: 9,
-  STAR_SPEED: 0.3,
-  STAR_MAX_Y: 70,
-  WIDTH: 20,
-};
+interface NightModeConfig {
+  FADE_SPEED: number;
+  HEIGHT: number;
+  MOON_SPEED: number;
+  NUM_STARS: number;
+  STAR_SIZE: number;
+  STAR_SPEED: number;
+  STAR_MAX_Y: number;
+  WIDTH: number;
+}
 
-NightMode.phases = [140, 120, 100, 60, 40, 20, 0];
+interface Star {
+  x: number;
+  y: number;
+  sourceY: number;
+}
 
-NightMode.prototype = {
+export default class NightMode {
+  static config: NightModeConfig = {
+    FADE_SPEED: 0.035,
+    HEIGHT: 40,
+    MOON_SPEED: 0.25,
+    NUM_STARS: 2,
+    STAR_SIZE: 9,
+    STAR_SPEED: 0.3,
+    STAR_MAX_Y: 70,
+    WIDTH: 20,
+  };
+
+  static phases: number[] = [140, 120, 100, 60, 40, 20, 0];
+
+  spritePos: number;
+  canvas: HTMLCanvasElement;
+  canvasCtx: CanvasRenderingContext2D;
+  xPos: number;
+  yPos: number;
+  currentPhase: number;
+  opacity: number;
+  containerWidth: number;
+  stars: Star[];
+  drawStars: boolean;
+
+  /**
+   * Nightmode shows a moon and stars on the horizon.
+   * @param {HTMLCanvasElement} canvas
+   * @param {number} spritePos
+   * @param {number} containerWidth
+   */
+  constructor(
+    canvas: HTMLCanvasElement,
+    spritePos: number,
+    containerWidth: number,
+  ) {
+    this.spritePos = spritePos;
+    this.canvas = canvas;
+    this.canvasCtx = /** @type {CanvasRenderingContext2D} */ canvas.getContext(
+      "2d",
+    );
+    this.xPos = containerWidth - 50;
+    this.yPos = 30;
+    this.currentPhase = 0;
+    this.opacity = 0;
+    this.containerWidth = containerWidth;
+    this.stars = [];
+    this.drawStars = false;
+    this.placeStars();
+  }
+
   /**
    * Update moving moon, changing phases.
-   * @param {boolean} activated Whether night mode is activated.
+   * @param  activated Whether night mode is activated.
    */
-  update(activated) {
+  update(activated: boolean) {
     // Moon phase.
     if (activated && this.opacity === 0) {
       this.currentPhase++;
@@ -78,16 +112,16 @@ NightMode.prototype = {
       this.placeStars();
     }
     this.drawStars = true;
-  },
+  }
 
-  updateXPos(currentPos, speed) {
+  updateXPos(currentPos: number, speed: number) {
     if (currentPos < -NightMode.config.WIDTH) {
       currentPos = this.containerWidth;
     } else {
       currentPos -= speed;
     }
     return currentPos;
-  },
+  }
 
   draw() {
     let moonSourceWidth = this.currentPhase === 3
@@ -142,7 +176,7 @@ NightMode.prototype = {
 
     this.canvasCtx.globalAlpha = 1;
     this.canvasCtx.restore();
-  },
+  }
 
   // Do star placement.
   placeStars() {
@@ -151,25 +185,21 @@ NightMode.prototype = {
     );
 
     for (let i = 0; i < NightMode.config.NUM_STARS; i++) {
-      this.stars[i] = {};
-      this.stars[i].x = getRandomNum(segmentSize * i, segmentSize * (i + 1));
-      this.stars[i].y = getRandomNum(0, NightMode.config.STAR_MAX_Y);
-
-      if (IS_HIDPI) {
-        this.stars[i].sourceY =
-          Runner.spriteDefinitionByType.original.HDPI.STAR.y +
-          NightMode.config.STAR_SIZE * 2 * i;
-      } else {
-        this.stars[i].sourceY =
-          Runner.spriteDefinitionByType.original.LDPI.STAR.y +
+      const x = getRandomNum(segmentSize * i, segmentSize * (i + 1));
+      const y = getRandomNum(0, NightMode.config.STAR_MAX_Y);
+      const sourceY = IS_HIDPI
+        ? Runner.spriteDefinitionByType.original.HDPI.STAR.y +
+          NightMode.config.STAR_SIZE * 2 * i
+        : Runner.spriteDefinitionByType.original.LDPI.STAR.y +
           NightMode.config.STAR_SIZE * i;
-      }
+
+      this.stars[i] = { x, y, sourceY };
     }
-  },
+  }
 
   reset() {
     this.currentPhase = 0;
     this.opacity = 0;
     this.update(false);
-  },
-};
+  }
+}

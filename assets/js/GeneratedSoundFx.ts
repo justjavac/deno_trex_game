@@ -1,14 +1,20 @@
-/**
- * Generated sound FX class for audio cues.
- * @constructor
- */
-function GeneratedSoundFx() {
-  this.audioCues = false;
-  this.context = null;
-  this.panner = null;
-}
+import { IS_IOS } from "./constants";
 
-GeneratedSoundFx.prototype = {
+export default class GeneratedSoundFx {
+  audioCues: boolean;
+  context: AudioContext;
+  panner: StereoPannerNode;
+  bgSoundIntervalId?: number;
+
+  /**
+   * Generated sound FX class for audio cues.
+   */
+  constructor() {
+    this.audioCues = false;
+    this.context = null;
+    this.panner = null;
+  }
+
   init() {
     this.audioCues = true;
     if (!this.context) {
@@ -28,21 +34,27 @@ GeneratedSoundFx.prototype = {
         ? this.context.createStereoPanner()
         : null;
     }
-  },
+  }
 
   stopAll() {
     this.cancelFootSteps();
-  },
+  }
 
   /**
    * Play oscillators at certain frequency and for a certain time.
-   * @param {number} frequency
-   * @param {number} startTime
-   * @param {number} duration
-   * @param {?number=} opt_vol
-   * @param {number=} opt_pan
+   * @param frequency
+   * @param startTime
+   * @param duration
+   * @param optVol
+   * @param optPan
    */
-  playNote(frequency, startTime, duration, opt_vol, opt_pan) {
+  playNote(
+    frequency: number,
+    startTime: number,
+    duration: number,
+    optVol = 0.01,
+    optPan = 0,
+  ) {
     const osc1 = this.context.createOscillator();
     const osc2 = this.context.createOscillator();
     const volume = this.context.createGain();
@@ -54,7 +66,7 @@ GeneratedSoundFx.prototype = {
 
     // Set up node routing
     if (this.panner) {
-      this.panner.pan.value = opt_pan || 0;
+      this.panner.pan.value = optPan;
       osc1.connect(volume).connect(this.panner);
       osc2.connect(volume).connect(this.panner);
       this.panner.connect(this.context.destination);
@@ -69,7 +81,7 @@ GeneratedSoundFx.prototype = {
     osc2.frequency.value = frequency - 2;
 
     // Fade out
-    volume.gain.setValueAtTime(opt_vol || 0.01, startTime + duration - 0.05);
+    volume.gain.setValueAtTime(optVol, startTime + duration - 0.05);
     volume.gain.linearRampToValueAtTime(0.00001, startTime + duration);
 
     // Start oscillators
@@ -78,7 +90,7 @@ GeneratedSoundFx.prototype = {
     // Stop oscillators
     osc1.stop(startTime + duration);
     osc2.stop(startTime + duration);
-  },
+  }
 
   background() {
     if (this.audioCues) {
@@ -87,7 +99,7 @@ GeneratedSoundFx.prototype = {
       this.playNote(659.255, now + 0.116, 0.232);
       this.loopFootSteps();
     }
-  },
+  }
 
   loopFootSteps() {
     if (this.audioCues && !this.bgSoundIntervalId) {
@@ -99,7 +111,7 @@ GeneratedSoundFx.prototype = {
         280,
       );
     }
-  },
+  }
 
   cancelFootSteps() {
     if (this.audioCues && this.bgSoundIntervalId) {
@@ -108,7 +120,7 @@ GeneratedSoundFx.prototype = {
       this.playNote(103.83, this.context.currentTime, 0.232, 0.02);
       this.playNote(116.54, this.context.currentTime + 0.116, 0.232, 0.02);
     }
-  },
+  }
 
   collect() {
     if (this.audioCues) {
@@ -117,7 +129,7 @@ GeneratedSoundFx.prototype = {
       this.playNote(830.61, now, 0.116);
       this.playNote(1318.51, now + 0.116, 0.232);
     }
-  },
+  }
 
   jump() {
     if (this.audioCues) {
@@ -125,5 +137,5 @@ GeneratedSoundFx.prototype = {
       this.playNote(659.25, now, 0.116, 0.3, -0.6);
       this.playNote(880, now + 0.116, 0.232, 0.3, -0.6);
     }
-  },
-};
+  }
+}

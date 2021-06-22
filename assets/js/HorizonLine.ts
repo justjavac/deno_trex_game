@@ -1,50 +1,68 @@
-/**
- * Horizon Line.
- * Consists of two connecting lines. Randomly assigns a flat / bumpy horizon.
- * @param {HTMLCanvasElement} canvas
- * @param {Object} lineConfig Configuration object.
- * @constructor
- */
-function HorizonLine(canvas, lineConfig) {
-  let sourceX = lineConfig.SOURCE_X;
-  let sourceY = lineConfig.SOURCE_Y;
+import { FPS, IS_HIDPI } from "./constants";
 
-  if (IS_HIDPI) {
-    sourceX *= 2;
-    sourceY *= 2;
-  }
-
-  this.spritePos = { x: sourceX, y: sourceY };
-  this.canvas = canvas;
-  this.canvasCtx = /** @type {CanvasRenderingContext2D} */ (
-    canvas.getContext("2d")
-  );
-  this.sourceDimensions = {};
-  this.dimensions = lineConfig;
-
-  this.sourceXPos = [
-    this.spritePos.x,
-    this.spritePos.x + this.dimensions.WIDTH,
-  ];
-  this.xPos = [];
-  this.yPos = 0;
-  this.bumpThreshold = 0.5;
-
-  this.setSourceDimensions(lineConfig);
-  this.draw();
+interface HorizonLineDimensions {
+  WIDTH: number;
+  HEIGHT: number;
+  YPOS: number;
 }
 
-/**
- * Horizon line dimensions.
- * @enum {number}
- */
-HorizonLine.dimensions = {
-  WIDTH: 600,
-  HEIGHT: 12,
-  YPOS: 127,
-};
+interface Position {
+  x: number;
+  y: number;
+}
 
-HorizonLine.prototype = {
+export default class HorizonLine {
+  /** Horizon line dimensions. */
+  static dimensions: HorizonLineDimensions = {
+    WIDTH: 600,
+    HEIGHT: 12,
+    YPOS: 127,
+  };
+
+  spritePos: Position;
+  canvas: HTMLCanvasElement;
+  canvasCtx: CanvasRenderingContext2D;
+  sourceDimensions: object;
+  dimensions: object;
+
+  sourceXPos: [number, number];
+  xPos: number[];
+  yPos: number;
+  bumpThreshold: number;
+
+  /**
+   * Horizon Line.
+   * Consists of two connecting lines. Randomly assigns a flat / bumpy horizon.
+   * @param canvas
+   * @param lineConfig Configuration object.
+   */
+  constructor(canvas: HTMLCanvasElement, lineConfig: object) {
+    let sourceX = lineConfig.SOURCE_X;
+    let sourceY = lineConfig.SOURCE_Y;
+
+    if (IS_HIDPI) {
+      sourceX *= 2;
+      sourceY *= 2;
+    }
+
+    this.spritePos = { x: sourceX, y: sourceY };
+    this.canvas = canvas;
+    this.canvasCtx = canvas.getContext("2d");
+    this.sourceDimensions = {};
+    this.dimensions = lineConfig;
+
+    this.sourceXPos = [
+      this.spritePos.x,
+      this.spritePos.x + this.dimensions.WIDTH,
+    ];
+    this.xPos = [];
+    this.yPos = 0;
+    this.bumpThreshold = 0.5;
+
+    this.setSourceDimensions(lineConfig);
+    this.draw();
+  }
+
   /**
    * Set the source dimensions of the horizon line.
    */
@@ -64,14 +82,14 @@ HorizonLine.prototype = {
 
     this.xPos = [0, newDimensions.WIDTH];
     this.yPos = newDimensions.YPOS;
-  },
+  }
 
   /**
    * Return the crop x position of a type.
    */
   getRandomType() {
     return Math.random() > this.bumpThreshold ? this.dimensions.WIDTH : 0;
-  },
+  }
 
   /**
    * Draw the horizon line.
@@ -100,14 +118,14 @@ HorizonLine.prototype = {
       this.dimensions.WIDTH,
       this.dimensions.HEIGHT,
     );
-  },
+  }
 
   /**
    * Update the x position of an indivdual piece of the line.
    * @param {number} pos Line position.
    * @param {number} increment
    */
-  updateXPos(pos, increment) {
+  updateXPos(pos: number, increment: number) {
     const line1 = pos;
     const line2 = pos === 0 ? 1 : 0;
 
@@ -119,14 +137,14 @@ HorizonLine.prototype = {
       this.xPos[line2] = this.xPos[line1] - this.dimensions.WIDTH;
       this.sourceXPos[line1] = this.getRandomType() + this.spritePos.x;
     }
-  },
+  }
 
   /**
    * Update the horizon line.
    * @param {number} deltaTime
    * @param {number} speed
    */
-  update(deltaTime, speed) {
+  update(deltaTime: number, speed: number) {
     const increment = Math.floor(speed * (FPS / 1000) * deltaTime);
 
     if (this.xPos[0] <= 0) {
@@ -135,7 +153,7 @@ HorizonLine.prototype = {
       this.updateXPos(1, increment);
     }
     this.draw();
-  },
+  }
 
   /**
    * Reset horizon to the starting position.
@@ -143,7 +161,5 @@ HorizonLine.prototype = {
   reset() {
     this.xPos[0] = 0;
     this.xPos[1] = this.dimensions.WIDTH;
-  },
-};
-
-export default HorizonLine;
+  }
+}
