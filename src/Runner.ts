@@ -104,9 +104,8 @@ export default class Runner {
 
   /**
    * Sound FX. Reference to the ID of the audio tag on interstitial page.
-   * @enum {string}
    */
-  static sounds = {
+  static sounds: Record<string, string> = {
     BUTTON_PRESS: "offline-sound-press",
     HIT: "offline-sound-hit",
     SCORE: "offline-sound-reached",
@@ -114,11 +113,10 @@ export default class Runner {
 
   /**
    * Key code mapping.
-   * @enum {Object}
    */
-  static keycodes = {
-    JUMP: { 38: 1, 32: 1 }, // Up, spacebar
-    DUCK: { 40: 1 }, // Down
+  static keycodes: Record<string, Record<number, number>> = {
+    JUMP: { 38: 1, 32: 1, 87: 1 }, // Up, spacebar, w
+    DUCK: { 40: 1, 83:1 }, // Down, s
     RESTART: { 13: 1 }, // Enter
   };
 
@@ -141,7 +139,7 @@ export default class Runner {
     FOCUS: "focus",
     LOAD: "load",
     GAMEPADCONNECTED: "gamepadconnected",
-  };
+  } as const;
 
   static origImageSprite: HTMLImageElement;
   spriteDef: Stage;
@@ -173,7 +171,7 @@ export default class Runner {
     optWidth?: number,
     optWeight?: number,
   ): boolean {
-    const context = canvas.getContext("2d");
+    const context = canvas.getContext("2d")!;
 
     // Query the various pixel ratios
     const devicePixelRatio = Math.floor(window.devicePixelRatio) || 1;
@@ -206,24 +204,23 @@ export default class Runner {
     return false;
   }
 
-  outerContainerEl: HTMLDivElement;
-  containerEl: HTMLDivElement;
-  snackbarEl: HTMLDivElement;
+  outerContainerEl!: HTMLDivElement;
+  containerEl!: HTMLDivElement;
   // A div to intercept touch events. Only set while (playing && useTouch).
-  touchController: HTMLDivElement;
+  touchController?: HTMLDivElement;
 
-  config: typeof Runner.config & typeof Runner.normalConfig;
+  config!: typeof Runner.config & typeof Runner.normalConfig;
   // Logical dimensions of the container.
-  dimensions: typeof Runner.defaultDimensions;
+  dimensions!: typeof Runner.defaultDimensions;
 
   fadeInTimer: number;
 
-  canvas: HTMLCanvasElement;
-  canvasCtx: CanvasRenderingContext2D;
+  canvas!: HTMLCanvasElement;
+  canvasCtx!: CanvasRenderingContext2D;
 
-  tRex: Trex;
+  tRex!: Trex;
 
-  distanceMeter: DistanceMeter;
+  distanceMeter!: DistanceMeter;
   distanceRan: number;
 
   highestScore: number;
@@ -246,14 +243,8 @@ export default class Runner {
 
   playCount: number;
 
-  // Sound FX.
-  audioBuffer: AudioBuffer;
+  soundFx: Record<string, AudioBuffer>;
 
-  soundFx: {
-    BUTTON_PRESS?: AudioBuffer;
-    HIT?: AudioBuffer;
-    SCORE?: AudioBuffer;
-  };
   generatedSoundFx: GeneratedSoundFx;
 
   // Global web audio context for playing sounds.
@@ -261,8 +252,8 @@ export default class Runner {
 
   // Gamepad state.
   pollingGamepads: boolean;
-  gamepadIndex: number;
-  previousGamepad: Gamepad;
+  gamepadIndex?: number;
+  previousGamepad!: Gamepad | null;
 
   /**
    * T-Rex runner.
@@ -278,23 +269,14 @@ export default class Runner {
     Runner.instance_ = this;
 
     this.outerContainerEl = document.querySelector(outerContainerId)!;
-    this.containerEl = null;
-    this.snackbarEl = null;
-    // A div to intercept touch events. Only set while (playing && useTouch).
-    this.touchController = null;
 
     this.config = Object.assign(Runner.config, Runner.normalConfig);
     // Logical dimensions of the container.
     this.dimensions = Runner.defaultDimensions;
 
     this.fadeInTimer = 0;
+    this.raqId = 0;
 
-    this.canvas = null;
-    this.canvasCtx = null;
-
-    this.tRex = null;
-
-    this.distanceMeter = null;
     this.distanceRan = 0;
 
     this.highestScore = 0;
@@ -317,12 +299,9 @@ export default class Runner {
     this.resizeTimerId_ = 0;
 
     this.playCount = 0;
-
-    // Sound FX.
-    this.audioBuffer = null;
+    this.raqId = 0;
 
     this.soundFx = {};
-    this.generatedSoundFx = null;
 
     // Global web audio context for playing sounds.
     this.audioContext = null;
@@ -332,6 +311,16 @@ export default class Runner {
     this.gamepadIndex = undefined;
     this.previousGamepad = null;
 
+    this.spriteDef = IS_HIDPI ? Sprite.HDPI : Sprite.LDPI;
+    
+    this.containerEl = document.createElement("div");
+    this.containerEl.setAttribute("role", IS_MOBILE ? "button" : "application");
+    this.containerEl.setAttribute("tabindex", "0");
+
+    this.containerEl.className = Runner.classes.CONTAINER;
+
+    this.generatedSoundFx = new GeneratedSoundFx();
+
     this.loadImages();
   }
 
@@ -340,12 +329,7 @@ export default class Runner {
    * definition.
    */
   loadImages() {
-    let scale = "1x";
-    this.spriteDef = Sprite.LDPI;
-    if (IS_HIDPI) {
-      scale = "2x";
-      this.spriteDef = Sprite.HDPI;
-    }
+    const scale =IS_HIDPI ? "2x" : "1x";
 
     Runner.imageSprite = document.getElementById(
       RESOURCE_POSTFIX + scale,
@@ -422,20 +406,12 @@ export default class Runner {
     this.adjustDimensions();
     this.setSpeed();
 
-    this.containerEl = document.createElement("div");
-    this.containerEl.setAttribute("role", IS_MOBILE ? "button" : "application");
-    this.containerEl.setAttribute("tabindex", "0");
-
-    this.containerEl.className = Runner.classes.CONTAINER;
-
     // Player canvas container.
     this.canvas = createCanvas(
       this.containerEl,
       this.dimensions.WIDTH,
       this.dimensions.HEIGHT,
     );
-
-    this.generatedSoundFx = new GeneratedSoundFx();
 
     this.canvasCtx = this.canvas.getContext("2d")!;
     this.canvasCtx.fillStyle = "#f7f7f7";
@@ -505,7 +481,7 @@ export default class Runner {
    */
   adjustDimensions() {
     clearInterval(this.resizeTimerId_);
-    this.resizeTimerId_ = null;
+    this.resizeTimerId_ = 0;
 
     const boxStyles = window.getComputedStyle(this.outerContainerEl);
     const padding = Number(
@@ -761,23 +737,23 @@ export default class Runner {
    * @param {Event} e
    */
   handleEvent(e: Event) {
-    return function (evtType, events) {
+    return  ((evtType, events) => {
       switch (evtType) {
         case events.KEYDOWN:
         case events.TOUCHSTART:
         case events.POINTERDOWN:
-          this.onKeyDown(e);
+          this.onKeyDown(e as KeyboardEvent);
           break;
         case events.KEYUP:
         case events.TOUCHEND:
         case events.POINTERUP:
-          this.onKeyUp(e);
+          this.onKeyUp(e as KeyboardEvent);
           break;
         case events.GAMEPADCONNECTED:
-          this.onGamepadConnected(e);
+          this.onGamepadConnected();
           break;
       }
-    }.bind(this)(e.type, Runner.events);
+    })(e.type, Runner.events);
   }
 
   /**
@@ -833,9 +809,11 @@ export default class Runner {
     // A11y keyboard / screen reader activation.
     this.containerEl.addEventListener(
       Runner.events.KEYDOWN,
-      this.handleCanvasKeyPress.bind(this),
+      (e: Event) => {
+        this.handleCanvasKeyPress(e as KeyboardEvent)
+      }
     );
-    this.canvas.addEventListener(
+    this.canvas.addEventListener<"keydown">(
       Runner.events.KEYDOWN,
       this.preventScrolling.bind(this),
     );
@@ -934,7 +912,6 @@ export default class Runner {
             }
             this.tRex.startJump(this.currentSpeed);
           }
-          // Ducking is disabled on alt game modes.
         } else if (this.playing && Runner.keycodes.DUCK[e.keyCode]) {
           e.preventDefault();
           if (this.tRex.jumping) {
@@ -953,7 +930,7 @@ export default class Runner {
    * Process key up.
    */
   onKeyUp(e: KeyboardEvent) {
-    const keyCode = String(e.keyCode);
+    const keyCode = e.keyCode;
     const isjumpKey = Runner.keycodes.JUMP[keyCode] ||
       e.type === Runner.events.TOUCHEND ||
       e.type === Runner.events.POINTERUP;
@@ -1008,12 +985,13 @@ export default class Runner {
    * becomes the "active" gamepad and all others are ignored.
    * @param gamepads
    */
-  pollForActiveGamepad(gamepads: Gamepad[]) {
+  pollForActiveGamepad(gamepads: (Gamepad | null)[]) {
     for (let i = 0; i < gamepads.length; ++i) {
+      const gamepad = gamepads[i];
+      if (!gamepad) continue;
       if (
-        gamepads[i] &&
-        gamepads[i].buttons.length > 0 &&
-        gamepads[i].buttons[0].pressed
+        gamepad.buttons.length > 0 &&
+        gamepad.buttons[0].pressed
       ) {
         this.gamepadIndex = i;
         this.pollActiveGamepad(gamepads);
@@ -1025,9 +1003,8 @@ export default class Runner {
   /**
    * Polls the chosen gamepad for button presses and generates KeyboardEvents
    * to integrate with the rest of the game logic.
-   * @param {!Array<Gamepad>} gamepads
    */
-  pollActiveGamepad(gamepads: Array<Gamepad>) {
+  pollActiveGamepad(gamepads: (Gamepad | null)[]) {
     if (this.gamepadIndex === undefined) {
       this.pollForActiveGamepad(gamepads);
       return;
@@ -1238,7 +1215,7 @@ export default class Runner {
     }
   }
 
-  setPlayStatus(isPlaying) {
+  setPlayStatus(isPlaying: boolean) {
     if (this.touchController) {
       this.touchController.classList.toggle("hidden", !isPlaying);
     }
@@ -1308,7 +1285,7 @@ export default class Runner {
   /**
    * Play a sound.
    */
-  playSound(soundBuffer: AudioBuffer) {
+  playSound(soundBuffer?: AudioBuffer) {
     if (soundBuffer) {
       const sourceNode = this.audioContext.createBufferSource();
       sourceNode.buffer = soundBuffer;
@@ -1322,7 +1299,7 @@ export default class Runner {
    * @param reset Whether to reset colors.
    */
   invert(reset: boolean) {
-    const htmlEl = document.firstElementChild;
+    const htmlEl = document.firstElementChild!;
 
     if (reset) {
       htmlEl.classList.toggle(Runner.classes.INVERTED, false);
