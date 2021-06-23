@@ -12,9 +12,11 @@ if (diagnostics.length) {
 }
 
 for (const [fileName, text] of Object.entries(files)) {
-  console.log(`emitted ${fileName} with a length of ${text.length}`);
+  const outputFile = "assets/js/" +
+    fileName.substr(fileName.lastIndexOf("/") + 1);
+  console.log(`emitted ${outputFile} with a length of ${text.length}`);
   Deno.writeTextFile(
-    fileName.replace("src", "assets/js").replace("file://", ""),
+    outputFile,
     text,
   );
 }

@@ -21,6 +21,9 @@ jobs:
       - name: Lint
         run: deno lint
 
+      - name: Build
+        run: deno run --allow-read=src --allow-write=assets/js --unstable build.ts
+
       - name: Deploy
         if: github.ref == 'refs/heads/main' && github.event_name == 'push' && github.repository == 'justjavac/deno_trex_game'
         uses: peaceiris/actions-gh-pages@v3
