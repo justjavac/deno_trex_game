@@ -300,14 +300,10 @@ export default class Runner {
 
     this.generatedSoundFx = new GeneratedSoundFx();
 
-    // Handle dark mode
-    const darkModeMediaQuery = window.matchMedia(
-      "(prefers-color-scheme: dark)",
-    );
-    this.isDarkMode = darkModeMediaQuery && darkModeMediaQuery.matches;
-    darkModeMediaQuery.addListener((e) => {
-      this.isDarkMode = e.matches;
-    });
+    // 处理黑夜模式
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    this.isDarkMode = mediaQuery && mediaQuery.matches;
+    mediaQuery.addListener((e) => this.isDarkMode = e.matches);
 
     this.loadImages();
   }
