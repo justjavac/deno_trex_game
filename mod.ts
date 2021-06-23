@@ -6,7 +6,7 @@ async function handleRequest(request: Request) {
     return fetch(favicon);
   }
 
-  if (pathname.startsWith("/assets/css")) {
+  if (pathname.endsWith(".css")) {
     const style = new URL(pathname.substr(1), import.meta.url);
     const response = await fetch(style);
     const headers = new Headers(response.headers);
@@ -14,29 +14,14 @@ async function handleRequest(request: Request) {
     return new Response(response.body, { ...response, headers });
   }
 
+  if (pathname.endsWith('.ts')) {
+    const js = new URL(pathname.substr(1) + '.js', import.meta.url);
+    return fetch(js);
+  }
+
   if (pathname.startsWith("/assets")) {
     const assets = new URL(pathname.substr(1), import.meta.url);
     return fetch(assets);
-  }
-
-  if (pathname.startsWith("/bundle.js")) {
-    const source = new URL("src/Runner.ts", import.meta.url);
-    const { files, diagnostics } = await Deno.emit(source, {
-      bundle: "module",
-      compilerOptions: {
-        checkJs: true,
-        sourceMap: false,
-        lib: ["dom", "dom.iterable", "deno.ns", "deno.unstable"],
-      },
-    });
-    if (diagnostics.length) {
-      console.warn(Deno.formatDiagnostics(diagnostics));
-    }
-    return new Response(files["deno:///bundle.js"], {
-      headers: {
-        "content-type": "text/javascript; charset=utf-8",
-      },
-    });
   }
 
   const html = new URL("index.html", import.meta.url);

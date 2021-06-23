@@ -18,5 +18,14 @@ jobs:
       - name: Format
         run: deno fmt --check
 
-      # - name: Lint
-      #   run: deno lint mod.ts
+      - name: Lint
+        run: deno lint
+
+      - name: Deploy
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push' && github.repository == 'justjavac/deno_trex_game'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: deploy
+          exclude_assets: '.github,.vscode,src,.gitattributes,.gitignore'
+          publish_dir: ./build

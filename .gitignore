@@ -4,5 +4,4 @@
 *bak
 .history
 .temp/**
-dist/**
-node_modules/**
+assets/js/
