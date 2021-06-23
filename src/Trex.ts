@@ -1,8 +1,8 @@
-import CollisionBox from "./CollisionBox.js";
-import { FPS, IS_HIDPI } from "./constants.js";
-import Runner from "./Runner.js";
-import Sprite, { Position } from "./Sprite.js";
-import { getTimeStamp } from "./utils.js";
+import CollisionBox from "./CollisionBox.ts";
+import { FPS, IS_HIDPI } from "./constants.ts";
+import Runner from "./Runner.ts";
+import Sprite, { Position } from "./Sprite.ts";
+import { getTimeStamp } from "./utils.ts";
 
 /**
  * T-rex player config.

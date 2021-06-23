@@ -1,8 +1,8 @@
-import CollisionBox from "./CollisionBox.js";
-import { FPS, IS_HIDPI, IS_MOBILE } from "./constants.js";
-import Runner from "./Runner.js";
-import { Dimensions, ObstacleType, Position } from "./Sprite.js";
-import { getRandomNum } from "./utils.js";
+import CollisionBox from "./CollisionBox.ts";
+import { FPS, IS_HIDPI, IS_MOBILE } from "./constants.ts";
+import Runner from "./Runner.ts";
+import { Dimensions, ObstacleType, Position } from "./Sprite.ts";
+import { getRandomNum } from "./utils.ts";
 
 export default class Obstacle {
   static types: ObstacleType[];

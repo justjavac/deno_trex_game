@@ -1,7 +1,7 @@
-import { IS_HIDPI } from "./constants.js";
-import { getTimeStamp } from "./utils.js";
-import Runner from "./Runner.js";
-import { Position } from "./Sprite.js";
+import { IS_HIDPI } from "./constants.ts";
+import { getTimeStamp } from "./utils.ts";
+import Runner from "./Runner.ts";
+import { Position } from "./Sprite.ts";
 
 interface Bounds {
   x: number;

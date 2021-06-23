@@ -1,7 +1,7 @@
-import { IS_HIDPI } from "./constants.js";
-import Runner from "./Runner.js";
-import Sprite, { CloudSprite, Position } from "./Sprite.js";
-import { getRandomNum } from "./utils.js";
+import { IS_HIDPI } from "./constants.ts";
+import Runner from "./Runner.ts";
+import Sprite, { CloudSprite, Position } from "./Sprite.ts";
+import { getRandomNum } from "./utils.ts";
 
 export default class BackgroundEl {
   /**

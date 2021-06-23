@@ -6,6 +6,20 @@ Chrome offline T-rex game.
 
 在线试玩地址：https://trex.jjc.fun
 
+## 本地开发
+
+1. 安装 `deployctl`:
+
+```bash
+deno install -Afr --no-check https://deno.land/x/deploy/deployctl.ts
+```
+
+1. 启动本地开发服务器：
+
+```bash
+deployctl run --watch ./mod.ts
+```
+
 ## 开发计划
 
 - [ ] 排行榜

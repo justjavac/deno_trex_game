@@ -1,11 +1,11 @@
-import BackgroundEl from "./BackgroundEl.js";
-import Cloud from "./Cloud.js";
-import Obstacle from "./Obstacle.js";
-import Runner from "./Runner.js";
-import HorizonLine from "./HorizonLine.js";
-import Sprite, { Dimensions, Stage } from "./Sprite.js";
-import NightMode from "./NightMode.js";
-import { getRandomNum } from "./utils.js";
+import BackgroundEl from "./BackgroundEl.ts";
+import Cloud from "./Cloud.ts";
+import Obstacle from "./Obstacle.ts";
+import Runner from "./Runner.ts";
+import HorizonLine from "./HorizonLine.ts";
+import Sprite, { Dimensions, Stage } from "./Sprite.ts";
+import NightMode from "./NightMode.ts";
+import { getRandomNum } from "./utils.ts";
 
 /**
  * Horizon config.

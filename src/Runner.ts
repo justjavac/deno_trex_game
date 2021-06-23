@@ -5,20 +5,26 @@ import {
   IS_IOS,
   IS_MOBILE,
   RESOURCE_POSTFIX,
-} from "./constants.js";
-import DistanceMeter from "./DistanceMeter.js";
-import GameOverPanel from "./GameOverPanel.js";
-import GeneratedSoundFx from "./GeneratedSoundFx.js";
-import Horizon from "./Horizon.js";
-import Sprite from "./Sprite.js";
-import type { Stage } from "./Sprite.js";
-import Trex, {TrexStatus} from "./Trex.js";
+} from "./constants.ts";
+import DistanceMeter from "./DistanceMeter.ts";
+import GameOverPanel from "./GameOverPanel.ts";
+import GeneratedSoundFx from "./GeneratedSoundFx.ts";
+import Horizon from "./Horizon.ts";
+import Sprite from "./Sprite.ts";
+import type { Stage } from "./Sprite.ts";
+import Trex, { TrexStatus } from "./Trex.ts";
 import {
   checkForCollision,
   createCanvas,
   getTimeStamp,
   vibrate,
-} from "./utils.js";
+} from "./utils.ts";
+
+declare var document: Document & { webkitHidden: boolean };
+
+declare type WebkitCanvasRenderingContext2D = CanvasRenderingContext2D & {
+  webkitBackingStorePixelRatio: number;
+};
 
 export default class Runner {
   static imageSprite: HTMLImageElement;
@@ -113,7 +119,7 @@ export default class Runner {
    */
   static keycodes: Record<string, Record<number, number>> = {
     JUMP: { 38: 1, 32: 1, 87: 1 }, // Up, spacebar, w
-    DUCK: { 40: 1, 83:1 }, // Down, s
+    DUCK: { 40: 1, 83: 1 }, // Down, s
     RESTART: { 13: 1 }, // Enter
   };
 
@@ -143,7 +149,7 @@ export default class Runner {
   static audioCues: boolean;
   static isMobileMouseInput: boolean;
   static generatedSoundFx: GeneratedSoundFx;
-  
+
   /**
    * Updates the canvas size taking into
    * account the backing store pixel ratio and
@@ -159,7 +165,7 @@ export default class Runner {
     optWidth?: number,
     optWeight?: number,
   ): boolean {
-    const context = canvas.getContext("2d")!;
+    const context = canvas.getContext("2d")! as WebkitCanvasRenderingContext2D;
 
     // Query the various pixel ratios
     const devicePixelRatio = Math.floor(window.devicePixelRatio) || 1;
@@ -297,7 +303,7 @@ export default class Runner {
     this.previousGamepad = null;
 
     this.spriteDef = IS_HIDPI ? Sprite.HDPI : Sprite.LDPI;
-    
+
     this.containerEl = document.createElement("div");
     this.containerEl.setAttribute("role", IS_MOBILE ? "button" : "application");
     this.containerEl.setAttribute("tabindex", "0");
@@ -305,7 +311,7 @@ export default class Runner {
     this.containerEl.className = Runner.classes.CONTAINER;
 
     this.generatedSoundFx = new GeneratedSoundFx();
-    
+
     // Handle dark mode
     const darkModeMediaQuery = window.matchMedia(
       "(prefers-color-scheme: dark)",
@@ -323,7 +329,7 @@ export default class Runner {
    * definition.
    */
   loadImages() {
-    const scale =IS_HIDPI ? "2x" : "1x";
+    const scale = IS_HIDPI ? "2x" : "1x";
 
     Runner.imageSprite = document.getElementById(
       RESOURCE_POSTFIX + scale,
@@ -439,7 +445,6 @@ export default class Runner {
       Runner.events.RESIZE,
       this.debounceResize.bind(this),
     );
-
   }
 
   /**
@@ -723,7 +728,7 @@ export default class Runner {
    * @param {Event} e
    */
   handleEvent(e: Event) {
-    return  ((evtType, events) => {
+    return ((evtType, events) => {
       switch (evtType) {
         case events.KEYDOWN:
         case events.TOUCHSTART:
@@ -796,8 +801,8 @@ export default class Runner {
     this.containerEl.addEventListener(
       Runner.events.KEYDOWN,
       (e: Event) => {
-        this.handleCanvasKeyPress(e as KeyboardEvent)
-      }
+        this.handleCanvasKeyPress(e as KeyboardEvent);
+      },
     );
     this.canvas.addEventListener<"keydown">(
       Runner.events.KEYDOWN,

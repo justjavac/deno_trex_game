@@ -1,4 +1,8 @@
-import { IS_IOS } from "./constants.js";
+import { IS_IOS } from "./constants.ts";
+
+declare var webkitAudioContext: typeof AudioContext;
+
+declare var window: Window & { webkitAudioContext: AudioContext };
 
 export default class GeneratedSoundFx {
   audioCues: boolean;
