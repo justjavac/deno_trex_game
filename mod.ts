@@ -16,7 +16,10 @@ async function handleRequest(request: Request) {
 
   if (pathname.endsWith(".ts")) {
     const js = new URL(pathname.substr(1) + ".js", import.meta.url);
-    return fetch(js);
+    const response = await fetch(js);
+    const headers = new Headers(response.headers);
+    headers.set("content-type", "text/javascript; charset=utf-8");
+    return new Response(response.body, { ...response, headers });
   }
 
   if (pathname.startsWith("/assets")) {
