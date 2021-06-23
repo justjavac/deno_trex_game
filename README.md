@@ -4,7 +4,7 @@
 
 Chrome offline T-rex game.
 
-在线试玩地址：https://trex.jjc.fun
+在线试玩地址：https://trex.deno.dev
 
 ## 本地开发
 
