@@ -57,28 +57,11 @@ export default class Runner {
     SPEED_DROP_COEFFICIENT: 3,
     ARCADE_MODE_INITIAL_TOP_POSITION: 35,
     ARCADE_MODE_TOP_POSITION_PERCENT: 0.1,
-  };
-
-  static normalConfig = {
     ACCELERATION: 0.001,
-    AUDIOCUE_PROXIMITY_THRESHOLD: 190,
-    AUDIOCUE_PROXIMITY_THRESHOLD_MOBILE_A11Y: 250,
     GAP_COEFFICIENT: 0.6,
     INVERT_DISTANCE: 700,
     MAX_SPEED: 13,
     MOBILE_SPEED_COEFFICIENT: 1.2,
-    SPEED: 6,
-  };
-
-  static slowConfig = {
-    ACCELERATION: 0.0005,
-    AUDIOCUE_PROXIMITY_THRESHOLD: 170,
-    AUDIOCUE_PROXIMITY_THRESHOLD_MOBILE_A11Y: 220,
-    GAP_COEFFICIENT: 0.3,
-    INVERT_DISTANCE: 350,
-    MAX_SPEED: 9,
-    MOBILE_SPEED_COEFFICIENT: 1.5,
-    SPEED: 4.2,
   };
 
   /**
@@ -143,7 +126,6 @@ export default class Runner {
   } as const;
 
   static origImageSprite: HTMLImageElement;
-  static slowDown: boolean;
   static audioCues: boolean;
   static isMobileMouseInput: boolean;
   static generatedSoundFx: GeneratedSoundFx;
@@ -201,7 +183,6 @@ export default class Runner {
   // A div to intercept touch events. Only set while (playing && useTouch).
   touchController?: HTMLDivElement;
 
-  config: typeof Runner.config & typeof Runner.normalConfig;
   // Logical dimensions of the container.
   dimensions: typeof Runner.defaultDimensions;
 
@@ -247,7 +228,6 @@ export default class Runner {
   playingIntro?: boolean;
   updatePending?: boolean;
   invertTrigger?: boolean;
-  slowSpeedCheckbox: HTMLInputElement;
   raqId: number;
 
   /**
@@ -259,7 +239,6 @@ export default class Runner {
   constructor(outerContainerId: string) {
     this.outerContainerEl = document.querySelector(outerContainerId)!;
 
-    this.config = Object.assign(Runner.config, Runner.normalConfig);
     // Logical dimensions of the container.
     this.dimensions = Runner.defaultDimensions;
 
@@ -274,8 +253,7 @@ export default class Runner {
     this.time = 0;
     this.runningTime = 0;
     this.msPerFrame = 1000 / FPS;
-    this.currentSpeed = this.config.SPEED;
-    Runner.slowDown = false;
+    this.currentSpeed = Runner.config.SPEED;
 
     this.activated = false; // Whether the easter egg has been activated.
     this.playing = false; // Whether the game is currently in play state.
@@ -340,7 +318,7 @@ export default class Runner {
 
       const resourceTemplate = (
         document.getElementById(
-          this.config.RESOURCE_TEMPLATE_ID,
+          Runner.config.RESOURCE_TEMPLATE_ID,
         ) as HTMLTemplateElement
       ).content;
 
@@ -373,10 +351,8 @@ export default class Runner {
 
     // Reduce the speed on smaller mobile screens.
     if (this.dimensions.WIDTH < DEFAULT_WIDTH) {
-      const mobileSpeed = Runner.slowDown
-        ? speed
-        : ((speed * this.dimensions.WIDTH) / DEFAULT_WIDTH) *
-          this.config.MOBILE_SPEED_COEFFICIENT;
+      const mobileSpeed = ((speed * this.dimensions.WIDTH) / DEFAULT_WIDTH) *
+        Runner.config.MOBILE_SPEED_COEFFICIENT;
       this.currentSpeed = mobileSpeed > speed ? speed : mobileSpeed;
     } else if (optSpeed) {
       this.currentSpeed = optSpeed;
@@ -407,7 +383,7 @@ export default class Runner {
       this.canvas,
       this.spriteDef,
       this.dimensions,
-      this.config.GAP_COEFFICIENT,
+      Runner.config.GAP_COEFFICIENT,
     );
 
     // Distance meter
@@ -601,7 +577,7 @@ export default class Runner {
       }
 
       this.runningTime += deltaTime;
-      const hasObstacles = this.runningTime > this.config.CLEAR_TIME;
+      const hasObstacles = this.runningTime > Runner.config.CLEAR_TIME;
 
       // First jump triggers the intro.
       if (this.tRex.jumpCount === 1 && !this.playingIntro) {
@@ -650,8 +626,8 @@ export default class Runner {
       if (!collision) {
         this.distanceRan += (this.currentSpeed * deltaTime) / this.msPerFrame;
 
-        if (this.currentSpeed < this.config.MAX_SPEED) {
-          this.currentSpeed += this.config.ACCELERATION;
+        if (this.currentSpeed < Runner.config.MAX_SPEED) {
+          this.currentSpeed += Runner.config.ACCELERATION;
         }
       } else {
         this.gameOver();
@@ -667,7 +643,7 @@ export default class Runner {
       }
 
       // Night mode.
-      if (this.invertTimer > this.config.INVERT_FADE_DURATION) {
+      if (this.invertTimer > Runner.config.INVERT_FADE_DURATION) {
         this.invertTimer = 0;
         this.invertTrigger = false;
         this.invert(false);
@@ -679,7 +655,8 @@ export default class Runner {
         );
 
         if (actualDistance > 0) {
-          this.invertTrigger = !(actualDistance % this.config.INVERT_DISTANCE);
+          this.invertTrigger =
+            !(actualDistance % Runner.config.INVERT_DISTANCE);
 
           if (this.invertTrigger && this.invertTimer === 0) {
             this.invertTimer += deltaTime;
@@ -749,19 +726,7 @@ export default class Runner {
    */
   toggleSpeed() {
     if (Runner.audioCues) {
-      const speedChange = Runner.slowDown != this.slowSpeedCheckbox.checked;
-
-      if (speedChange) {
-        Runner.slowDown = this.slowSpeedCheckbox.checked;
-        const updatedConfig = Runner.slowDown
-          ? Runner.slowConfig
-          : Runner.normalConfig;
-
-        Runner.config = Object.assign(Runner.config, updatedConfig);
-        this.currentSpeed = updatedConfig.SPEED;
-        this.tRex.enableSlowConfig();
-        this.horizon.adjustObstacleSpeed();
-      }
+      this.currentSpeed = Runner.config.SPEED;
     }
   }
 
@@ -821,60 +786,50 @@ export default class Runner {
       e.preventDefault();
     }
 
-    if (this.isCanvasInView()) {
-      // Allow toggling of speed toggle.
+    if (this.isCanvasInView() && !this.crashed && !this.paused) {
+      // For a11y, screen reader activation.
+      const isMobileMouseInput = (IS_MOBILE &&
+        e.type === Runner.events.POINTERDOWN &&
+        e.target == this.containerEl) ||
+        (IS_IOS && document.activeElement == this.containerEl);
+
       if (
-        Runner.keycodes.JUMP[e.keyCode] &&
-        e.target == this.slowSpeedCheckbox
+        Runner.keycodes.JUMP[e.keyCode] ||
+        e.type === Runner.events.TOUCHSTART ||
+        isMobileMouseInput
       ) {
-        return;
-      }
-
-      if (!this.crashed && !this.paused) {
-        // For a11y, screen reader activation.
-        const isMobileMouseInput = (IS_MOBILE &&
-          e.type === Runner.events.POINTERDOWN &&
-          e.target == this.containerEl) ||
-          (IS_IOS && document.activeElement == this.containerEl);
-
-        if (
-          Runner.keycodes.JUMP[e.keyCode] ||
-          e.type === Runner.events.TOUCHSTART ||
-          isMobileMouseInput
-        ) {
-          e.preventDefault();
-          // Starting the game for the first time.
-          if (!this.playing) {
-            // Started by touch so create a touch controller.
-            if (!this.touchController && e.type === Runner.events.TOUCHSTART) {
-              this.createTouchController();
-            }
-
-            if (isMobileMouseInput) {
-              this.handleCanvasKeyPress(e);
-            }
-            this.loadSounds();
-            this.setPlayStatus(true);
-            this.update();
+        e.preventDefault();
+        // Starting the game for the first time.
+        if (!this.playing) {
+          // Started by touch so create a touch controller.
+          if (!this.touchController && e.type === Runner.events.TOUCHSTART) {
+            this.createTouchController();
           }
-          // Start jump.
-          if (!this.tRex.jumping && !this.tRex.ducking) {
-            if (Runner.audioCues) {
-              this.generatedSoundFx.cancelFootSteps();
-            } else {
-              this.playSound(this.soundFx.BUTTON_PRESS);
-            }
-            this.tRex.startJump(this.currentSpeed);
+
+          if (isMobileMouseInput) {
+            this.handleCanvasKeyPress(e);
           }
-        } else if (this.playing && Runner.keycodes.DUCK[e.keyCode]) {
-          e.preventDefault();
-          if (this.tRex.jumping) {
-            // Speed drop, activated only when jump key is not pressed.
-            this.tRex.setSpeedDrop();
-          } else if (!this.tRex.jumping && !this.tRex.ducking) {
-            // Duck.
-            this.tRex.setDuck(true);
+          this.loadSounds();
+          this.setPlayStatus(true);
+          this.update();
+        }
+        // Start jump.
+        if (!this.tRex.jumping && !this.tRex.ducking) {
+          if (Runner.audioCues) {
+            this.generatedSoundFx.cancelFootSteps();
+          } else {
+            this.playSound(this.soundFx.BUTTON_PRESS);
           }
+          this.tRex.startJump(this.currentSpeed);
+        }
+      } else if (this.playing && Runner.keycodes.DUCK[e.keyCode]) {
+        e.preventDefault();
+        if (this.tRex.jumping) {
+          // Speed drop, activated only when jump key is not pressed.
+          this.tRex.setSpeedDrop();
+        } else if (!this.tRex.jumping && !this.tRex.ducking) {
+          // Duck.
+          this.tRex.setDuck(true);
         }
       }
     }
@@ -902,7 +857,7 @@ export default class Runner {
         this.isCanvasInView() &&
         (Runner.keycodes.RESTART[keyCode] ||
           this.isLeftClickOnCanvas(e as unknown as MouseEvent) ||
-          (deltaTime >= this.config.GAMEOVER_CLEAR_TIME &&
+          (deltaTime >= Runner.config.GAMEOVER_CLEAR_TIME &&
             Runner.keycodes.JUMP[keyCode]))
       ) {
         this.handleGameOverClicks(e as unknown as MouseEvent);
@@ -919,21 +874,19 @@ export default class Runner {
    * A user is able to tap the high score twice to reset it.
    */
   handleGameOverClicks(e: MouseEvent) {
-    if (e.target != this.slowSpeedCheckbox) {
-      e.preventDefault();
-      if (this.distanceMeter.hasClickedOnHighScore(e) && this.highestScore) {
-        if (this.distanceMeter.isHighScoreFlashing()) {
-          // Subsequent click, reset the high score.
-          this.saveHighScore(0);
-          this.distanceMeter.resetHighScore();
-        } else {
-          // First click, flash the high score.
-          this.distanceMeter.startHighScoreFlashing();
-        }
+    e.preventDefault();
+    if (this.distanceMeter.hasClickedOnHighScore(e) && this.highestScore) {
+      if (this.distanceMeter.isHighScoreFlashing()) {
+        // Subsequent click, reset the high score.
+        this.saveHighScore(0);
+        this.distanceMeter.resetHighScore();
       } else {
-        this.distanceMeter.cancelHighScoreFlashing();
-        this.restart();
+        // First click, flash the high score.
+        this.distanceMeter.startHighScoreFlashing();
       }
+    } else {
+      this.distanceMeter.cancelHighScoreFlashing();
+      this.restart();
     }
   }
 
@@ -1062,7 +1015,7 @@ export default class Runner {
       this.paused = false;
       this.crashed = false;
       this.distanceRan = 0;
-      this.setSpeed(this.config.SPEED);
+      this.setSpeed(Runner.config.SPEED);
       this.time = getTimeStamp();
       this.containerEl.classList.remove(Runner.classes.CRASHED);
       this.clearCanvas();

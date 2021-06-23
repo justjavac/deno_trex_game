@@ -50,7 +50,7 @@ export default class Obstacle {
     this.canvasCtx = canvasCtx;
     this.spritePos = spriteImgPos;
     this.typeConfig = type;
-    this.gapCoefficient = Runner.slowDown ? gapCoefficient * 2 : gapCoefficient;
+    this.gapCoefficient = gapCoefficient;
     this.size = getRandomNum(1, Obstacle.MAX_OBSTACLE_LENGTH);
     this.dimensions = dimensions;
     this.remove = false;

@@ -55,7 +55,7 @@ type AnimFrames = Record<TrexStatus, { frames: number[]; msPerFrame: number }>;
 
 export default class Trex {
   /** T-rex player config. */
-  static config: TrexConfig = {
+  static config: TrexConfig & JumpConfig = {
     DROP_VELOCITY: -5,
     FLASH_OFF: 175,
     FLASH_ON: 100,
@@ -67,16 +67,7 @@ export default class Trex {
     START_X_POS: 50,
     WIDTH: 44,
     WIDTH_DUCK: 59,
-  };
-
-  static slowJumpConfig: JumpConfig = {
-    GRAVITY: 0.25,
-    MAX_JUMP_HEIGHT: 50,
-    MIN_JUMP_HEIGHT: 45,
-    INITIAL_JUMP_VELOCITY: -20,
-  };
-
-  static normalJumpConfig: JumpConfig = {
+    // JumpConfig
     GRAVITY: 0.6,
     MAX_JUMP_HEIGHT: 30,
     MIN_JUMP_HEIGHT: 30,
@@ -174,7 +165,7 @@ export default class Trex {
     this.animStartTime = 0;
     this.timer = 0;
     this.msPerFrame = 1000 / FPS;
-    this.config = Object.assign(Trex.config, Trex.normalJumpConfig);
+    this.config = Trex.config;
     // Current status.
     this.status = TrexStatus.WAITING;
     this.jumping = false;
@@ -201,16 +192,6 @@ export default class Trex {
   init() {
     this.draw(0, 0);
     this.update(0, TrexStatus.WAITING);
-  }
-
-  /**
-   * Assign the appropriate jump parameters based on the game speed.
-   */
-  enableSlowConfig() {
-    const jumpConfig = Runner.slowDown
-      ? Trex.slowJumpConfig
-      : Trex.normalJumpConfig;
-    Trex.config = Object.assign(Trex.config, jumpConfig);
   }
 
   /**

@@ -90,26 +90,6 @@ export default class Horizon {
   }
 
   /**
-   * Update obstacle definitions based on the speed of the game.
-   */
-  adjustObstacleSpeed() {
-    for (let i = 0; i < Obstacle.types.length; i++) {
-      if (Runner.slowDown) {
-        Obstacle.types[i].multipleSpeed = Obstacle.types[i].multipleSpeed / 2;
-        Obstacle.types[i].minGap *= 1.5;
-        Obstacle.types[i].minSpeed = Obstacle.types[i].minSpeed / 2;
-
-        // Convert variable y position obstacles to fixed.
-        const yPos = Obstacle.types[i].yPos;
-        if (Array.isArray(yPos)) {
-          Obstacle.types[i].yPos = yPos[0];
-          Obstacle.types[i].yPosMobile = yPos[0];
-        }
-      }
-    }
-  }
-
-  /**
    * @param updateObstacles Used as an override to prevent
    *     the obstacles from being updated / added. This happens in the
    *     ease in section.

@@ -5,14 +5,12 @@ declare var webkitAudioContext: typeof AudioContext;
 declare var window: Window & { webkitAudioContext: AudioContext };
 
 export default class GeneratedSoundFx {
+  /** 声音文件是否初始化完成 */
   audioCues: boolean;
   context!: AudioContext;
   panner: StereoPannerNode | null;
   bgSoundIntervalId?: number;
 
-  /**
-   * Generated sound FX class for audio cues.
-   */
   constructor() {
     this.audioCues = false;
     this.panner = null;
@@ -21,7 +19,7 @@ export default class GeneratedSoundFx {
   init() {
     this.audioCues = true;
     if (!this.context) {
-      // iOS only supports the webkit version.
+      // iOS 只支持 webkitAudioContext
       this.context = window.webkitAudioContext
         ? new webkitAudioContext()
         : new AudioContext();
