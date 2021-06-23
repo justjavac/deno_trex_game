@@ -25,8 +25,8 @@ jobs:
         run: deno run --allow-read=src --allow-write=assets/js --unstable build.ts
 
       - name: Deploy
-        if: ｜
-          matrix.os == 'ubuntu-latest'  &&
+        if: |
+          matrix.os == 'ubuntu-latest' &&
           github.ref == 'refs/heads/main' &&
           github.event_name == 'push' &&
           github.repository == 'justjavac/deno_trex_game'
