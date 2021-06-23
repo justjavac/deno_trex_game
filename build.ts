@@ -1,6 +1,6 @@
 const source = new URL("src/Runner.ts", import.meta.url);
 const { files, diagnostics } = await Deno.emit(source, {
-//   bundle: "module",
+  //   bundle: "module",
   compilerOptions: {
     checkJs: true,
     sourceMap: false,
@@ -12,6 +12,9 @@ if (diagnostics.length) {
 }
 
 for (const [fileName, text] of Object.entries(files)) {
-    console.log(`emitted ${fileName} with a length of ${text.length}`);
-    Deno.writeTextFile(fileName.replace('src', 'assets/js').replace('file://', ''), text)
+  console.log(`emitted ${fileName} with a length of ${text.length}`);
+  Deno.writeTextFile(
+    fileName.replace("src", "assets/js").replace("file://", ""),
+    text,
+  );
 }

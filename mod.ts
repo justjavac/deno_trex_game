@@ -14,8 +14,8 @@ async function handleRequest(request: Request) {
     return new Response(response.body, { ...response, headers });
   }
 
-  if (pathname.endsWith('.ts')) {
-    const js = new URL(pathname.substr(1) + '.js', import.meta.url);
+  if (pathname.endsWith(".ts")) {
+    const js = new URL(pathname.substr(1) + ".js", import.meta.url);
     return fetch(js);
   }
 
