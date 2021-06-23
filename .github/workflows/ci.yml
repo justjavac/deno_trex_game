@@ -31,4 +31,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: deploy
           exclude_assets: '.github,.vscode,src,.gitattributes,.gitignore'
-          publish_dir: ./build
+          publish_dir: .
