@@ -1,7 +1,7 @@
 import { IS_HIDPI } from "./constants.ts";
 import Runner from "./Runner.ts";
 import Sprite, { Position } from "./sprite/Config.ts";
-import Moon from './sprite/Moon.ts'
+import Moon from "./sprite/Moon.ts";
 import { getRandomNum } from "./utils.ts";
 
 interface NightModeConfig {
@@ -58,7 +58,7 @@ export default class NightMode {
     this.opacity = 0;
     this.containerWidth = containerWidth;
     this.stars = [];
-    this.moon = new Moon(this.canvas, this.containerWidth)
+    this.moon = new Moon(this.canvas, this.containerWidth);
     this.drawStars = false;
     this.placeStars();
   }
