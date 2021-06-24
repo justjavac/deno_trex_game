@@ -1,5 +1,5 @@
 import { FPS, IS_HIDPI } from "./constants.ts";
-import { LineSprite } from "./Sprite.ts";
+import { LineSprite } from "./SpriteConfig.ts";
 import Runner from "./Runner.ts";
 
 interface HorizonLineDimensions {

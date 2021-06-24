@@ -10,8 +10,8 @@ import DistanceMeter from "./DistanceMeter.ts";
 import GameOverPanel from "./GameOverPanel.ts";
 import GeneratedSoundFx from "./GeneratedSoundFx.ts";
 import Horizon from "./Horizon.ts";
-import Sprite from "./Sprite.ts";
-import type { Stage } from "./Sprite.ts";
+import Sprite from "./SpriteConfig.ts";
+import type { Stage } from "./SpriteConfig.ts";
 import Trex, { TrexStatus } from "./Trex.ts";
 import {
   checkForCollision,

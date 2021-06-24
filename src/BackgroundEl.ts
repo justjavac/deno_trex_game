@@ -1,6 +1,6 @@
 import { IS_HIDPI } from "./constants.ts";
 import Runner from "./Runner.ts";
-import Sprite, { CloudSprite, Position } from "./Sprite.ts";
+import Sprite, { CloudSprite, Position } from "./SpriteConfig.ts";
 import { getRandomNum } from "./utils.ts";
 
 export default class BackgroundEl {

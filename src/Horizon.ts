@@ -3,7 +3,7 @@ import Cloud from "./Cloud.ts";
 import Obstacle from "./Obstacle.ts";
 import Runner from "./Runner.ts";
 import HorizonLine from "./HorizonLine.ts";
-import Sprite, { Dimensions, Stage } from "./Sprite.ts";
+import Sprite, { Dimensions, Stage } from "./SpriteConfig.ts";
 import NightMode from "./NightMode.ts";
 import { getRandomNum } from "./utils.ts";
 

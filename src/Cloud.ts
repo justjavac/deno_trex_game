@@ -1,15 +1,17 @@
 import { IS_HIDPI } from "./constants.ts";
 import Runner from "./Runner.ts";
-import { Position } from "./Sprite.ts";
+import { Position } from "./SpriteConfig.ts";
 import { getRandomNum } from "./utils.ts";
 
 enum CloudConfig {
   HEIGHT = 14,
-  MAX_CLOUD_GAP = 400,
-  MAX_SKY_LEVEL = 30,
-  MIN_CLOUD_GAP = 100,
-  MIN_SKY_LEVEL = 71,
   WIDTH = 46,
+  /** 最大间隔 */
+  MAX_CLOUD_GAP = 400,
+  /** 最小间隔 */
+  MIN_CLOUD_GAP = 100,
+  MAX_SKY_LEVEL = 30,
+  MIN_SKY_LEVEL = 71,
 }
 
 export default class Cloud {

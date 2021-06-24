@@ -1,20 +1,25 @@
 import { IS_HIDPI } from "./constants.ts";
 import Runner from "./Runner.ts";
-import Sprite, { Position } from "./Sprite.ts";
+import Sprite, { Position } from "./SpriteConfig.ts";
 import { getRandomNum } from "./utils.ts";
 
-/**
- * @enum {number}
- */
 interface NightModeConfig {
+  /** 渐变速度 */
   FADE_SPEED: number;
+  /** 宽度 */
   HEIGHT: number;
-  MOON_SPEED: number;
-  NUM_STARS: number;
-  STAR_SIZE: number;
-  STAR_SPEED: number;
-  STAR_MAX_Y: number;
+  /** 高 */
   WIDTH: number;
+  /** 月亮的速度 */
+  MOON_SPEED: number;
+  /** 星星的数量 */
+  NUM_STARS: number;
+  /** 星星的大小 */
+  STAR_SIZE: number;
+  /** 星星的速度 */
+  STAR_SPEED: number;
+  /** 星星的最大 y 坐标 */
+  STAR_MAX_Y: number;
 }
 
 /** 星星 ✨ */
@@ -35,15 +40,20 @@ export default class NightMode {
     STAR_MAX_Y: 70,
     WIDTH: 20,
   };
-
+  /** 月相 */
   static phases: number[] = [140, 120, 100, 60, 40, 20, 0];
 
+  /** sprite 位置 */
   spritePos: Position;
   canvas: HTMLCanvasElement;
   canvasCtx: CanvasRenderingContext2D;
+  /** x 坐标 */
   xPos: number;
+  /** y 坐标 */
   yPos: number;
+  /** 当前月相 */
   currentPhase: number;
+  /** 透明度 */
   opacity: number;
   containerWidth: number;
   stars: Star[];
@@ -71,11 +81,11 @@ export default class NightMode {
   }
 
   /**
-   * Update moving moon, changing phases.
-   * @param  activated Whether night mode is activated.
+   * 移动月亮，并修改月相
+   * @param activated 当前是否为黑夜模式
    */
   update(activated: boolean) {
-    // Moon phase.
+    // 每次进入黑夜模式后切换一个月相
     if (activated && this.opacity === 0) {
       this.currentPhase++;
 
@@ -91,11 +101,11 @@ export default class NightMode {
       this.opacity -= NightMode.config.FADE_SPEED;
     }
 
-    // Set moon positioning.
+    // 设置月亮的位置
     if (this.opacity > 0) {
       this.xPos = this.updateXPos(this.xPos, NightMode.config.MOON_SPEED);
 
-      // Update stars.
+      // 更新星星位置
       if (this.drawStars) {
         for (let i = 0; i < NightMode.config.NUM_STARS; i++) {
           this.stars[i].x = this.updateXPos(
@@ -109,6 +119,7 @@ export default class NightMode {
       this.opacity = 0;
       this.placeStars();
     }
+    
     this.drawStars = true;
   }
 
@@ -142,7 +153,7 @@ export default class NightMode {
     this.canvasCtx.save();
     this.canvasCtx.globalAlpha = this.opacity;
 
-    // Stars.
+    // 绘制星星 ✨
     if (this.drawStars) {
       for (let i = 0; i < NightMode.config.NUM_STARS; i++) {
         this.canvasCtx.drawImage(
@@ -159,7 +170,7 @@ export default class NightMode {
       }
     }
 
-    // Moon.
+    // 绘制月亮 🌛
     this.canvasCtx.drawImage(
       Runner.origImageSprite,
       moonSourceX,
@@ -176,7 +187,7 @@ export default class NightMode {
     this.canvasCtx.restore();
   }
 
-  // Do star placement.
+  // 放置星星
   placeStars() {
     const segmentSize = Math.round(
       this.containerWidth / NightMode.config.NUM_STARS,
