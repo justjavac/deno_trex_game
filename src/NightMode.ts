@@ -75,10 +75,8 @@ export default class NightMode {
 
     // Fade in / out.
     if (activated && (this.opacity < 1 || this.opacity === 0)) {
-      console.log('in  ', this.opacity)
       this.opacity += NightMode.config.FADE_SPEED;
     } else if (this.opacity > 0) {
-      console.log('out ', this.opacity)
       this.opacity -= NightMode.config.FADE_SPEED;
     }
 
