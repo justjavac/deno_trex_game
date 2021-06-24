@@ -1,17 +1,12 @@
 import { IS_HIDPI } from "./constants.ts";
 import Runner from "./Runner.ts";
 import Sprite, { Position } from "./sprite/Config.ts";
+import Moon from './sprite/Moon.ts'
 import { getRandomNum } from "./utils.ts";
 
 interface NightModeConfig {
   /** 渐变速度 */
   FADE_SPEED: number;
-  /** 宽度 */
-  HEIGHT: number;
-  /** 高 */
-  WIDTH: number;
-  /** 月亮的速度 */
-  MOON_SPEED: number;
   /** 星星的数量 */
   NUM_STARS: number;
   /** 星星的大小 */
@@ -32,31 +27,21 @@ interface Star {
 export default class NightMode {
   static config: NightModeConfig = {
     FADE_SPEED: 0.035,
-    HEIGHT: 40,
-    MOON_SPEED: 0.25,
     NUM_STARS: 2,
     STAR_SIZE: 9,
     STAR_SPEED: 0.3,
     STAR_MAX_Y: 70,
-    WIDTH: 20,
   };
-  /** 月相 */
-  static phases: number[] = [140, 120, 100, 60, 40, 20, 0];
 
   /** sprite 位置 */
   spritePos: Position;
   canvas: HTMLCanvasElement;
   canvasCtx: CanvasRenderingContext2D;
-  /** x 坐标 */
-  xPos: number;
-  /** y 坐标 */
-  yPos: number;
-  /** 当前月相 */
-  currentPhase: number;
   /** 透明度 */
   opacity: number;
   containerWidth: number;
   stars: Star[];
+  moon: Moon;
   drawStars: boolean;
 
   /**
@@ -70,12 +55,10 @@ export default class NightMode {
     this.spritePos = spritePos;
     this.canvas = canvas;
     this.canvasCtx = canvas.getContext("2d")!;
-    this.xPos = containerWidth - 50;
-    this.yPos = 30;
-    this.currentPhase = 0;
     this.opacity = 0;
     this.containerWidth = containerWidth;
     this.stars = [];
+    this.moon = new Moon(this.canvas, this.containerWidth)
     this.drawStars = false;
     this.placeStars();
   }
@@ -87,23 +70,21 @@ export default class NightMode {
   update(activated: boolean) {
     // 每次进入黑夜模式后切换一个月相
     if (activated && this.opacity === 0) {
-      this.currentPhase++;
-
-      if (this.currentPhase >= NightMode.phases.length) {
-        this.currentPhase = 0;
-      }
+      this.moon.next();
     }
 
     // Fade in / out.
     if (activated && (this.opacity < 1 || this.opacity === 0)) {
+      console.log('in  ', this.opacity)
       this.opacity += NightMode.config.FADE_SPEED;
     } else if (this.opacity > 0) {
+      console.log('out ', this.opacity)
       this.opacity -= NightMode.config.FADE_SPEED;
     }
 
     // 设置月亮的位置
     if (this.opacity > 0) {
-      this.xPos = this.updateXPos(this.xPos, NightMode.config.MOON_SPEED);
+      this.moon.update();
 
       // 更新星星位置
       if (this.drawStars) {
@@ -124,7 +105,7 @@ export default class NightMode {
   }
 
   updateXPos(currentPos: number, speed: number) {
-    if (currentPos < -NightMode.config.WIDTH) {
+    if (currentPos < -20) {
       currentPos = this.containerWidth;
     } else {
       currentPos -= speed;
@@ -133,19 +114,10 @@ export default class NightMode {
   }
 
   draw() {
-    let moonSourceWidth = this.currentPhase === 3
-      ? NightMode.config.WIDTH * 2
-      : NightMode.config.WIDTH;
-    let moonSourceHeight = NightMode.config.HEIGHT;
-    let moonSourceX = this.spritePos.x + NightMode.phases[this.currentPhase];
-    const moonOutputWidth = moonSourceWidth;
     let starSize = NightMode.config.STAR_SIZE;
     let starSourceX = Sprite.LDPI.STAR.x;
 
     if (IS_HIDPI) {
-      moonSourceWidth *= 2;
-      moonSourceHeight *= 2;
-      moonSourceX = this.spritePos.x + NightMode.phases[this.currentPhase] * 2;
       starSize *= 2;
       starSourceX = Sprite.HDPI.STAR.x;
     }
@@ -170,19 +142,6 @@ export default class NightMode {
       }
     }
 
-    // 绘制月亮 🌛
-    this.canvasCtx.drawImage(
-      Runner.origImageSprite,
-      moonSourceX,
-      this.spritePos.y,
-      moonSourceWidth,
-      moonSourceHeight,
-      Math.round(this.xPos),
-      this.yPos,
-      moonOutputWidth,
-      NightMode.config.HEIGHT,
-    );
-
     this.canvasCtx.globalAlpha = 1;
     this.canvasCtx.restore();
   }
@@ -205,7 +164,7 @@ export default class NightMode {
   }
 
   reset() {
-    this.currentPhase = 0;
+    this.moon.reset();
     this.opacity = 0;
     this.update(false);
   }

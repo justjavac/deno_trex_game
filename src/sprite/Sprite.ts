@@ -87,8 +87,7 @@ export default abstract class Sprite<T extends SpriteConfig> {
     this.alpha = alpha;
   }
 
-  update(speed: number, loop = false, alpha = 1) {
-    this.alpha = alpha;
+  update(speed: number, loop = false) {
     if (!this.isVisible()) {
       if (loop) {
         this.x = this.containerWidth;
@@ -104,6 +103,10 @@ export default abstract class Sprite<T extends SpriteConfig> {
   /** 检查元素是否在画布上可见。*/
   isVisible() {
     return this.x + this.config.WIDTH > 0;
+  }
+
+  reset() {
+    this.currentPhase = 0;
   }
 
   draw() {
