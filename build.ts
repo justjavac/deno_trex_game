@@ -14,7 +14,7 @@ if (diagnostics.length) {
   console.warn(Deno.formatDiagnostics(diagnostics));
 }
 
-await Deno.remove("assets/js").catch(()=>{});
+await Deno.remove("assets/js", { recursive: true }).catch(()=>{});
 await Deno.mkdir("assets/js/sprite", { recursive: true });
 
 for (let [fileName, text] of Object.entries(files)) {
