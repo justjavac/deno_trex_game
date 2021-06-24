@@ -17,6 +17,7 @@ interface NightModeConfig {
   WIDTH: number;
 }
 
+/** 星星 ✨ */
 interface Star {
   x: number;
   y: number;
