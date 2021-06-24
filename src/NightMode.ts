@@ -1,6 +1,6 @@
 import { IS_HIDPI } from "./constants.ts";
 import Runner from "./Runner.ts";
-import Sprite, { Position } from "./SpriteConfig.ts";
+import Sprite, { Position } from "./sprite/Config.ts";
 import { getRandomNum } from "./utils.ts";
 
 interface NightModeConfig {
@@ -119,7 +119,7 @@ export default class NightMode {
       this.opacity = 0;
       this.placeStars();
     }
-    
+
     this.drawStars = true;
   }
 

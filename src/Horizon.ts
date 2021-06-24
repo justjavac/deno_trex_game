@@ -1,15 +1,12 @@
 import BackgroundEl from "./BackgroundEl.ts";
-import Cloud from "./Cloud.ts";
+import Cloud from "./sprite/Cloud.ts";
 import Obstacle from "./Obstacle.ts";
 import Runner from "./Runner.ts";
 import HorizonLine from "./HorizonLine.ts";
-import Sprite, { Dimensions, Stage } from "./SpriteConfig.ts";
+import Sprite, { Dimensions, SpritePosition } from "./sprite/Config.ts";
 import NightMode from "./NightMode.ts";
 import { getRandomNum } from "./utils.ts";
 
-/**
- * Horizon config.
- */
 enum HorizonConfig {
   BG_CLOUD_SPEED = 0.2,
   BUMPY_THRESHOLD = 0.3,
@@ -27,7 +24,7 @@ export default class Horizon {
   obstacleHistory: string[];
   horizonOffsets: [number, number];
   cloudFrequency: number;
-  spritePos: Stage;
+  spritePos: SpritePosition;
   nightMode: NightMode;
 
   // Cloud
@@ -51,7 +48,7 @@ export default class Horizon {
    */
   constructor(
     canvas: HTMLCanvasElement,
-    spritePos: Stage,
+    spritePos: SpritePosition,
     dimensions: Dimensions,
     gapCoefficient: number,
   ) {
@@ -140,7 +137,7 @@ export default class Horizon {
       // Check for adding a new element.
       if (
         numElements < maxBgEl &&
-        this.dimensions.WIDTH - lastEl.xPos > lastEl.gap &&
+        this.dimensions.WIDTH - lastEl.x > lastEl.gap &&
         frequency > Math.random()
       ) {
         bgElAddFunction();
@@ -166,7 +163,7 @@ export default class Horizon {
     );
 
     // Remove expired elements.
-    this.clouds = this.clouds.filter((obj) => !obj.remove);
+    this.clouds = this.clouds.filter((obj) => obj.isVisible());
   }
 
   /**
@@ -174,6 +171,7 @@ export default class Horizon {
    * @param {number} deltaTime
    */
   updateBackgroundEls(deltaTime: number) {
+    console.log("updateBackgroundEls");
     this.updateBackgroundEl(
       deltaTime,
       this.backgroundEls,
@@ -183,7 +181,7 @@ export default class Horizon {
     );
 
     // Remove expired elements.
-    this.backgroundEls = this.backgroundEls.filter((obj) => !obj.remove);
+    this.backgroundEls = this.backgroundEls.filter((obj) => obj.isVisible());
   }
 
   /**
@@ -313,7 +311,7 @@ export default class Horizon {
    */
   addCloud() {
     this.clouds.push(
-      new Cloud(this.canvas, this.spritePos.CLOUD, this.dimensions.WIDTH),
+      new Cloud(this.canvas, this.dimensions.WIDTH),
     );
   }
 
@@ -322,6 +320,7 @@ export default class Horizon {
    */
   addBackgroundEl() {
     const backgroundElTypes = Object.keys(Sprite.BACKGROUND_EL);
+    console.log(backgroundElTypes);
 
     if (backgroundElTypes.length > 0) {
       let index = getRandomNum(0, backgroundElTypes.length - 1);

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import CollisionBox from "./CollisionBox.ts";
+import CollisionBox from "../CollisionBox.ts";
 
 export interface Position {
   x: number;
@@ -22,7 +22,7 @@ export interface Dimensions {
  * minSpeed: Minimum speed which the obstacle can make an appearance.
  */
 export interface ObstacleType {
-  type: keyof Stage;
+  type: keyof SpritePosition;
   width: number;
   height: number;
   yPos: number | number[];
@@ -36,7 +36,7 @@ export interface ObstacleType {
   speedOffset?: number;
 }
 
-export interface Stage {
+export interface SpritePosition {
   BACKGROUND_EL: Position;
   CACTUS_LARGE: Position;
   CACTUS_SMALL: Position;
@@ -103,9 +103,9 @@ export interface SpriteBackgroundEl {
   CLOUD: CloudSprite;
 }
 
-export interface SpriteDefinition {
-  LDPI: Stage;
-  HDPI: Stage;
+export interface SpritePositoninition {
+  LDPI: SpritePosition;
+  HDPI: SpritePosition;
   MAX_GAP_COEFFICIENT: number;
   MAX_OBSTACLE_LENGTH: number;
   HAS_CLOUDS: number;
@@ -120,7 +120,7 @@ export interface SpriteDefinition {
 /**
  * T-Rex runner sprite definitions.
  */
-const Sprite: SpriteDefinition = {
+const Config: SpritePositoninition = {
   LDPI: {
     BACKGROUND_EL: { x: 86, y: 2 },
     CACTUS_LARGE: { x: 332, y: 2 },
@@ -257,4 +257,4 @@ const Sprite: SpriteDefinition = {
   LINES: [{ SOURCE_X: 2, SOURCE_Y: 52, WIDTH: 600, HEIGHT: 12, YPOS: 127 }],
 };
 
-export default Sprite;
+export default Config;

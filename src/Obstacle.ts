@@ -1,7 +1,7 @@
 import CollisionBox from "./CollisionBox.ts";
 import { FPS, IS_HIDPI, IS_MOBILE } from "./constants.ts";
 import Runner from "./Runner.ts";
-import { Dimensions, ObstacleType, Position } from "./SpriteConfig.ts";
+import { Dimensions, ObstacleType, Position } from "./sprite/Config.ts";
 import { getRandomNum } from "./utils.ts";
 
 export default class Obstacle {

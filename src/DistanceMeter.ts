@@ -1,7 +1,7 @@
 import { IS_HIDPI } from "./constants.ts";
 import { getTimeStamp } from "./utils.ts";
 import Runner from "./Runner.ts";
-import { Position } from "./SpriteConfig.ts";
+import { Position } from "./sprite/Config.ts";
 
 interface Bounds {
   x: number;

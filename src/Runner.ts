@@ -10,8 +10,8 @@ import DistanceMeter from "./DistanceMeter.ts";
 import GameOverPanel from "./GameOverPanel.ts";
 import GeneratedSoundFx from "./GeneratedSoundFx.ts";
 import Horizon from "./Horizon.ts";
-import Sprite from "./SpriteConfig.ts";
-import type { Stage } from "./SpriteConfig.ts";
+import Sprite from "./sprite/Config.ts";
+import type { SpritePosition } from "./sprite/Config.ts";
 import Trex, { TrexStatus } from "./Trex.ts";
 import {
   checkForCollision,
@@ -221,7 +221,7 @@ export default class Runner {
   // Global web audio context for playing sounds.
   audioContext!: AudioContext;
 
-  spriteDef: Stage;
+  spriteDef: SpritePosition;
   gameOverPanel!: GameOverPanel;
   horizon!: Horizon;
   isDarkMode: boolean;
@@ -960,13 +960,13 @@ export default class Runner {
 
     // Game over panel.
     if (!this.gameOverPanel) {
-      const origSpriteDef = IS_HIDPI ? Sprite.HDPI : Sprite.LDPI;
+      const origSpritePosition = IS_HIDPI ? Sprite.HDPI : Sprite.LDPI;
 
       if (this.canvas) {
         this.gameOverPanel = new GameOverPanel(
           this.canvas,
-          origSpriteDef.TEXT_SPRITE,
-          origSpriteDef.RESTART,
+          origSpritePosition.TEXT_SPRITE,
+          origSpritePosition.RESTART,
           this.dimensions,
         );
       }

@@ -1,7 +1,7 @@
 import CollisionBox from "./CollisionBox.ts";
 import { FPS, IS_HIDPI } from "./constants.ts";
 import Runner from "./Runner.ts";
-import Sprite, { Position } from "./SpriteConfig.ts";
+import Sprite, { Position } from "./sprite/Config.ts";
 import { getTimeStamp } from "./utils.ts";
 
 /**

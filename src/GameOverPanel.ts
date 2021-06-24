@@ -1,6 +1,6 @@
 import { IS_HIDPI } from "./constants.ts";
 import Runner from "./Runner.ts";
-import { Dimensions, Position } from "./SpriteConfig.ts";
+import { Dimensions, Position } from "./sprite/Config.ts";
 import { getTimeStamp } from "./utils.ts";
 
 const RESTART_ANIM_DURATION = 875;
