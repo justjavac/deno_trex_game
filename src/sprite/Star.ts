@@ -17,10 +17,9 @@ export default class Star extends Sprite<typeof defaultConfig> {
    */
   constructor(
     canvas: HTMLCanvasElement,
-    containerWidth: number,
     currentPhase = 0,
   ) {
-    super(canvas, containerWidth, "STAR");
+    super(canvas, "STAR");
     this.phases = [[0, 0], [0, 9], [0, 18]];
     this.currentPhase = currentPhase;
   }

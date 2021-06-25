@@ -9,6 +9,11 @@ export interface Position {
   y: number;
 }
 
+export interface Size {
+  width: number;
+  height: number;
+}
+
 export interface Dimensions {
   WIDTH: number;
   HEIGHT: number;

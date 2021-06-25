@@ -1,9 +1,6 @@
 import Sprite from "./Sprite.ts";
 import {PIXEL_RATIO} from '../constants.ts'
 
-// TEXT_X: 0,
-// TEXT_Y: 13,
-
 const defaultConfig = {
   WIDTH: 191,
   HEIGHT: 11,
@@ -14,8 +11,8 @@ export default class GameOverText extends Sprite<typeof defaultConfig> {
   /**
    * Game Over
    */
-  constructor(canvas: HTMLCanvasElement, containerWidth: number) {
-    super(canvas, containerWidth, "TEXT_SPRITE");
+  constructor(canvas: HTMLCanvasElement) {
+    super(canvas, "TEXT_SPRITE");
   }
 
   override init() {

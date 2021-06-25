@@ -259,6 +259,6 @@ export default class Horizon {
    * Add a new cloud to the horizon.
    */
   addCloud() {
-    this.clouds.push(new Cloud(this.canvas, this.dimensions.WIDTH));
+    this.clouds.push(new Cloud(this.canvas));
   }
 }

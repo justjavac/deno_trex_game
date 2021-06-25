@@ -20,8 +20,8 @@ export default class Cloud extends Sprite<typeof defaultConfig> {
    *
    * 和障碍物(Obstacle)类似，但是没有碰撞盒子。
    */
-  constructor(canvas: HTMLCanvasElement, containerWidth: number) {
-    super(canvas, containerWidth, "CLOUD");
+  constructor(canvas: HTMLCanvasElement) {
+    super(canvas, "CLOUD");
     // 设置云出现的间隙
     this.gap = getRandomNum(
       this.config.MIN_CLOUD_GAP,

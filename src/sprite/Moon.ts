@@ -12,8 +12,8 @@ export default class Moon extends Sprite<typeof defaultConfig> {
    *
    * 和障碍物(Obstacle)类似，但是没有碰撞盒子。
    */
-  constructor(canvas: HTMLCanvasElement, containerWidth: number) {
-    super(canvas, containerWidth, "MOON");
+  constructor(canvas: HTMLCanvasElement) {
+    super(canvas, "MOON");
   }
 
   override init() {

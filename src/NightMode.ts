@@ -33,7 +33,7 @@ export default class NightMode {
     this.opacity = 0;
     this.containerWidth = containerWidth;
     this.stars = [];
-    this.moon = new Moon(this.canvas, this.containerWidth);
+    this.moon = new Moon(this.canvas);
     this.placeStars();
   }
 
@@ -79,7 +79,7 @@ export default class NightMode {
 
     for (let i = 0; i < NightMode.config.NUM_STARS; i++) {
       const x = getRandomNum(segmentSize * i, segmentSize * (i + 1));
-      this.stars[i] = new Star(this.canvas, this.containerWidth, i);
+      this.stars[i] = new Star(this.canvas, i);
       this.stars[i].setX(x);
     }
   }

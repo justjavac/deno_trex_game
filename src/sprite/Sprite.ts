@@ -1,6 +1,6 @@
 import { DPI_TYPE, PIXEL_RATIO } from "../constants.ts";
 import Runner from "../Runner.ts";
-import Config, { Position, SpritePosition } from "./Config.ts";
+import Config, { Position, Size, SpritePosition } from "./Config.ts";
 
 export interface SpriteConfig {
   /** 宽度 */
@@ -15,7 +15,7 @@ export default abstract class Sprite<T extends SpriteConfig> {
   config!: T;
   spritePos: Position;
   canvas: HTMLCanvasElement;
-  containerWidth: number;
+  container: Size;
   alpha: number;
   x: number;
   y: number;
@@ -25,14 +25,16 @@ export default abstract class Sprite<T extends SpriteConfig> {
 
   constructor(
     canvas: HTMLCanvasElement,
-    containerWidth: number,
     type: keyof SpritePosition,
   ) {
     this.spritePos = Config[DPI_TYPE][type];
     this.canvas = canvas;
-    this.containerWidth = containerWidth;
+    this.container = {
+      width: this.canvas.width / PIXEL_RATIO,
+      height: this.canvas.height / PIXEL_RATIO,
+    };
     this.alpha = 1;
-    this.x = containerWidth;
+    this.x = this.container.width;
     this.y = 0;
     this.phases = [[0, 0]];
     this.currentPhase = 0;
@@ -90,7 +92,7 @@ export default abstract class Sprite<T extends SpriteConfig> {
   update(speed: number, loop = false) {
     if (!this.isVisible()) {
       if (loop) {
-        this.x = this.containerWidth;
+        this.x = this.container.width;
       } else {
         return;
       }
