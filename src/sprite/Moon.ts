@@ -14,6 +14,11 @@ export default class Moon extends Sprite<typeof defaultConfig> {
    */
   constructor(canvas: HTMLCanvasElement, containerWidth: number) {
     super(canvas, containerWidth, "MOON");
+  }
+
+  override init() {
+    this.config = defaultConfig;
+    this.y = 30;
     this.phases = [
       [140, 0],
       [120, 0],
@@ -23,11 +28,6 @@ export default class Moon extends Sprite<typeof defaultConfig> {
       [20, 0],
       [0, 0],
     ];
-  }
-
-  override init() {
-    this.config = defaultConfig;
-    this.y = 30;
   }
 
   override update() {

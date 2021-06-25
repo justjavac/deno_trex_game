@@ -1,6 +1,7 @@
 import { IS_HIDPI } from "./constants.ts";
 import Runner from "./Runner.ts";
 import { Dimensions, Position } from "./sprite/Config.ts";
+import GameOverText from "./sprite/GameOverText.ts";
 import { getTimeStamp } from "./utils.ts";
 
 const RESTART_ANIM_DURATION = 875;
@@ -18,10 +19,6 @@ const AnimConfig = {
  * Dimensions used in the panel.
  */
 const GameOverPanelDimensions = {
-  TEXT_X: 0,
-  TEXT_Y: 13,
-  TEXT_WIDTH: 191,
-  TEXT_HEIGHT: 11,
   RESTART_WIDTH: 36,
   RESTART_HEIGHT: 32,
 };
@@ -40,10 +37,10 @@ export default class GameOverPanel {
   currentFrame: number;
 
   gameOverRafId?: number;
+  gameOverTex: GameOverText;
 
   flashTimer: number;
   flashCounter: number;
-  originalText: boolean;
 
   /**
    * Game over panel.
@@ -51,8 +48,6 @@ export default class GameOverPanel {
    * @param textImgPos
    * @param restartImgPos
    * @param dimensions Canvas dimensions.
-   * @param optAltGameEndImgPos
-   * @param optAltGameActive
    */
   constructor(
     canvas: HTMLCanvasElement,
@@ -73,7 +68,7 @@ export default class GameOverPanel {
 
     this.flashTimer = 0;
     this.flashCounter = 0;
-    this.originalText = true;
+    this.gameOverTex = new GameOverText(this.canvas, this.canvasDimensions.WIDTH)
   }
 
   /**
@@ -87,45 +82,6 @@ export default class GameOverPanel {
       this.canvasDimensions.HEIGHT = optHeight;
     }
     this.currentFrame = AnimConfig.frames.length - 1;
-  }
-
-  drawGameOverText(dimensions: typeof GameOverPanelDimensions) {
-    const centerX = this.canvasDimensions.WIDTH / 2;
-    let textSourceX = dimensions.TEXT_X;
-    let textSourceY = dimensions.TEXT_Y;
-    let textSourceWidth = dimensions.TEXT_WIDTH;
-    let textSourceHeight = dimensions.TEXT_HEIGHT;
-
-    const textTargetX = Math.round(centerX - dimensions.TEXT_WIDTH / 2);
-    const textTargetY = Math.round((this.canvasDimensions.HEIGHT - 25) / 3);
-    const textTargetWidth = dimensions.TEXT_WIDTH;
-    const textTargetHeight = dimensions.TEXT_HEIGHT;
-
-    if (IS_HIDPI) {
-      textSourceY *= 2;
-      textSourceX *= 2;
-      textSourceWidth *= 2;
-      textSourceHeight *= 2;
-    }
-
-    textSourceX += this.textImgPos.x;
-    textSourceY += this.textImgPos.y;
-    this.canvasCtx.save();
-
-    // Game over text from sprite.
-    this.canvasCtx.drawImage(
-      Runner.origImageSprite,
-      textSourceX,
-      textSourceY,
-      textSourceWidth,
-      textSourceHeight,
-      textTargetX,
-      textTargetY,
-      textTargetWidth,
-      textTargetHeight,
-    );
-
-    this.canvasCtx.restore();
   }
 
   /**
@@ -165,7 +121,8 @@ export default class GameOverPanel {
    * Draw the panel.
    */
   draw() {
-    this.drawGameOverText(GameOverPanelDimensions);
+    // this.drawGameOverText(GameOverPanelDimensions);
+    this.gameOverTex.draw();
     this.drawRestartButton();
     this.update();
   }
@@ -202,24 +159,6 @@ export default class GameOverPanel {
     this.gameOverRafId = requestAnimationFrame(this.update.bind(this));
   }
 
-  /**
-   * Clear game over text.
-   */
-  clearGameOverTextBounds() {
-    this.canvasCtx.save();
-
-    this.canvasCtx.clearRect(
-      Math.round(
-        this.canvasDimensions.WIDTH / 2 -
-          GameOverPanelDimensions.TEXT_WIDTH / 2,
-      ),
-      Math.round((this.canvasDimensions.HEIGHT - 25) / 3),
-      GameOverPanelDimensions.TEXT_WIDTH,
-      GameOverPanelDimensions.TEXT_HEIGHT + 4,
-    );
-    this.canvasCtx.restore();
-  }
-
   reset() {
     if (this.gameOverRafId) {
       cancelAnimationFrame(this.gameOverRafId);
@@ -230,6 +169,5 @@ export default class GameOverPanel {
     this.currentFrame = 0;
     this.flashTimer = 0;
     this.flashCounter = 0;
-    this.originalText = true;
   }
 }
