@@ -1,5 +1,5 @@
 import Sprite from "./Sprite.ts";
-import {PIXEL_RATIO} from '../constants.ts'
+import { PIXEL_RATIO } from "../constants.ts";
 import { getTimeStamp } from "../utils.ts";
 
 const defaultConfig = {
@@ -26,8 +26,11 @@ export default class RestartButton extends Sprite<typeof defaultConfig> {
   /** RestartButton */
   constructor(canvas: HTMLCanvasElement) {
     super(canvas, "RESTART");
-    this.phases = [[0,0], [36,0], [72,0], [108,0], [144,0], [180,0], [216,0], [252,0]]
-    this.msPerFrame = RESTART_ANIM_DURATION / this.phases.length
+    this.phases = [[0, 0], [36, 0], [72, 0], [108, 0], [144, 0], [180, 0], [
+      216,
+      0,
+    ], [252, 0]];
+    this.msPerFrame = RESTART_ANIM_DURATION / this.phases.length;
 
     // Retry animation.
     this.frameTimeStamp = 0;
@@ -40,11 +43,11 @@ export default class RestartButton extends Sprite<typeof defaultConfig> {
 
   override init() {
     this.config = defaultConfig;
-    this.x = (this.canvas.width/PIXEL_RATIO - this.config.WIDTH )/ 2;
-    this.y = (this.canvas.height/PIXEL_RATIO - this.config.HEIGHT - 25) / 2
+    this.x = (this.canvas.width / PIXEL_RATIO - this.config.WIDTH) / 2;
+    this.y = (this.canvas.height / PIXEL_RATIO - this.config.HEIGHT - 25) / 2;
   }
 
-  override update(){
+  override update() {
     const now = getTimeStamp();
     const deltaTime = now - (this.frameTimeStamp || now);
 

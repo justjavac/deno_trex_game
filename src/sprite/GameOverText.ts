@@ -1,5 +1,5 @@
 import Sprite from "./Sprite.ts";
-import {PIXEL_RATIO} from '../constants.ts'
+import { PIXEL_RATIO } from "../constants.ts";
 
 const defaultConfig = {
   WIDTH: 191,
@@ -7,7 +7,6 @@ const defaultConfig = {
 } as const;
 
 export default class GameOverText extends Sprite<typeof defaultConfig> {
-
   /**
    * Game Over
    */
@@ -17,13 +16,13 @@ export default class GameOverText extends Sprite<typeof defaultConfig> {
 
   override init() {
     this.config = defaultConfig;
-    this.phases = [[0,13]]
-    this.x = (this.canvas.width/PIXEL_RATIO - this.config.WIDTH )/ 2;
-    this.y = (this.canvas.height/PIXEL_RATIO - this.config.HEIGHT - 25) / 2
+    this.phases = [[0, 13]];
+    this.x = (this.canvas.width / PIXEL_RATIO - this.config.WIDTH) / 2;
+    this.y = (this.canvas.height / PIXEL_RATIO - this.config.HEIGHT - 25) / 2;
   }
 
-  override update(){
-    super.update(0)
+  override update() {
+    super.update(0);
   }
 
   clear() {
@@ -31,10 +30,10 @@ export default class GameOverText extends Sprite<typeof defaultConfig> {
     canvasCtx.save();
 
     canvasCtx.clearRect(
-        this.x,
+      this.x,
       this.y,
       this.config.WIDTH,
-      this.config.HEIGHT + 4
+      this.config.HEIGHT + 4,
     );
     canvasCtx.restore();
   }

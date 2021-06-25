@@ -68,7 +68,7 @@ export default class GameOverPanel {
 
     this.flashTimer = 0;
     this.flashCounter = 0;
-    this.gameOverTex = new GameOverText(this.canvas)
+    this.gameOverTex = new GameOverText(this.canvas);
   }
 
   /**
