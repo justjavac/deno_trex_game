@@ -3,7 +3,7 @@ import Sprite from "./Sprite.ts";
 const defaultConfig = {
   WIDTH: 20,
   HEIGHT: 40,
-  SPEED: 0.25,
+  SPEED: 0.35,
 };
 
 export default class Moon extends Sprite<typeof defaultConfig> {
@@ -27,14 +27,10 @@ export default class Moon extends Sprite<typeof defaultConfig> {
 
   override init() {
     this.config = defaultConfig;
-    this.x = this.containerWidth - 50;
     this.y = 30;
   }
 
   override update() {
-    if (!this.isVisible()) {
-      this.x = this.containerWidth;
-    }
-    super.update(this.config.SPEED);
+    super.update(this.config.SPEED, true);
   }
 }

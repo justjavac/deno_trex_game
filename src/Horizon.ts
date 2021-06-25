@@ -81,7 +81,6 @@ export default class Horizon {
 
     this.nightMode = new NightMode(
       this.canvas,
-      this.spritePos.MOON,
       this.dimensions.WIDTH,
     );
   }

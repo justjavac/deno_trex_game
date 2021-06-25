@@ -28,16 +28,7 @@ interface JumpConfig {
   INITIAL_JUMP_VELOCITY: number;
 }
 
-interface JumpConfig {
-  GRAVITY: number;
-  MAX_JUMP_HEIGHT: number;
-  MIN_JUMP_HEIGHT: number;
-  INITIAL_JUMP_VELOCITY: number;
-}
-
-/**
- * Animation states.
- */
+/** Trex 状态 */
 export enum TrexStatus {
   CRASHED = "CRASHED",
   DUCKING = "DUCKING",
@@ -45,10 +36,8 @@ export enum TrexStatus {
   RUNNING = "RUNNING",
   WAITING = "WAITING",
 }
-/**
- * Blinking coefficient.
- */
 
+/** 闪烁时间 */
 const TREX_BLINK_TIMING = 7000;
 
 type AnimFrames = Record<TrexStatus, { frames: number[]; msPerFrame: number }>;

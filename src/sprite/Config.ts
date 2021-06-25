@@ -82,15 +82,6 @@ export interface CloudSprite {
   Y_POS: number;
 }
 
-export interface BackgroundElConfig {
-  MAX_BG_ELS: number;
-  MAX_GAP: number;
-  MIN_GAP: number;
-  POS: number;
-  SPEED: number;
-  Y_POS: number;
-}
-
 export interface LineSprite {
   SOURCE_X: number;
   SOURCE_Y: number;
@@ -106,14 +97,9 @@ export interface SpriteBackgroundEl {
 export interface SpritePositoninition {
   LDPI: SpritePosition;
   HDPI: SpritePosition;
-  MAX_GAP_COEFFICIENT: number;
-  MAX_OBSTACLE_LENGTH: number;
-  HAS_CLOUDS: number;
-  BOTTOM_PAD: number;
   TREX: TrexSprite;
   OBSTACLES: ObstacleType[];
   BACKGROUND_EL: SpriteBackgroundEl;
-  BACKGROUND_EL_CONFIG: BackgroundElConfig;
   LINES: LineSprite[];
 }
 
@@ -153,10 +139,6 @@ const Config: SpritePositoninition = {
     STAR: { x: 1276, y: 2 },
     COLLECTABLE: { x: 4, y: 4 },
   },
-  MAX_GAP_COEFFICIENT: 1.5,
-  MAX_OBSTACLE_LENGTH: 3,
-  HAS_CLOUDS: 1,
-  BOTTOM_PAD: 10,
   TREX: {
     WAITING_1: { x: 44, w: 44, h: 47, xOffset: 0 },
     WAITING_2: { x: 0, w: 44, h: 47, xOffset: 0 },
@@ -245,14 +227,6 @@ const Config: SpritePositoninition = {
       X_POS: 1,
       Y_POS: 120,
     },
-  },
-  BACKGROUND_EL_CONFIG: {
-    MAX_BG_ELS: 1,
-    MAX_GAP: 400,
-    MIN_GAP: 100,
-    POS: 0,
-    SPEED: 0.5,
-    Y_POS: 125,
   },
   LINES: [{ SOURCE_X: 2, SOURCE_Y: 52, WIDTH: 600, HEIGHT: 12, YPOS: 127 }],
 };

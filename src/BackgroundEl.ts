@@ -5,12 +5,12 @@ import { getRandomNum } from "./utils.ts";
 
 export default class BackgroundEl {
   static config = {
-    MAX_BG_ELS: 0,
-    MAX_GAP: 0,
-    MIN_GAP: 0,
+    MAX_BG_ELS: 1,
+    MAX_GAP: 400,
+    MIN_GAP: 100,
     POS: 0,
-    SPEED: 0,
-    Y_POS: 0,
+    SPEED: 0.5,
+    Y_POS: 125,
   };
 
   canvas: HTMLCanvasElement;

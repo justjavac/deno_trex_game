@@ -6,6 +6,7 @@ const defaultConfig = {
   WIDTH: 9,
   /** 限制最大 y 坐标，防止星星生成到地面 */
   MAX_Y: 70,
+  SPEED: 0.25,
 };
 
 export default class Star extends Sprite<typeof defaultConfig> {
@@ -14,13 +15,18 @@ export default class Star extends Sprite<typeof defaultConfig> {
    *
    * 和障碍物(Obstacle)类似，但是没有碰撞盒子。
    */
-  constructor(canvas: HTMLCanvasElement, containerWidth: number) {
+  constructor(canvas: HTMLCanvasElement, containerWidth: number,currentPhase=0) {
     super(canvas, containerWidth, "STAR");
     this.phases = [[0, 0], [0, 9], [0, 18]];
+    this.currentPhase = currentPhase;
   }
 
   override init() {
     this.config = defaultConfig;
     this.y = getRandomNum(0, this.config.MAX_Y);
+  }
+
+  override update() {
+    super.update(this.config.SPEED, true);
   }
 }

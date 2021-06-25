@@ -6,10 +6,10 @@ import { getRandomNum } from "./utils.ts";
 
 export default class Obstacle {
   static types: ObstacleType[];
-  /** Coefficient for calculating the maximum gap. */
+  /** 最大间隙系数. */
   static MAX_GAP_COEFFICIENT = 1.5;
 
-  /** Maximum obstacle grouping count. */
+  /** 最大障碍物长度. */
   static MAX_OBSTACLE_LENGTH = 3;
 
   canvasCtx: CanvasRenderingContext2D;

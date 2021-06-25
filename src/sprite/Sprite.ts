@@ -21,7 +21,7 @@ export default abstract class Sprite<T extends SpriteConfig> {
   y: number;
   /** 多个 sprite 图，记录每个 sprite 的偏移量 */
   phases: [number, number][];
-  private currentPhase: number;
+  protected currentPhase: number;
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -96,7 +96,7 @@ export default abstract class Sprite<T extends SpriteConfig> {
       }
     }
 
-    this.x -= Math.ceil(speed);
+    this.x -= speed;
     this.draw();
   }
 
