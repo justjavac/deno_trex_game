@@ -15,7 +15,6 @@ export default class GameOverText extends Sprite<typeof defaultConfig> {
    * Game Over
    */
   constructor(canvas: HTMLCanvasElement, containerWidth: number) {
-    console.log(canvas.width, containerWidth)
     super(canvas, containerWidth, "TEXT_SPRITE");
   }
 
