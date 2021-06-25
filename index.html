@@ -31,7 +31,8 @@
 
   <script type="module">
     import Runner from './assets/js/Runner.ts';
-    new Runner('.interstitial-wrapper');
+    const runner = new Runner('.interstitial-wrapper');
+    runner.initializeHighScore(localStorage.getItem('highestScore'))
   </script>
 </body>
 
