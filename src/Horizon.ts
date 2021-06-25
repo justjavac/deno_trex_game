@@ -1,4 +1,3 @@
-import BackgroundEl from "./BackgroundEl.ts";
 import Cloud from "./sprite/Cloud.ts";
 import Obstacle from "./Obstacle.ts";
 import Runner from "./Runner.ts";
@@ -32,7 +31,6 @@ export default class Horizon {
   cloudSpeed: number;
 
   // Background elements
-  backgroundEls: BackgroundEl[];
   lastEl?: string;
   backgroundSpeed: number;
 
@@ -66,8 +64,6 @@ export default class Horizon {
     this.clouds = [];
     this.cloudSpeed = HorizonConfig.BG_CLOUD_SPEED;
 
-    // Background elements
-    this.backgroundEls = [];
     this.backgroundSpeed = HorizonConfig.BG_CLOUD_SPEED;
 
     // Horizon
@@ -119,7 +115,7 @@ export default class Horizon {
    */
   updateBackgroundEl(
     elSpeed: number,
-    bgElArray: (Cloud | BackgroundEl)[],
+    bgElArray: Cloud[],
     maxBgEl: number,
     bgElAddFunction: () => void,
     frequency: number,
@@ -163,24 +159,6 @@ export default class Horizon {
 
     // Remove expired elements.
     this.clouds = this.clouds.filter((obj) => obj.isVisible());
-  }
-
-  /**
-   * Update the background element positions.
-   * @param {number} deltaTime
-   */
-  updateBackgroundEls(deltaTime: number) {
-    console.log("updateBackgroundEls");
-    this.updateBackgroundEl(
-      deltaTime,
-      this.backgroundEls,
-      BackgroundEl.config.MAX_BG_ELS,
-      this.addBackgroundEl.bind(this),
-      this.cloudFrequency,
-    );
-
-    // Remove expired elements.
-    this.backgroundEls = this.backgroundEls.filter((obj) => obj.isVisible());
   }
 
   /**
@@ -312,34 +290,5 @@ export default class Horizon {
     this.clouds.push(
       new Cloud(this.canvas, this.dimensions.WIDTH),
     );
-  }
-
-  /**
-   * Add a random background element to the horizon.
-   */
-  addBackgroundEl() {
-    const backgroundElTypes = Object.keys(Sprite.BACKGROUND_EL);
-    console.log(backgroundElTypes);
-
-    if (backgroundElTypes.length > 0) {
-      let index = getRandomNum(0, backgroundElTypes.length - 1);
-      let type = backgroundElTypes[index];
-
-      // Add variation if available.
-      while (type == this.lastEl && backgroundElTypes.length > 1) {
-        index = getRandomNum(0, backgroundElTypes.length - 1);
-        type = backgroundElTypes[index];
-      }
-
-      this.lastEl = type;
-      this.backgroundEls.push(
-        new BackgroundEl(
-          this.canvas,
-          this.spritePos.BACKGROUND_EL,
-          this.dimensions.WIDTH,
-          type,
-        ),
-      );
-    }
   }
 }
