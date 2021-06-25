@@ -45,7 +45,7 @@ export default class NightMode {
     // 每次进入黑夜模式后切换一个月相
     // FIXME: 有 bug，月相无法切换，疑似 opacity 处理逻辑存在问题
     if (activated && this.opacity === 0) {
-      this.moon.next();
+      this.moon.nextPhase(true);
     }
 
     // Fade in / out.

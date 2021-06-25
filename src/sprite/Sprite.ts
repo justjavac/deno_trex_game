@@ -71,18 +71,33 @@ export default abstract class Sprite<T extends SpriteConfig> {
     this.y = y;
   }
 
-  setPhase(phase: number) {
+  setPhase(phase: number, loop = false) {
     const length = this.phases.length;
-    if (phase < 0) phase += length;
-    this.currentPhase = phase % length;
+    if (loop) {
+      if (phase < 0) phase += length;
+      this.currentPhase = phase % length;
+    } else {
+      this.currentPhase = phase;
+    }
+    return phase >= 0 && phase < length;
   }
 
-  next() {
-    this.setPhase(this.currentPhase + 1);
+  resetPhase() {
+    this.currentPhase = 0;
   }
 
-  prev() {
-    this.setPhase(this.currentPhase - 1);
+  /** 下一个 sprite，如果超出范围后，置为 0，并返回 `false` */
+  nextPhase(loop = false) {
+    const nextPhase = this.currentPhase + 1;
+    this.setPhase(nextPhase, loop);
+    return nextPhase < this.phases.length;
+  }
+
+  /** 上一个 sprite，如果超出范围后，置为最后一个，并返回 `false` */
+  prevPhase(loop = false) {
+    const prevPhase = this.currentPhase - 1;
+    this.setPhase(prevPhase, loop);
+    return prevPhase >= 0;
   }
 
   setAlpha(alpha: number) {

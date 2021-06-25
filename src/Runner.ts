@@ -464,7 +464,6 @@ export default class Runner {
 
       // Game over panel.
       if (this.crashed && this.gameOverPanel) {
-        this.gameOverPanel.updateDimensions(this.dimensions.WIDTH);
         this.gameOverPanel.draw();
       }
     }
@@ -959,14 +958,9 @@ export default class Runner {
 
     // Game over panel.
     if (!this.gameOverPanel) {
-      const origSpritePosition = IS_HIDPI ? Sprite.HDPI : Sprite.LDPI;
-
       if (this.canvas) {
         this.gameOverPanel = new GameOverPanel(
           this.canvas,
-          origSpritePosition.TEXT_SPRITE,
-          origSpritePosition.RESTART,
-          this.dimensions,
         );
       }
     }

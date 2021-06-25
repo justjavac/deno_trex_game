@@ -16,7 +16,6 @@ export default class RestartButton extends Sprite<typeof defaultConfig> {
   // Retry animation.
   frameTimeStamp: number;
   animTimer: number;
-  currentFrame: number;
 
   gameOverRafId?: number;
 
@@ -26,16 +25,21 @@ export default class RestartButton extends Sprite<typeof defaultConfig> {
   /** RestartButton */
   constructor(canvas: HTMLCanvasElement) {
     super(canvas, "RESTART");
-    this.phases = [[0, 0], [36, 0], [72, 0], [108, 0], [144, 0], [180, 0], [
-      216,
-      0,
-    ], [252, 0]];
+    this.phases = [
+      [0, 0],
+      [36, 0],
+      [72, 0],
+      [108, 0],
+      [144, 0],
+      [180, 0],
+      [216, 0],
+      [252, 0],
+    ];
     this.msPerFrame = RESTART_ANIM_DURATION / this.phases.length;
 
     // Retry animation.
     this.frameTimeStamp = 0;
     this.animTimer = 0;
-    this.currentFrame = 0;
 
     this.flashTimer = 0;
     this.flashCounter = 0;
@@ -56,19 +60,19 @@ export default class RestartButton extends Sprite<typeof defaultConfig> {
     this.flashTimer += deltaTime;
 
     // Restart Button
-    if (this.currentFrame == 0 && this.animTimer > LOGO_PAUSE_DURATION) {
+    if (this.currentPhase == 0 && this.animTimer > LOGO_PAUSE_DURATION) {
       this.animTimer = 0;
-      this.next();
       this.draw();
+      this.nextPhase();
     } else if (
-      this.currentFrame > 0 &&
-      this.currentFrame < this.phases.length
+      this.currentPhase > 0 &&
+      this.currentPhase < this.phases.length
     ) {
-      if (this.animTimer >= AnimConfig.msPerFrame) {
-        this.currentFrame++;
-        this.drawRestartButton();
+      if (this.animTimer >= this.msPerFrame) {
+        this.draw();
+        this.nextPhase();
       }
-    } else if (this.currentFrame == AnimConfig.frames.length) {
+    } else if (this.currentPhase == this.phases.length) {
       this.reset();
       return;
     }
@@ -83,8 +87,8 @@ export default class RestartButton extends Sprite<typeof defaultConfig> {
     }
     this.animTimer = 0;
     this.frameTimeStamp = 0;
-    this.currentFrame = 0;
     this.flashTimer = 0;
     this.flashCounter = 0;
+    this.resetPhase();
   }
 }
