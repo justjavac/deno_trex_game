@@ -62,7 +62,7 @@ export default class NightMode {
       // 更新星星位置
       if (activated) {
         for (let i = 0; i < NightMode.config.NUM_STARS; i++) {
-          this.stars[i].update()
+          this.stars[i].update();
         }
       }
     } else {

@@ -37,7 +37,6 @@ export interface ObstacleType {
 }
 
 export interface SpritePosition {
-  BACKGROUND_EL: Position;
   CACTUS_LARGE: Position;
   CACTUS_SMALL: Position;
   OBSTACLE_2: Position;
@@ -90,16 +89,11 @@ export interface LineSprite {
   YPOS: number;
 }
 
-export interface SpriteBackgroundEl {
-  CLOUD: CloudSprite;
-}
-
 export interface SpritePositoninition {
   LDPI: SpritePosition;
   HDPI: SpritePosition;
   TREX: TrexSprite;
   OBSTACLES: ObstacleType[];
-  BACKGROUND_EL: SpriteBackgroundEl;
   LINES: LineSprite[];
 }
 
@@ -108,7 +102,6 @@ export interface SpritePositoninition {
  */
 const Config: SpritePositoninition = {
   LDPI: {
-    BACKGROUND_EL: { x: 86, y: 2 },
     CACTUS_LARGE: { x: 332, y: 2 },
     CACTUS_SMALL: { x: 228, y: 2 },
     OBSTACLE_2: { x: 332, y: 2 },
@@ -124,7 +117,6 @@ const Config: SpritePositoninition = {
     COLLECTABLE: { x: 2, y: 2 },
   },
   HDPI: {
-    BACKGROUND_EL: { x: 166, y: 2 },
     CACTUS_LARGE: { x: 652, y: 2 },
     CACTUS_SMALL: { x: 446, y: 2 },
     OBSTACLE_2: { x: 652, y: 2 },
@@ -215,19 +207,6 @@ const Config: SpritePositoninition = {
       collisionBoxes: [new CollisionBox(0, 0, 12, 38)],
     },
   ],
-  BACKGROUND_EL: {
-    CLOUD: {
-      HEIGHT: 14,
-      MAX_CLOUD_GAP: 400,
-      MAX_SKY_LEVEL: 30,
-      MIN_CLOUD_GAP: 100,
-      MIN_SKY_LEVEL: 71,
-      OFFSET: 4,
-      WIDTH: 46,
-      X_POS: 1,
-      Y_POS: 120,
-    },
-  },
   LINES: [{ SOURCE_X: 2, SOURCE_Y: 52, WIDTH: 600, HEIGHT: 12, YPOS: 127 }],
 };
 

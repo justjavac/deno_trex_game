@@ -4,7 +4,7 @@ const defaultConfig = {
   WIDTH: 20,
   HEIGHT: 40,
   SPEED: 0.35,
-};
+} as const;
 
 export default class Moon extends Sprite<typeof defaultConfig> {
   /**

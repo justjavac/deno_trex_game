@@ -7,11 +7,10 @@ import NightMode from "./NightMode.ts";
 import { getRandomNum } from "./utils.ts";
 
 enum HorizonConfig {
+  /** 云和背景的移动速度 */
   BG_CLOUD_SPEED = 0.2,
   BUMPY_THRESHOLD = 0.3,
-  CLOUD_FREQUENCY = 0.5,
   HORIZON_HEIGHT = 16,
-  MAX_CLOUDS = 6,
 }
 
 export default class Horizon {
@@ -22,13 +21,10 @@ export default class Horizon {
   obstacles: Obstacle[];
   obstacleHistory: string[];
   horizonOffsets: [number, number];
-  cloudFrequency: number;
   spritePos: SpritePosition;
   nightMode: NightMode;
 
-  // Cloud
   clouds: Cloud[];
-  cloudSpeed: number;
 
   // Background elements
   lastEl?: string;
@@ -57,12 +53,10 @@ export default class Horizon {
     this.obstacles = [];
     this.obstacleHistory = [];
     this.horizonOffsets = [0, 0];
-    this.cloudFrequency = HorizonConfig.CLOUD_FREQUENCY;
     this.spritePos = spritePos;
 
     // Cloud
     this.clouds = [];
-    this.cloudSpeed = HorizonConfig.BG_CLOUD_SPEED;
 
     this.backgroundSpeed = HorizonConfig.BG_CLOUD_SPEED;
 
@@ -75,10 +69,7 @@ export default class Horizon {
       this.horizonLines.push(new HorizonLine(this.canvas, Sprite.LINES[i]));
     }
 
-    this.nightMode = new NightMode(
-      this.canvas,
-      this.dimensions.WIDTH,
-    );
+    this.nightMode = new NightMode(this.canvas, this.dimensions.WIDTH);
   }
 
   /**
@@ -106,59 +97,40 @@ export default class Horizon {
   }
 
   /**
-   * Update background element positions. Also handles creating new elements.
-   * @param {number} elSpeed
-   * @param {Array<Object>} bgElArray
-   * @param {number} maxBgEl
-   * @param {Function} bgElAddFunction
-   * @param {number} frequency
-   */
-  updateBackgroundEl(
-    elSpeed: number,
-    bgElArray: Cloud[],
-    maxBgEl: number,
-    bgElAddFunction: () => void,
-    frequency: number,
-  ) {
-    const numElements = bgElArray.length;
-
-    if (numElements) {
-      for (let i = numElements - 1; i >= 0; i--) {
-        bgElArray[i].update(elSpeed);
-      }
-
-      const lastEl = bgElArray[numElements - 1];
-
-      // Check for adding a new element.
-      if (
-        numElements < maxBgEl &&
-        this.dimensions.WIDTH - lastEl.x > lastEl.gap &&
-        frequency > Math.random()
-      ) {
-        bgElAddFunction();
-      }
-    } else {
-      bgElAddFunction();
-    }
-  }
-
-  /**
-   * Update the cloud positions.
+   * 更新云的位置
    * @param {number} deltaTime
    * @param {number} speed
    */
   updateClouds(deltaTime: number, speed: number) {
-    const elSpeed = (this.cloudSpeed / 1000) * deltaTime * speed;
-    this.updateBackgroundEl(
-      elSpeed,
-      this.clouds,
-      HorizonConfig.MAX_CLOUDS,
-      this.addCloud.bind(this),
-      this.cloudFrequency,
+    const elSpeed = Math.ceil(
+      (HorizonConfig.BG_CLOUD_SPEED / 1000) * deltaTime * speed,
     );
 
-    // Remove expired elements.
+    if (this.needAdded()) {
+      this.addCloud();
+    }
+
+    // 更新云
+    this.clouds.forEach((x) => x.update(elSpeed));
+    // 移除在画布中不可见的云
     this.clouds = this.clouds.filter((obj) => obj.isVisible());
+  }
+
+  /**
+   * 是否需要添加云。添加云的条件：
+   *
+   * 1. 当前画布中没有云
+   * 1. 最后一个云的移动距离大于云的间隙
+   */
+  needAdded() {
+    const count = this.clouds.length;
+
+    if (count === 0) {
+      return true;
+    }
+
+    const last = this.clouds[count - 1];
+    return this.dimensions.WIDTH - last.x > last.gap;
   }
 
   /**
@@ -287,8 +259,6 @@ export default class Horizon {
    * Add a new cloud to the horizon.
    */
   addCloud() {
-    this.clouds.push(
-      new Cloud(this.canvas, this.dimensions.WIDTH),
-    );
+    this.clouds.push(new Cloud(this.canvas, this.dimensions.WIDTH));
   }
 }

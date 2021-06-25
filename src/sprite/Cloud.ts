@@ -1,27 +1,18 @@
 import Sprite from "./Sprite.ts";
 import { getRandomNum } from "../utils.ts";
 
-interface CloudConfig {
-  HEIGHT: number;
-  WIDTH: number;
-  /** 最大间隔 */
-  MAX_CLOUD_GAP: number;
-  /** 最小间隔 */
-  MIN_CLOUD_GAP: number;
-  MAX_SKY_LEVEL: number;
-  MIN_SKY_LEVEL: number;
-}
-
-const defaultConfig: CloudConfig = {
-  HEIGHT: 14,
+const defaultConfig = {
   WIDTH: 46,
-  MAX_CLOUD_GAP: 400,
+  HEIGHT: 14,
+  /** 最大间隔 */
+  MAX_CLOUD_GAP: 200,
+  /** 最小间隔 */
   MIN_CLOUD_GAP: 100,
   MAX_SKY_LEVEL: 30,
   MIN_SKY_LEVEL: 71,
-};
+} as const;
 
-export default class Cloud extends Sprite<CloudConfig> {
+export default class Cloud extends Sprite<typeof defaultConfig> {
   gap: number;
 
   /**
