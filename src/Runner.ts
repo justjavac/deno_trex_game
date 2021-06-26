@@ -941,7 +941,7 @@ export default class Runner {
   saveHighScore(distanceRan: number) {
     this.highestScore = Math.ceil(distanceRan);
     this.distanceMeter.setHighScore(this.highestScore);
-    localStorage.setItem('highestScore', String(this.highestScore))
+    localStorage.setItem("highestScore", String(this.highestScore));
   }
 
   /**
