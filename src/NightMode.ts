@@ -2,18 +2,13 @@ import Moon from "./sprite/Moon.ts";
 import Star from "./sprite/Star.ts";
 import { getRandomNum } from "./utils.ts";
 
-interface NightModeConfig {
-  /** 渐变速度 */
-  FADE_SPEED: number;
-  /** 星星的数量 */
-  NUM_STARS: number;
-}
-
 export default class NightMode {
-  static config: NightModeConfig = {
+  static config = {
+    /** 渐变速度 */
     FADE_SPEED: 0.035,
+    /** 星星的数量 */
     NUM_STARS: 3,
-  };
+  } as const;
 
   canvas: HTMLCanvasElement;
   /** 透明度 */
@@ -25,10 +20,7 @@ export default class NightMode {
   /**
    * Nightmode shows a moon and stars on the horizon.
    */
-  constructor(
-    canvas: HTMLCanvasElement,
-    containerWidth: number,
-  ) {
+  constructor(canvas: HTMLCanvasElement, containerWidth: number) {
     this.canvas = canvas;
     this.opacity = 0;
     this.containerWidth = containerWidth;
