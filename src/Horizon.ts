@@ -32,9 +32,7 @@ export default class Horizon {
   backgroundSpeed: number;
 
   // Horizon
-  horizonLines: HorizonLine[];
   horizonLine: HorizonLine;
-
   /**
    * Horizon background class.
    * @param {HTMLCanvasElement} canvas
@@ -63,7 +61,6 @@ export default class Horizon {
     this.backgroundSpeed = HorizonConfig.BG_CLOUD_SPEED;
 
     // Horizon
-    this.horizonLines = [];
     this.horizonLine = new HorizonLine(this.canvas);
     Obstacle.types = Sprite.OBSTACLES;
     this.addCloud();
@@ -243,10 +240,7 @@ export default class Horizon {
    */
   reset() {
     this.obstacles = [];
-    for (let l = 0; l < this.horizonLines.length; l++) {
-      this.horizonLines[l].reset();
-    }
-
+    this.horizonLine.reset();
     this.nightMode.reset();
   }
 
