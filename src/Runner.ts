@@ -29,37 +29,29 @@ declare type WebkitCanvasRenderingContext2D = CanvasRenderingContext2D & {
 export default class Runner {
   static imageSprite: HTMLImageElement;
 
-  /**
-   * Default game configuration.
-   * Shared config for all  versions of the game. Additional parameters are
-   * defined in Runner.normalConfig and Runner.slowConfig.
-   */
   static config = {
+    /** 声音提示的阈值 */
     AUDIOCUE_PROXIMITY_THRESHOLD: 190,
     AUDIOCUE_PROXIMITY_THRESHOLD_MOBILE_A11Y: 250,
-    BG_CLOUD_SPEED: 0.2,
     BOTTOM_PAD: 10,
     // Scroll Y threshold at which the game can be activated.
     CANVAS_IN_VIEW_OFFSET: -10,
     CLEAR_TIME: 3000,
-    CLOUD_FREQUENCY: 0.5,
-    FADE_DURATION: 1,
     FLASH_DURATION: 1000,
     GAMEOVER_CLEAR_TIME: 1200,
     INITIAL_JUMP_VELOCITY: 12,
     INVERT_FADE_DURATION: 12000,
     MAX_BLINK_COUNT: 3,
-    MAX_CLOUDS: 6,
     MAX_OBSTACLE_DUPLICATION: 2,
     RESOURCE_TEMPLATE_ID: "audio-resources",
+    /** 速度 */
     SPEED: 6,
-    SPEED_DROP_COEFFICIENT: 3,
-    ARCADE_MODE_INITIAL_TOP_POSITION: 35,
-    ARCADE_MODE_TOP_POSITION_PERCENT: 0.1,
+    /** 加速度 */
     ACCELERATION: 0.001,
+    /** 最大速度 */
+    MAX_SPEED: 13,
     GAP_COEFFICIENT: 0.6,
     INVERT_DISTANCE: 700,
-    MAX_SPEED: 13,
     MOBILE_SPEED_COEFFICIENT: 1.2,
   };
 

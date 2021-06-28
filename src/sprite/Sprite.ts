@@ -23,16 +23,10 @@ export default abstract class Sprite<T extends SpriteConfig> {
   phases: [number, number][];
   protected currentPhase: number;
 
-  constructor(
-    canvas: HTMLCanvasElement,
-    type: keyof SpritePosition,
-  ) {
+  constructor(canvas: HTMLCanvasElement, type: keyof SpritePosition) {
     this.spritePos = Config[DPI_TYPE][type];
     this.canvas = canvas;
-    this.container = {
-      width: this.canvas.width / PIXEL_RATIO,
-      height: this.canvas.height / PIXEL_RATIO,
-    };
+    this.container = this.canvas.getBoundingClientRect();
     this.alpha = 1;
     this.x = this.container.width;
     this.y = 0;

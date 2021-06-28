@@ -1,5 +1,4 @@
 import Sprite from "./Sprite.ts";
-import { PIXEL_RATIO } from "../constants.ts";
 
 const defaultConfig = {
   WIDTH: 191,
@@ -17,8 +16,8 @@ export default class GameOverText extends Sprite<typeof defaultConfig> {
   override init() {
     this.config = defaultConfig;
     this.phases = [[0, 13]];
-    this.x = (this.canvas.width / PIXEL_RATIO - this.config.WIDTH) / 2;
-    this.y = (this.canvas.height / PIXEL_RATIO - this.config.HEIGHT - 25) / 2;
+    this.x = (this.container.width - this.config.WIDTH) / 2;
+    this.y = (this.container.height - this.config.HEIGHT - 25) / 2;
   }
 
   override update() {

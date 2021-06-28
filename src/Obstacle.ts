@@ -76,27 +76,26 @@ export default class Obstacle {
   init(speed: number) {
     this.cloneCollisionBoxes();
 
-    // Only allow sizing if we're at the right speed.
+    // 只有在正确的速度下才允许调整尺寸
     if (this.size > 1 && this.typeConfig.multipleSpeed > speed) {
       this.size = 1;
     }
 
     this.width = this.typeConfig.width * this.size;
 
-    // Check if obstacle can be positioned at various heights.
+    // 检查障碍物是否能定位在不同高度
     if (Array.isArray(this.typeConfig.yPos)) {
       const yPosConfig = IS_MOBILE
         ? (this.typeConfig.yPosMobile as number[])
         : this.typeConfig.yPos;
-      this.yPos =
-        yPosConfig[getRandomNum(0, (yPosConfig as number[]).length - 1)];
+      this.yPos = yPosConfig[getRandomNum(0, (yPosConfig).length - 1)];
     } else {
       this.yPos = this.typeConfig.yPos;
     }
 
     this.draw();
 
-    // Make collision box adjustments,
+    // 进行碰撞盒调整，
     // Central box is adjusted to the size as one box.
     //      ____        ______        ________
     //    _|   |-|    _|     |-|    _|       |-|
@@ -111,7 +110,7 @@ export default class Obstacle {
       this.collisionBoxes[2].x = this.width - this.collisionBoxes[2].width;
     }
 
-    // For obstacles that go at a different speed from the horizon.
+    // 有些障碍物的移动速度和地平线速度不同
     if (this.typeConfig.speedOffset) {
       this.speedOffset = Math.random() > 0.5
         ? this.typeConfig.speedOffset
@@ -126,9 +125,6 @@ export default class Obstacle {
     }
   }
 
-  /**
-   * Draw and crop based on size.
-   */
   draw() {
     let sourceWidth = this.typeConfig.width;
     let sourceHeight = this.typeConfig.height;
@@ -206,17 +202,12 @@ export default class Obstacle {
     return getRandomNum(minGap, maxGap);
   }
 
-  /**
-   * Check if obstacle is visible.
-   * @return Whether the obstacle is in the game area.
-   */
   isVisible() {
     return this.xPos + this.width > 0;
   }
 
   /**
-   * Make a copy of the collision boxes, since these will change based on
-   * obstacle type and size.
+   * 复制碰撞框，因为这些碰撞框会根据障碍物的类型和大小而改变
    */
   cloneCollisionBoxes() {
     const collisionBoxes = this.typeConfig.collisionBoxes;

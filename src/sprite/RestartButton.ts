@@ -1,5 +1,4 @@
 import Sprite from "./Sprite.ts";
-import { PIXEL_RATIO } from "../constants.ts";
 import { getTimeStamp } from "../utils.ts";
 
 const defaultConfig = {
@@ -47,8 +46,8 @@ export default class RestartButton extends Sprite<typeof defaultConfig> {
 
   override init() {
     this.config = defaultConfig;
-    this.x = (this.canvas.width / PIXEL_RATIO - this.config.WIDTH) / 2;
-    this.y = (this.canvas.height / PIXEL_RATIO - this.config.HEIGHT) / 2 + 15;
+    this.x = (this.container.width - this.config.WIDTH) / 2;
+    this.y = (this.container.height - this.config.HEIGHT) / 2 + 15;
   }
 
   override update() {

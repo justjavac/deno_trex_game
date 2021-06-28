@@ -1,10 +1,11 @@
 import Cloud from "./sprite/Cloud.ts";
 import Obstacle from "./Obstacle.ts";
 import Runner from "./Runner.ts";
-import HorizonLine from "./HorizonLine.ts";
+import HorizonLine from "./sprite/HorizonLine.ts";
 import Sprite, { Dimensions, SpritePosition } from "./sprite/Config.ts";
 import NightMode from "./NightMode.ts";
 import { getRandomNum } from "./utils.ts";
+import { FPS } from "./constants.ts";
 
 enum HorizonConfig {
   /** 云和背景的移动速度 */
@@ -32,6 +33,7 @@ export default class Horizon {
 
   // Horizon
   horizonLines: HorizonLine[];
+  horizonLine: HorizonLine;
 
   /**
    * Horizon background class.
@@ -62,13 +64,9 @@ export default class Horizon {
 
     // Horizon
     this.horizonLines = [];
+    this.horizonLine = new HorizonLine(this.canvas);
     Obstacle.types = Sprite.OBSTACLES;
     this.addCloud();
-    // Multiple Horizon lines
-    for (let i = 0; i < Sprite.LINES.length; i++) {
-      this.horizonLines.push(new HorizonLine(this.canvas, Sprite.LINES[i]));
-    }
-
     this.nightMode = new NightMode(this.canvas, this.dimensions.WIDTH);
   }
 
@@ -84,11 +82,8 @@ export default class Horizon {
     updateObstacles: boolean,
     showNightMode = false,
   ) {
-    for (let i = 0; i < this.horizonLines.length; i++) {
-      this.horizonLines[i].update(deltaTime, currentSpeed);
-    }
-
     this.nightMode.update(showNightMode);
+    this.updateHorizonLine(deltaTime, currentSpeed);
     this.updateClouds(deltaTime, currentSpeed);
 
     if (updateObstacles) {
@@ -114,6 +109,16 @@ export default class Horizon {
     this.clouds.forEach((x) => x.update(elSpeed));
     // 移除在画布中不可见的云
     this.clouds = this.clouds.filter((obj) => obj.isVisible());
+  }
+
+  /**
+   * 更新 HorizonLine 的位置
+   * @param {number} deltaTime
+   * @param {number} speed
+   */
+  updateHorizonLine(deltaTime: number, speed: number) {
+    const increment = Math.floor(speed * (FPS / 1000) * deltaTime);
+    this.horizonLine.update(increment);
   }
 
   /**

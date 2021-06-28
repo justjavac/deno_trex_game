@@ -23,9 +23,7 @@ export function vibrate(duration: number) {
   }
 }
 
-/**
- * Create canvas element.
- */
+/** 创建 canvas 元素标签 */
 export function createCanvas(
   container: Element,
   width: number,
