@@ -40,7 +40,7 @@ export function createCanvas(
 
 /** 获取当前时间 */
 export function getTimeStamp() {
-  return IS_IOS ? new Date().getTime() : performance.now();
+  return IS_IOS ? Date.now() : performance.now();
 }
 
 /**
