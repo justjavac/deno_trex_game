@@ -1,3 +1,8 @@
+// Copyright (c) 2015 The Chromium Authors. All rights reserved. BSD-style license.
+// https://source.chromium.org/chromium/chromium/src/+/main:LICENSE;drc=0125cf675617075bb4216dc1a794b9038be4f63d
+//
+// Copyright (c) justjavac. All rights reserved. MIT License.
+
 import Sprite from "./Sprite.ts";
 import { getTimeStamp } from "../utils.ts";
 
