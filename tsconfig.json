@@ -1,7 +1,0 @@
-{
-  "compilerOptions": {
-    "checkJs": true,
-    "lib": ["dom", "dom.iterable", "deno.ns", "deno.unstable"]
-  },
-  "exclude": ["assets/js"]
-}

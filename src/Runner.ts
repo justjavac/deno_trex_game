@@ -20,8 +20,6 @@ import {
   vibrate,
 } from "./utils.ts";
 
-declare var document: Document & { webkitHidden: boolean };
-
 declare type WebkitCanvasRenderingContext2D = CanvasRenderingContext2D & {
   webkitBackingStorePixelRatio: number;
 };
@@ -1029,7 +1027,6 @@ export default class Runner {
   onVisibilityChange(e: Event) {
     if (
       document.hidden ||
-      document.webkitHidden ||
       e.type === "blur" ||
       document.visibilityState !== "visible"
     ) {

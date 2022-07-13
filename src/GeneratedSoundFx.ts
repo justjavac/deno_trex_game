@@ -1,8 +1,7 @@
 import { IS_IOS } from "./constants.ts";
 
-declare var webkitAudioContext: typeof AudioContext;
-
-declare var window: Window & { webkitAudioContext: AudioContext };
+declare let webkitAudioContext: typeof AudioContext;
+declare let window: Window & { webkitAudioContext: AudioContext };
 
 export default class GeneratedSoundFx {
   /** 声音文件是否初始化完成 */
