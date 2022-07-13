@@ -2,6 +2,7 @@
 
 import { serve } from "https://deno.land/std@0.148.0/http/server.ts";
 import { bundle } from "https://deno.land/x/emit@0.4.0/mod.ts";
+import tmpDir from "https://deno.land/x/dir@1.5.1/tmp_dir/mod.ts";
 
 async function handleRequest(request: Request) {
   const { pathname } = new URL(request.url);
@@ -43,7 +44,7 @@ async function handleRequest(request: Request) {
 
   if (pathname.startsWith("/bundled.js")) {
     const { code } = await bundle(new URL("./src/entry.ts", import.meta.url), {
-      cacheRoot: "./cache",
+      cacheRoot: tmpDir() ?? "./cache",
     });
 
     return new Response(code, {
