@@ -42,7 +42,9 @@ async function handleRequest(request: Request) {
   }
 
   if (pathname.startsWith("/bundled.js")) {
-    const { code } = await bundle(new URL("./src/entry.ts", import.meta.url));
+    const { code } = await bundle(new URL("./src/entry.ts", import.meta.url), {
+      cacheRoot: "./cache",
+    });
 
     return new Response(code, {
       headers: {
