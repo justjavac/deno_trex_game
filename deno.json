@@ -3,7 +3,6 @@
     "start": "deno run --allow-net --allow-read --allow-env --watch main.ts"
   },
   "compilerOptions": {
-    "target": "esnext",
     "lib": [
       "dom",
       "dom.iterable",
