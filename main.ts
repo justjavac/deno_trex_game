@@ -1,6 +1,6 @@
 // Copyright (c) justjavac. All rights reserved. MIT License.
 
-import { serve } from "https://deno.land/std@0.148.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.150.0/http/server.ts";
 import { bundle } from "https://deno.land/x/emit@0.4.0/mod.ts";
 
 async function handleRequest(request: Request) {
