@@ -3,11 +3,12 @@
 //
 // Copyright (c) justjavac. All rights reserved. MIT License.
 
-import CollisionBox from "./CollisionBox.ts";
-import { FPS, IS_HIDPI } from "./constants.ts";
-import Runner from "./Runner.ts";
-import Sprite, { Position } from "./sprite/Config.ts";
-import { getTimeStamp } from "./utils.ts";
+import { FPS, IS_HIDPI } from "./_definitions/constants";
+import CollisionBox from "./CollisionBox";
+import Runner from "./Runner";
+import type { Position } from "./sprite/Config";
+import Sprite from "./sprite/Config";
+import { getTimeStamp } from "./utils";
 
 /**
  * T-rex player config.
@@ -170,7 +171,8 @@ export default class Trex {
     this.jumpCount = 0;
     this.jumpspotX = 0;
     this.flashing = false;
-    this.groundYPos = Runner.defaultDimensions.HEIGHT -
+    this.groundYPos =
+      Runner.defaultDimensions.HEIGHT -
       this.config.HEIGHT -
       Runner.config.BOTTOM_PAD;
     this.yPos = this.groundYPos;
@@ -237,14 +239,16 @@ export default class Trex {
     if (this.status === TrexStatus.WAITING) {
       this.blink(getTimeStamp());
     } else {
-      this.draw(this.currentAnimFrames[this.currentFrame], 0);
+      const frame = this.currentAnimFrames[this.currentFrame] ?? 0;
+      this.draw(frame, 0);
     }
 
     // Update the frame position.
     if (!this.flashing && this.timer >= this.msPerFrame) {
-      this.currentFrame = this.currentFrame == this.currentAnimFrames.length - 1
-        ? 0
-        : this.currentFrame + 1;
+      this.currentFrame =
+        this.currentFrame == this.currentAnimFrames.length - 1
+          ? 0
+          : this.currentFrame + 1;
       this.timer = 0;
     }
 
@@ -263,9 +267,10 @@ export default class Trex {
   draw(x: number, y: number) {
     let sourceX = x;
     let sourceY = y;
-    let sourceWidth = this.ducking && this.status !== TrexStatus.CRASHED
-      ? this.config.WIDTH_DUCK
-      : this.config.WIDTH;
+    let sourceWidth =
+      this.ducking && this.status !== TrexStatus.CRASHED
+        ? this.config.WIDTH_DUCK
+        : this.config.WIDTH;
     let sourceHeight = this.config.HEIGHT;
     const outputHeight = sourceHeight;
 
@@ -341,7 +346,8 @@ export default class Trex {
     const deltaTime = time - this.animStartTime;
 
     if (deltaTime >= this.blinkDelay) {
-      this.draw(this.currentAnimFrames[this.currentFrame], 0);
+      const frame = this.currentAnimFrames[this.currentFrame] ?? 0;
+      this.draw(frame, 0);
 
       if (this.currentFrame === 1) {
         // Set new random delay to blink.

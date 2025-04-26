@@ -3,8 +3,8 @@
 //
 // Copyright (c) justjavac. All rights reserved. MIT License.
 
-import GameOverText from "./sprite/GameOverText.ts";
-import RestartButton from "./sprite/RestartButton.ts";
+import GameOverText from "./sprite/GameOverText";
+import RestartButton from "./sprite/RestartButton";
 
 export default class GameOverPanel {
   canvas: HTMLCanvasElement;

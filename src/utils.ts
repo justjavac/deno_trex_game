@@ -3,11 +3,11 @@
 //
 // Copyright (c) justjavac. All rights reserved. MIT License.
 
-import { IS_IOS, IS_MOBILE } from "./constants.ts";
-import CollisionBox from "./CollisionBox.ts";
-import Runner from "./Runner.ts";
-import Obstacle from "./Obstacle.ts";
-import Trex from "./Trex.ts";
+import { IS_IOS, IS_MOBILE } from "./_definitions/constants";
+import CollisionBox from "./CollisionBox";
+import Obstacle from "./Obstacle";
+import Runner from "./Runner";
+import Trex from "./Trex";
 
 /**
  * 获取指定范围内的随机数字。
@@ -92,12 +92,13 @@ export function checkForCollision(
     for (let t = 0; t < tRexCollisionBoxes.length; t++) {
       for (let i = 0; i < collisionBoxes.length; i++) {
         // Adjust the box to actual positions.
+
         const adjTrexBox = createAdjustedCollisionBox(
-          tRexCollisionBoxes[t],
+          tRexCollisionBoxes[t] as CollisionBox,
           tRexBox,
         );
         const adjObstacleBox = createAdjustedCollisionBox(
-          collisionBoxes[i],
+          collisionBoxes[i] as CollisionBox,
           obstacleBox,
         );
         const crashed = boxCompare(adjTrexBox, adjObstacleBox);

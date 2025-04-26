@@ -3,7 +3,7 @@
 //
 // Copyright (c) justjavac. All rights reserved. MIT License.
 
-import { IS_IOS } from "./constants.ts";
+import { IS_IOS } from "./_definitions/constants";
 
 declare let webkitAudioContext: typeof AudioContext;
 declare let window: Window & { webkitAudioContext: AudioContext };
@@ -13,7 +13,7 @@ export default class GeneratedSoundFx {
   audioCues: boolean;
   context!: AudioContext;
   panner: StereoPannerNode | null;
-  bgSoundIntervalId?: number;
+  bgSoundIntervalId: ReturnType<typeof setInterval> | undefined;
 
   constructor() {
     this.audioCues = false;
@@ -118,7 +118,7 @@ export default class GeneratedSoundFx {
   cancelFootSteps() {
     if (this.audioCues && this.bgSoundIntervalId) {
       clearInterval(this.bgSoundIntervalId);
-      this.bgSoundIntervalId = 0;
+      this.bgSoundIntervalId = undefined;
       this.playNote(103.83, this.context.currentTime, 0.232, 0.02);
       this.playNote(116.54, this.context.currentTime + 0.116, 0.232, 0.02);
     }
