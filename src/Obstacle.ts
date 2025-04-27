@@ -3,11 +3,11 @@
 //
 // Copyright (c) justjavac. All rights reserved. MIT License.
 
-import { FPS, IS_HIDPI, IS_MOBILE } from "./_definitions/constants";
-import CollisionBox from "./CollisionBox";
-import Runner from "./Runner";
-import type { Dimensions, ObstacleType, Position } from "./sprite/Config";
-import { getRandomNum } from "./utils";
+import CollisionBox from "./CollisionBox.ts";
+import { FPS, IS_HIDPI, IS_MOBILE } from "./constants.ts";
+import Runner from "./Runner.ts";
+import { Dimensions, ObstacleType, Position } from "./sprite/Config.ts";
+import { getRandomNum } from "./utils.ts";
 
 export default class Obstacle {
   static types: ObstacleType[];
@@ -93,9 +93,7 @@ export default class Obstacle {
       const yPosConfig = IS_MOBILE
         ? (this.typeConfig.yPosMobile as number[])
         : this.typeConfig.yPos;
-      const index = getRandomNum(0, yPosConfig.length - 1);
-      const yPos = yPosConfig[index];
-      this.yPos = yPos ?? 0; // Fallback to 0 if undefined
+      this.yPos = yPosConfig[getRandomNum(0, (yPosConfig).length - 1)];
     } else {
       this.yPos = this.typeConfig.yPos;
     }
@@ -110,14 +108,8 @@ export default class Obstacle {
     //   | | 1 | |   | |  2  | |   | |   3   | |
     //   |_|___|_|   |_|_____|_|   |_|_______|_|
     //
-    if (
-      this.size > 1 &&
-      this.collisionBoxes[0] &&
-      this.collisionBoxes[1] &&
-      this.collisionBoxes[2]
-    ) {
-      this.collisionBoxes[1].width =
-        this.width -
+    if (this.size > 1) {
+      this.collisionBoxes[1].width = this.width -
         this.collisionBoxes[0].width -
         this.collisionBoxes[2].width;
       this.collisionBoxes[2].x = this.width - this.collisionBoxes[2].width;
@@ -125,10 +117,9 @@ export default class Obstacle {
 
     // 有些障碍物的移动速度和地平线速度不同
     if (this.typeConfig.speedOffset) {
-      this.speedOffset =
-        Math.random() > 0.5
-          ? this.typeConfig.speedOffset
-          : -this.typeConfig.speedOffset;
+      this.speedOffset = Math.random() > 0.5
+        ? this.typeConfig.speedOffset
+        : -this.typeConfig.speedOffset;
     }
 
     this.gap = this.getGap(this.gapCoefficient, speed);
@@ -149,8 +140,8 @@ export default class Obstacle {
     }
 
     // X position in sprite.
-    let sourceX =
-      sourceWidth * this.size * (0.5 * (this.size - 1)) + this.spritePos.x;
+    let sourceX = sourceWidth * this.size * (0.5 * (this.size - 1)) +
+      this.spritePos.x;
 
     // Animation frames.
     if (this.currentFrame > 0) {
@@ -227,14 +218,11 @@ export default class Obstacle {
     const collisionBoxes = this.typeConfig.collisionBoxes;
 
     for (let i = collisionBoxes.length - 1; i >= 0; i--) {
-      const box = collisionBoxes[i];
-      if (!box) continue;
-
       this.collisionBoxes[i] = new CollisionBox(
-        box.x,
-        box.y,
-        box.width,
-        box.height,
+        collisionBoxes[i].x,
+        collisionBoxes[i].y,
+        collisionBoxes[i].width,
+        collisionBoxes[i].height,
       );
     }
   }

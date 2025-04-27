@@ -3,8 +3,8 @@
 //
 // Copyright (c) justjavac. All rights reserved. MIT License.
 
-import { getRandomNum } from "../utils";
-import Sprite from "./Sprite";
+import Sprite from "./Sprite.ts";
+import { getRandomNum } from "../utils.ts";
 
 const defaultConfig = {
   WIDTH: 46,
@@ -37,6 +37,9 @@ export default class Cloud extends Sprite<typeof defaultConfig> {
   override init() {
     this.config = defaultConfig;
     // 设置云的随机高度
-    this.y = getRandomNum(this.config.MAX_SKY_LEVEL, this.config.MIN_SKY_LEVEL);
+    this.y = getRandomNum(
+      this.config.MAX_SKY_LEVEL,
+      this.config.MIN_SKY_LEVEL,
+    );
   }
 }

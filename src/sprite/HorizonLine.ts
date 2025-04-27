@@ -3,7 +3,7 @@
 //
 // Copyright (c) justjavac. All rights reserved. MIT License.
 
-import Sprite from "./Sprite";
+import Sprite from "./Sprite.ts";
 
 const defaultConfig = {
   HEIGHT: 12,

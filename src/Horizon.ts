@@ -3,15 +3,14 @@
 //
 // Copyright (c) justjavac. All rights reserved. MIT License.
 
-import { FPS } from "./_definitions/constants";
-import NightMode from "./NightMode";
-import Obstacle from "./Obstacle";
-import Runner from "./Runner";
-import Cloud from "./sprite/Cloud";
-import type { Dimensions, SpritePosition } from "./sprite/Config";
-import Sprite from "./sprite/Config";
-import HorizonLine from "./sprite/HorizonLine";
-import { getRandomNum } from "./utils";
+import Cloud from "./sprite/Cloud.ts";
+import Obstacle from "./Obstacle.ts";
+import Runner from "./Runner.ts";
+import HorizonLine from "./sprite/HorizonLine.ts";
+import Sprite, { Dimensions, SpritePosition } from "./sprite/Config.ts";
+import NightMode from "./NightMode.ts";
+import { getRandomNum } from "./utils.ts";
+import { FPS } from "./constants.ts";
 
 enum HorizonConfig {
   /** 云和背景的移动速度 */
@@ -138,9 +137,6 @@ export default class Horizon {
     }
 
     const last = this.clouds[count - 1];
-    if (!last) {
-      return false;
-    }
     return this.dimensions.WIDTH - last.x > last.gap;
   }
 
@@ -154,13 +150,10 @@ export default class Horizon {
 
     for (let i = 0; i < this.obstacles.length; i++) {
       const obstacle = this.obstacles[i];
-      if (!obstacle) {
-        continue;
-      }
       obstacle.update(deltaTime, currentSpeed);
 
       // Clean up existing obstacles.
-      if (obstacle && obstacle.remove) {
+      if (obstacle.remove) {
         updatedObstacles.shift();
       }
     }
@@ -195,24 +188,19 @@ export default class Horizon {
    */
   addNewObstacle(currentSpeed: number) {
     const obstacleCount = Obstacle.types.length - 2;
-    const obstacleTypeIndex =
-      obstacleCount > 0 ? getRandomNum(0, obstacleCount) : 0;
+    const obstacleTypeIndex = obstacleCount > 0
+      ? getRandomNum(0, obstacleCount)
+      : 0;
     const obstacleType = Obstacle.types[obstacleTypeIndex];
 
     // Check for multiples of the same type of obstacle.
     // Also check obstacle is available at current speed.
     if (
-      (obstacleCount > 0 &&
-        obstacleType &&
-        this.duplicateObstacleCheck(obstacleType.type)) ??
-      currentSpeed < (obstacleType?.minSpeed ?? 0)
+      (obstacleCount > 0 && this.duplicateObstacleCheck(obstacleType.type)) ||
+      currentSpeed < obstacleType.minSpeed
     ) {
       this.addNewObstacle(currentSpeed);
     } else {
-      if (!obstacleType) {
-        console.warn("No obstacle type found");
-        return;
-      }
       const obstacleSpritePos = this.spritePos[obstacleType.type];
 
       this.obstacles.push(
@@ -244,8 +232,9 @@ export default class Horizon {
     let duplicateCount = 0;
 
     for (let i = 0; i < this.obstacleHistory.length; i++) {
-      duplicateCount =
-        this.obstacleHistory[i] === nextObstacleType ? duplicateCount + 1 : 0;
+      duplicateCount = this.obstacleHistory[i] === nextObstacleType
+        ? duplicateCount + 1
+        : 0;
     }
     return duplicateCount >= Runner.config.MAX_OBSTACLE_DUPLICATION;
   }
