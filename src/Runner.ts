@@ -395,7 +395,7 @@ export default class Runner {
     this.startListening();
     this.update();
 
-    window.addEventListener(
+    addEventListener(
       Runner.events.RESIZE,
       this.debounceResize.bind(this),
     );
@@ -517,12 +517,12 @@ export default class Runner {
       this.onVisibilityChange.bind(this),
     );
 
-    window.addEventListener(
+    addEventListener(
       Runner.events.BLUR,
       this.onVisibilityChange.bind(this),
     );
 
-    window.addEventListener(
+    addEventListener(
       Runner.events.FOCUS,
       this.onVisibilityChange.bind(this),
     );

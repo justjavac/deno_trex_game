@@ -93,7 +93,7 @@ export default class Obstacle {
       const yPosConfig = IS_MOBILE
         ? (this.typeConfig.yPosMobile as number[])
         : this.typeConfig.yPos;
-      this.yPos = yPosConfig[getRandomNum(0, (yPosConfig).length - 1)];
+      this.yPos = yPosConfig[getRandomNum(0, yPosConfig.length - 1)];
     } else {
       this.yPos = this.typeConfig.yPos;
     }

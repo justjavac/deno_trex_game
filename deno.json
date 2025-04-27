@@ -15,7 +15,7 @@
   "lint": {
     "rules": {
       "tags": ["recommended"],
-      "exclude": ["no-window-prefix"]
+      "exclude": ["no-window"]
     }
   }
 }

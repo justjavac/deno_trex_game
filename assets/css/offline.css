@@ -67,7 +67,8 @@ html {
 }
 
 .offline {
-  transition: filter 1.5s cubic-bezier(0.65, 0.05, 0.36, 1),
+  transition:
+    filter 1.5s cubic-bezier(0.65, 0.05, 0.36, 1),
     background-color 1.5s cubic-bezier(0.65, 0.05, 0.36, 1);
   will-change: filter, background-color;
 }
@@ -152,10 +153,10 @@ html {
 }
 
 /**
-* Mobile specific styling.
-* Navigation buttons are anchored to the bottom of the screen.
-* Details message replaces the top content in its own scrollable area.
-*/
+ * Mobile specific styling.
+ * Navigation buttons are anchored to the bottom of the screen.
+ * Details message replaces the top content in its own scrollable area.
+ */
 
 /* Fixed nav. */
 
@@ -191,7 +192,8 @@ html {
   }
 }
 
-@media (min-height: 500px) and (max-height: 650px) and (max-width: 414px) and (orientation: portrait) {
+@media (min-height: 500px) and (max-height: 650px) and (max-width: 414px)
+    and (orientation: portrait) {
   .interstitial-wrapper {
     margin-top: 7vh;
   }
@@ -221,7 +223,8 @@ html {
   }
 }
 
-@media (min-width: 420px) and (max-width: 736px) and (min-height: 240px) and (max-height: 420px) and (orientation: landscape) {
+@media (min-width: 420px) and (max-width: 736px) and (min-height: 240px)
+    and (max-height: 420px) and (orientation: landscape) {
   .interstitial-wrapper {
     margin-bottom: 100px;
   }

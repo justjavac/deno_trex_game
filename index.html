@@ -1,35 +1,50 @@
 <!DOCTYPE html>
 <html lang="zh" class="offline">
-
-<head>
-  <meta charset="utf-8" />
-  <meta content="IE=edge" http-equiv="X-UA-Compatible" />
-  <meta name="renderer" content="webkit" />
-  <meta name="color-scheme" content="light dark">
-  <meta name="theme-color" content="#fff">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Chrome T-Rex Game</title>
-  <link rel="stylesheet" href="assets/css/offline.css" />
+  <head>
+    <meta charset="utf-8" />
+    <meta content="IE=edge" http-equiv="X-UA-Compatible" />
+    <meta name="renderer" content="webkit" />
+    <meta name="color-scheme" content="light dark">
+    <meta name="theme-color" content="#fff">
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    >
+    <title>Chrome T-Rex Game</title>
+    <link rel="stylesheet" href="assets/css/offline.css" />
   </head>
 
-<body>
-  <div class="interstitial-wrapper"></div>
+  <body>
+    <div class="interstitial-wrapper"></div>
 
-  <div id="offline-resources">
-    <img id="offline-resources-1x" src="assets/img/offline-resources-1x.png">
-    <img id="offline-resources-2x" src="assets/img/offline-resources-2x.png">
-    <template id="audio-resources">
-      <audio id="offline-sound-press" src="assets/audio/offline-sound-press.mpeg"></audio>
-      <audio id="offline-sound-hit" src="assets/audio/offline-sound-hit.mpeg"></audio>
-      <audio id="offline-sound-reached" src="assets/audio/offline-sound-reached.mpeg"></audio>
-    </template>
-  </div>
+    <div id="offline-resources">
+      <img id="offline-resources-1x" src="assets/img/offline-resources-1x.png">
+      <img id="offline-resources-2x" src="assets/img/offline-resources-2x.png">
+      <template id="audio-resources">
+        <audio
+          id="offline-sound-press"
+          src="assets/audio/offline-sound-press.mpeg"
+        >
+        </audio>
+        <audio id="offline-sound-hit" src="assets/audio/offline-sound-hit.mpeg">
+        </audio>
+        <audio
+          id="offline-sound-reached"
+          src="assets/audio/offline-sound-reached.mpeg"
+        >
+        </audio>
+      </template>
+    </div>
 
-  <a class="v-fork-me" href="https://github.com/justjavac/deno_trex_game" target="_blank" rel="noopener">
-    <img src="assets/img/forkme_right_darkblue.png" alt="Fork me on GitHub" />
-  </a>
+    <a
+      class="v-fork-me"
+      href="https://github.com/justjavac/deno_trex_game"
+      target="_blank"
+      rel="noopener"
+    >
+      <img src="assets/img/forkme_right_darkblue.png" alt="Fork me on GitHub" />
+    </a>
 
-  <script type="module" src="bundled.js"></script>
-</body>
-
+    <script type="module" src="bundled.js"></script>
+  </body>
 </html>
