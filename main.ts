@@ -1,6 +1,7 @@
 // Copyright (c) justjavac. All rights reserved. MIT License.
 
-import { bundle } from "@deno/emit";
+import * as esbuild from "npm:esbuild-wasm";
+import { denoPlugins } from "jsr:@luca/esbuild-deno-loader";
 
 async function handleRequest(request: Request) {
   const { pathname } = new URL(request.url);
@@ -41,9 +42,15 @@ async function handleRequest(request: Request) {
   }
 
   if (pathname.startsWith("/bundled.js")) {
-    const { code } = await bundle(new URL("./src/entry.ts", import.meta.url), {
-      cacheRoot: "./cache",
+    const result = await esbuild.build({
+      plugins: [...denoPlugins()],
+      entryPoints: ["./src/entry.ts"],
+      bundle: true,
+      write: false,
+      format: "esm",
     });
+
+    const code = result.outputFiles?.[0].text;
 
     return new Response(code, {
       headers: {

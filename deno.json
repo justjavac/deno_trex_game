@@ -1,6 +1,6 @@
 {
   "tasks": {
-    "start": "deno run --allow-net --allow-read --allow-write --allow-env --watch main.ts"
+    "start": "deno run --allow-net --allow-read --allow-env --watch main.ts"
   },
   "compilerOptions": {
     "lib": [
@@ -19,6 +19,8 @@
     }
   },
   "imports": {
-    "@deno/emit": "jsr:@deno/emit@^0.46.0"
+    "@luca/esbuild-deno-loader": "jsr:@luca/esbuild-deno-loader@^0.11.1",
+    "esbuild": "npm:esbuild@^0.25.3",
+    "esbuild-wasm": "npm:esbuild-wasm@^0.25.3"
   }
 }
