@@ -32,5 +32,3 @@ jobs:
           project: "trex"
           entrypoint: "main.ts"
           root: ""
-          
-          
