@@ -20,7 +20,6 @@
   },
   "imports": {
     "@luca/esbuild-deno-loader": "jsr:@luca/esbuild-deno-loader@^0.11.1",
-    "esbuild": "npm:esbuild@^0.25.3",
-    "esbuild-wasm": "npm:esbuild-wasm@^0.25.3"
+    "esbuild": "https://deno.land/x/esbuild@v0.25.3/wasm.js"
   }
 }
