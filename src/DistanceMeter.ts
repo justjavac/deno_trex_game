@@ -2,10 +2,11 @@
 // https://source.chromium.org/chromium/chromium/src/+/main:LICENSE;drc=0125cf675617075bb4216dc1a794b9038be4f63d
 //
 // Copyright (c) justjavac. All rights reserved. MIT License.
-import { IS_HIDPI } from "./_definitions/constants";
-import Runner from "./Runner";
-import type { Position } from "./sprite/Config";
-import { getTimeStamp } from "./utils";
+
+import { IS_HIDPI } from "./constants.ts";
+import { getTimeStamp } from "./utils.ts";
+import Runner from "./Runner.ts";
+import { Position } from "./sprite/Config.ts";
 
 interface Bounds {
   x: number;
@@ -261,7 +262,7 @@ export default class DistanceMeter {
     // Draw the digits if not flashing.
     if (paint) {
       for (let i = this.digits.length - 1; i >= 0; i--) {
-        this.draw(i, parseInt(this.digits[i] ?? "0", 10));
+        this.draw(i, parseInt(this.digits[i], 10));
       }
     }
 
@@ -277,7 +278,7 @@ export default class DistanceMeter {
       this.canvasCtx.save();
       this.canvasCtx.globalAlpha = 0.8;
       for (let i = this.highScore.length - 1; i >= 0; i--) {
-        this.draw(i, parseInt(this.highScore[i] ?? "0", 10), true);
+        this.draw(i, parseInt(this.highScore[i], 10), true);
       }
       this.canvasCtx.restore();
     }
@@ -308,8 +309,8 @@ export default class DistanceMeter {
     if (isTouchEvent(e)) {
       // Bounds for touch differ from pointer.
       const canvasBounds = this.canvas.getBoundingClientRect();
-      x = (e.touches[0]?.clientX ?? 0) - canvasBounds.left;
-      y = (e.touches[0]?.clientY ?? 0) - canvasBounds.top;
+      x = e.touches[0].clientX - canvasBounds.left;
+      y = e.touches[0].clientY - canvasBounds.top;
     } else {
       x = e.offsetX;
       y = e.offsetY;
@@ -329,16 +330,14 @@ export default class DistanceMeter {
    */
   getHighScoreBounds(): Bounds {
     return {
-      x:
-        this.x -
+      x: this.x -
         this.maxScoreUnits * 2 * Dimensions.WIDTH -
         DistanceMeterConfig.HIGH_SCORE_HIT_AREA_PADDING,
       y: this.y,
-      width:
-        Dimensions.WIDTH * (this.highScore.length + 1) +
+      width: Dimensions.WIDTH * (this.highScore.length + 1) +
         DistanceMeterConfig.HIGH_SCORE_HIT_AREA_PADDING,
-      height:
-        Dimensions.HEIGHT + DistanceMeterConfig.HIGH_SCORE_HIT_AREA_PADDING * 2,
+      height: Dimensions.HEIGHT +
+        DistanceMeterConfig.HIGH_SCORE_HIT_AREA_PADDING * 2,
     };
   }
 

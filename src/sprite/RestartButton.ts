@@ -3,8 +3,8 @@
 //
 // Copyright (c) justjavac. All rights reserved. MIT License.
 
-import Sprite from "./Sprite";
-import { getTimeStamp } from "../utils";
+import Sprite from "./Sprite.ts";
+import { getTimeStamp } from "../utils.ts";
 
 const defaultConfig = {
   WIDTH: 36,

@@ -3,8 +3,8 @@
 //
 // Copyright (c) justjavac. All rights reserved. MIT License.
 
-import { getRandomNum } from "../utils";
-import Sprite from "./Sprite";
+import Sprite from "./Sprite.ts";
+import { getRandomNum } from "../utils.ts";
 
 const defaultConfig = {
   HEIGHT: 9,
@@ -20,13 +20,12 @@ export default class Star extends Sprite<typeof defaultConfig> {
    *
    * 和障碍物(Obstacle)类似，但是没有碰撞盒子。
    */
-  constructor(canvas: HTMLCanvasElement, currentPhase = 0) {
+  constructor(
+    canvas: HTMLCanvasElement,
+    currentPhase = 0,
+  ) {
     super(canvas, "STAR");
-    this.phases = [
-      [0, 0],
-      [0, 9],
-      [0, 18],
-    ];
+    this.phases = [[0, 0], [0, 9], [0, 18]];
     this.currentPhase = currentPhase;
   }
 

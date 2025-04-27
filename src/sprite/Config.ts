@@ -3,7 +3,7 @@
 //
 // Copyright (c) justjavac. All rights reserved. MIT License.
 
-import CollisionBox from "../CollisionBox";
+import CollisionBox from "../CollisionBox.ts";
 
 export interface Position {
   x: number;
