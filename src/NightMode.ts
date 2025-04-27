@@ -3,9 +3,9 @@
 //
 // Copyright (c) justjavac. All rights reserved. MIT License.
 
-import Moon from "./sprite/Moon.ts";
-import Star from "./sprite/Star.ts";
-import { getRandomNum } from "./utils.ts";
+import Moon from "./sprite/Moon";
+import Star from "./sprite/Star";
+import { getRandomNum } from "./utils";
 
 export default class NightMode {
   static config = {
@@ -59,7 +59,10 @@ export default class NightMode {
       // 更新星星位置
       if (activated) {
         for (let i = 0; i < NightMode.config.NUM_STARS; i++) {
-          this.stars[i].update();
+          const star = this.stars[i];
+          if (star) {
+            star.update();
+          }
         }
       }
     } else {
@@ -76,8 +79,9 @@ export default class NightMode {
 
     for (let i = 0; i < NightMode.config.NUM_STARS; i++) {
       const x = getRandomNum(segmentSize * i, segmentSize * (i + 1));
-      this.stars[i] = new Star(this.canvas, i);
-      this.stars[i].setX(x);
+      const star = new Star(this.canvas, i);
+      star.setX(x);
+      this.stars[i] = star;
     }
   }
 

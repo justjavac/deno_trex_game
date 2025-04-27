@@ -3,7 +3,7 @@
 //
 // Copyright (c) justjavac. All rights reserved. MIT License.
 
-import Sprite from "./Sprite.ts";
+import Sprite from "./Sprite";
 
 const defaultConfig = {
   WIDTH: 191,

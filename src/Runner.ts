@@ -10,20 +10,20 @@ import {
   IS_IOS,
   IS_MOBILE,
   RESOURCE_POSTFIX,
-} from "./constants.ts";
-import DistanceMeter from "./DistanceMeter.ts";
-import GameOverPanel from "./GameOverPanel.ts";
-import GeneratedSoundFx from "./GeneratedSoundFx.ts";
-import Horizon from "./Horizon.ts";
-import Sprite from "./sprite/Config.ts";
-import type { SpritePosition } from "./sprite/Config.ts";
-import Trex, { TrexStatus } from "./Trex.ts";
+} from "./_definitions/constants";
+import DistanceMeter from "./DistanceMeter";
+import GameOverPanel from "./GameOverPanel";
+import GeneratedSoundFx from "./GeneratedSoundFx";
+import Horizon from "./Horizon";
+import type { SpritePosition } from "./sprite/Config";
+import Sprite from "./sprite/Config";
+import Trex, { TrexStatus } from "./Trex";
 import {
   checkForCollision,
   createCanvas,
   getTimeStamp,
   vibrate,
-} from "./utils.ts";
+} from "./utils";
 
 declare type WebkitCanvasRenderingContext2D = CanvasRenderingContext2D & {
   webkitBackingStorePixelRatio: number;
@@ -93,7 +93,11 @@ export default class Runner {
   /**
    * Key code mapping.
    */
-  static keycodes: Record<string, Record<number, number>> = {
+  static keycodes: {
+    JUMP: Record<number, 1>;
+    DUCK: Record<number, 1>;
+    RESTART: Record<number, 1>;
+  } = {
     JUMP: { 38: 1, 32: 1, 87: 1 }, // Up, spacebar, w
     DUCK: { 40: 1, 83: 1 }, // Down, s
     RESTART: { 13: 1 }, // Enter
@@ -204,7 +208,7 @@ export default class Runner {
   paused: boolean;
   inverted: boolean;
   invertTimer: number;
-  resizeTimerId_: number;
+  resizeTimerId_: ReturnType<typeof setInterval> | null = null;
 
   playCount: number;
 
@@ -255,7 +259,6 @@ export default class Runner {
     this.paused = false;
     this.inverted = false;
     this.invertTimer = 0;
-    this.resizeTimerId_ = 0;
 
     this.playCount = 0;
     this.raqId = 0;
@@ -275,7 +278,7 @@ export default class Runner {
     // 处理黑夜模式
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     this.isDarkMode = mediaQuery && mediaQuery.matches;
-    mediaQuery.addListener((e) => this.isDarkMode = e.matches);
+    mediaQuery.addListener((e) => (this.isDarkMode = e.matches));
 
     this.loadImages();
   }
@@ -317,11 +320,15 @@ export default class Runner {
       ).content;
 
       for (const sound in Runner.sounds) {
-        const soundSrc = (
-          resourceTemplate.getElementById(
-            Runner.sounds[sound],
-          ) as HTMLAudioElement
-        ).src;
+        const soundId = Runner.sounds[sound];
+        if (!soundId) continue;
+
+        const audioElement = resourceTemplate.getElementById(
+          soundId,
+        ) as HTMLAudioElement;
+        if (!audioElement) continue;
+
+        const soundSrc = audioElement.src;
         fetch(soundSrc)
           .then((response) => {
             return response.arrayBuffer();
@@ -345,7 +352,8 @@ export default class Runner {
 
     // Reduce the speed on smaller mobile screens.
     if (this.dimensions.WIDTH < DEFAULT_WIDTH) {
-      const mobileSpeed = ((speed * this.dimensions.WIDTH) / DEFAULT_WIDTH) *
+      const mobileSpeed =
+        ((speed * this.dimensions.WIDTH) / DEFAULT_WIDTH) *
         Runner.config.MOBILE_SPEED_COEFFICIENT;
       this.currentSpeed = mobileSpeed > speed ? speed : mobileSpeed;
     } else if (optSpeed) {
@@ -425,8 +433,10 @@ export default class Runner {
    * Adjust game space dimensions on resize.
    */
   adjustDimensions() {
-    clearInterval(this.resizeTimerId_);
-    this.resizeTimerId_ = 0;
+    if (this.resizeTimerId_) {
+      clearInterval(this.resizeTimerId_);
+      this.resizeTimerId_ = null;
+    }
 
     const boxStyles = window.getComputedStyle(this.outerContainerEl);
     const padding = Number(
@@ -473,8 +483,8 @@ export default class Runner {
       this.playingIntro = true;
       this.tRex.playingIntro = true;
 
-      // CSS animation definition.
-      const keyframes = "@-webkit-keyframes intro { " +
+      const keyframes =
+        "@-webkit-keyframes intro { " +
         "from { width:" +
         Trex.config.WIDTH +
         "px }" +
@@ -482,7 +492,15 @@ export default class Runner {
         this.dimensions.WIDTH +
         "px }" +
         "}";
-      document.styleSheets[0].insertRule(keyframes, 0);
+
+      const styleSheet = document.styleSheets[0];
+      if (styleSheet) {
+        try {
+          styleSheet.insertRule(keyframes, 0);
+        } catch (e) {
+          console.warn("Failed to insert animation rule:", e);
+        }
+      }
 
       this.containerEl.addEventListener(
         Runner.events.ANIM_END,
@@ -545,7 +563,7 @@ export default class Runner {
   isCanvasInView() {
     return (
       this.containerEl.getBoundingClientRect().top >
-        Runner.config.CANVAS_IN_VIEW_OFFSET
+      Runner.config.CANVAS_IN_VIEW_OFFSET
     );
   }
 
@@ -562,7 +580,6 @@ export default class Runner {
 
     if (this.playing) {
       this.clearCanvas();
-
       this.canvasCtx.globalAlpha = 1;
 
       if (this.tRex.jumping) {
@@ -592,26 +609,30 @@ export default class Runner {
       }
 
       // Check for collisions.
-      const collision = hasObstacles &&
-        checkForCollision(this.horizon.obstacles[0], this.tRex);
+      const firstObstacle = this.horizon.obstacles[0];
+      const collision =
+        hasObstacles &&
+        firstObstacle &&
+        checkForCollision(firstObstacle, this.tRex);
 
       // For a11y, audio cues.
-      if (Runner.audioCues && hasObstacles) {
-        const jumpObstacle =
-          this.horizon.obstacles[0].typeConfig.type != "COLLECTABLE";
+      if (Runner.audioCues && hasObstacles && firstObstacle) {
+        const jumpObstacle = firstObstacle.typeConfig.type != "COLLECTABLE";
 
-        if (!this.horizon.obstacles[0].jumpAlerted) {
+        if (!firstObstacle.jumpAlerted) {
           const threshold = Runner.isMobileMouseInput
             ? Runner.config.AUDIOCUE_PROXIMITY_THRESHOLD_MOBILE_A11Y
             : Runner.config.AUDIOCUE_PROXIMITY_THRESHOLD;
-          const adjProximityThreshold = threshold +
+
+          const adjProximityThreshold =
+            threshold +
             threshold * Math.log10(this.currentSpeed / Runner.config.SPEED);
 
-          if (this.horizon.obstacles[0].xPos < adjProximityThreshold) {
+          if (firstObstacle.xPos < adjProximityThreshold) {
             if (jumpObstacle) {
               this.generatedSoundFx.jump();
             }
-            this.horizon.obstacles[0].jumpAlerted = true;
+            firstObstacle.jumpAlerted = true;
           }
         }
       }
@@ -648,8 +669,9 @@ export default class Runner {
         );
 
         if (actualDistance > 0) {
-          this.invertTrigger =
-            !(actualDistance % Runner.config.INVERT_DISTANCE);
+          this.invertTrigger = !(
+            actualDistance % Runner.config.INVERT_DISTANCE
+          );
 
           if (this.invertTrigger && this.invertTimer === 0) {
             this.invertTimer += deltaTime;
@@ -700,7 +722,11 @@ export default class Runner {
       this.generatedSoundFx.init();
       Runner.generatedSoundFx = this.generatedSoundFx;
       Runner.config.CLEAR_TIME *= 1.2;
-    } else if (e.keyCode && Runner.keycodes.JUMP[e.keyCode]) {
+    } else if (
+      e.keyCode &&
+      Runner.keycodes?.JUMP &&
+      Runner.keycodes.JUMP[e.keyCode]
+    ) {
       this.onKeyDown(e);
     }
   }
@@ -728,12 +754,9 @@ export default class Runner {
    */
   startListening() {
     // A11y keyboard / screen reader activation.
-    this.containerEl.addEventListener(
-      Runner.events.KEYDOWN,
-      (e: Event) => {
-        this.handleCanvasKeyPress(e as KeyboardEvent);
-      },
-    );
+    this.containerEl.addEventListener(Runner.events.KEYDOWN, (e: Event) => {
+      this.handleCanvasKeyPress(e as KeyboardEvent);
+    });
     this.canvas.addEventListener<"keydown">(
       Runner.events.KEYDOWN,
       this.preventScrolling.bind(this),
@@ -781,13 +804,14 @@ export default class Runner {
 
     if (this.isCanvasInView() && !this.crashed && !this.paused) {
       // For a11y, screen reader activation.
-      const isMobileMouseInput = (IS_MOBILE &&
-        e.type === Runner.events.POINTERDOWN &&
-        e.target == this.containerEl) ||
+      const isMobileMouseInput =
+        (IS_MOBILE &&
+          e.type === Runner.events.POINTERDOWN &&
+          e.target == this.containerEl) ||
         (IS_IOS && document.activeElement == this.containerEl);
 
       if (
-        Runner.keycodes.JUMP[e.keyCode] ||
+        Runner.keycodes?.JUMP?.[e.keyCode] ||
         e.type === Runner.events.TOUCHSTART ||
         isMobileMouseInput
       ) {
@@ -815,7 +839,7 @@ export default class Runner {
           }
           this.tRex.startJump(this.currentSpeed);
         }
-      } else if (this.playing && Runner.keycodes.DUCK[e.keyCode]) {
+      } else if (this.playing && Runner.keycodes?.DUCK?.[e.keyCode]) {
         e.preventDefault();
         if (this.tRex.jumping) {
           // Speed drop, activated only when jump key is not pressed.
@@ -833,13 +857,14 @@ export default class Runner {
    */
   onKeyUp(e: KeyboardEvent) {
     const keyCode = e.keyCode;
-    const isjumpKey = Runner.keycodes.JUMP[keyCode] ||
+    const isjumpKey =
+      Runner.keycodes?.JUMP?.[keyCode] ||
       e.type === Runner.events.TOUCHEND ||
       e.type === Runner.events.POINTERUP;
 
     if (this.isRunning() && isjumpKey) {
       this.tRex.endJump();
-    } else if (Runner.keycodes.DUCK[keyCode]) {
+    } else if (Runner.keycodes?.DUCK?.[keyCode]) {
       this.tRex.speedDrop = false;
       this.tRex.setDuck(false);
     } else if (this.crashed) {
@@ -848,10 +873,10 @@ export default class Runner {
 
       if (
         this.isCanvasInView() &&
-        (Runner.keycodes.RESTART[keyCode] ||
+        (Runner.keycodes?.RESTART?.[keyCode] ||
           this.isLeftClickOnCanvas(e as unknown as MouseEvent) ||
           (deltaTime >= Runner.config.GAMEOVER_CLEAR_TIME &&
-            Runner.keycodes.JUMP[keyCode]))
+            Runner.keycodes?.JUMP?.[keyCode]))
       ) {
         this.handleGameOverClicks(e as unknown as MouseEvent);
       }
@@ -955,9 +980,7 @@ export default class Runner {
     // Game over panel.
     if (!this.gameOverPanel) {
       if (this.canvas) {
-        this.gameOverPanel = new GameOverPanel(
-          this.canvas,
-        );
+        this.gameOverPanel = new GameOverPanel(this.canvas);
       }
     }
 

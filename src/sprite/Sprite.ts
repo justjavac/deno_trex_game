@@ -3,9 +3,10 @@
 //
 // Copyright (c) justjavac. All rights reserved. MIT License.
 
-import { DPI_TYPE, PIXEL_RATIO } from "../constants.ts";
-import Runner from "../Runner.ts";
-import Config, { Position, Size, SpritePosition } from "./Config.ts";
+import { DPI_TYPE, PIXEL_RATIO } from "../_definitions/constants";
+import Runner from "../Runner";
+import type { Position, Size, SpritePosition } from "./Config";
+import Config from "./Config";
 
 export interface SpriteConfig {
   /** 宽度 */
@@ -130,8 +131,15 @@ export default abstract class Sprite<T extends SpriteConfig> {
     canvasCtx.save();
     canvasCtx.globalAlpha = this.alpha;
 
-    const xOffset = this.phases[this.currentPhase][0] * PIXEL_RATIO;
-    const yOffset = this.phases[this.currentPhase][1] * PIXEL_RATIO;
+    const phase = this.phases[this.currentPhase];
+    if (!phase) {
+      console.warn("Invalid phase index:", this.currentPhase);
+      return;
+    }
+
+    const [xPhase, yPhase] = phase;
+    const xOffset = xPhase * PIXEL_RATIO;
+    const yOffset = yPhase * PIXEL_RATIO;
 
     canvasCtx.drawImage(
       Runner.imageSprite,
