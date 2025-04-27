@@ -1,7 +1,6 @@
 // Copyright (c) justjavac. All rights reserved. MIT License.
 
-import { serve } from "https://deno.land/std@0.152.0/http/server.ts";
-import { bundle } from "https://deno.land/x/emit@0.4.0/mod.ts";
+import { bundle } from "@deno/emit";
 
 async function handleRequest(request: Request) {
   const { pathname } = new URL(request.url);
@@ -60,4 +59,4 @@ async function handleRequest(request: Request) {
   });
 }
 
-serve(handleRequest);
+Deno.serve(handleRequest);

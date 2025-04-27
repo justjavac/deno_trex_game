@@ -1,6 +1,6 @@
 {
   "tasks": {
-    "start": "deno run --allow-net --allow-read --allow-env --watch main.ts"
+    "start": "deno run --allow-net --allow-read --allow-write --allow-env --watch main.ts"
   },
   "compilerOptions": {
     "lib": [
@@ -17,5 +17,8 @@
       "tags": ["recommended"],
       "exclude": ["no-window"]
     }
+  },
+  "imports": {
+    "@deno/emit": "jsr:@deno/emit@^0.46.0"
   }
 }
